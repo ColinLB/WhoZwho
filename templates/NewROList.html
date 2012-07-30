@@ -1,0 +1,25 @@
+<!--
+Copyright (C) 2012 C. R. Leavett-Brown
+You may distribute under the terms of either the GNU General Public
+License or the Apache v2 License, as specified in the README file.
+-->
+
+{% extends "WhoZwhoAuthenticated.html" %}
+
+{% block body %}
+    <table>
+        <tr>
+            <td class="left_margin"></td>
+            <td>Select a name to display more information:</td>
+        </tr>
+    </table>
+
+    <table>
+        {% for name in names %}
+            <tr>
+                <td class="left_margin"></td>
+                <td><a href="{{ WZ.httpURL }}sname/{{ name.id }}/{{ browser_tab }}"> {{ name.first }} {{ name.last }}</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

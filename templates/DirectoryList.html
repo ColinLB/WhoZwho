@@ -1,0 +1,87 @@
+<!--
+Copyright (C) 2012 C. R. Leavett-Brown
+You may distribute under the terms of either the GNU General Public
+License or the Apache v2 License, as specified in the README file.
+-->
+
+{% extends "WhoZwhoAuthenticated.html" %}
+
+{% block headers %}
+    <script type="text/javascript" src="{{ WZ.httpURL }}static/js/Cookie.js"></script>
+    <script type="text/javascript" src="{{ WZ.httpURL }}static/js/DirectoryList.js"></script>
+{% endblock %}
+
+{% block body %}
+    <table><tr>
+        <td class="left_margin"></td>
+        <td>
+            {% if select.0 = 'F' %}
+                <div id="F" style="display:block">
+            {% else %}
+                <div id="F" style="display:none">
+            {% endif %}
+            
+                List in <a onclick="DisplaySwitchFirstLast();">firstname</a> order, names beginning with:
+                {% for initial in first_initials %}
+                    <a onclick="DisplaySelectedList('F{{ initial }}');">&nbsp{{ initial }}</a>
+                {% endfor %}
+
+                &nbsp&nbsp&nbsp
+                &nbsp&nbsp&nbsp
+                <a class="more_info" href="{{ WZ.httpURL }}print/{{ browser_tab }}">(or print)</a>
+
+                {% for initial, names in first_names.items %}
+                    {% if select.1 = '.' and forloop.counter = 1 %}
+                        <div id='F{{ initial }}' style="display:block">
+                    {% elif initial = select.1  %}
+                        <div id='F{{ initial }}' style="display:block">
+                    {% else %}
+                        <div id='F{{ initial }}' style="display:none">
+                    {% endif %}
+
+                        <br>{{ initial }}<br>
+                        {% for name in names %}
+                            &nbsp&nbsp&nbsp
+                            <a href="{{ WZ.httpURL }}sname/{{ name.id }}/{{ browser_tab }}">{{ name.first }} {{ name.last }}</a><br>
+                        {% endfor %}
+                    </div id="F{{ initial }}">
+                {% endfor %}
+
+            </div id="F">
+
+            {% if select.0 = 'F' %}
+                <div id="L" style="display:none">
+            {% else %}
+                <div id="L" style="display:block">
+            {% endif %}
+            
+                List in <a onclick="DisplaySwitchFirstLast();">lastname</a> order, names beginning with:
+                {% for initial in last_initials %}
+                    <a onclick="DisplaySelectedList('L{{ initial }}');">&nbsp{{ initial }}</a>
+                {% endfor %}
+
+                &nbsp&nbsp&nbsp
+                &nbsp&nbsp&nbsp
+                <a class="more_info" href="{{ WZ.httpURL }}print/{{ browser_tab }}">(or print)</a>
+
+                {% for initial, names in last_names.items %}
+                    {% if select.2 = '.' and forloop.counter = 1 %}
+                        <div id='F{{ initial }}' style="display:block">
+                    {% elif initial = select.2  %}
+                        <div id='L{{ initial }}' style="display:block">
+                    {% else %}
+                        <div id='L{{ initial }}' style="display:none">
+                    {% endif %}
+
+                        <br>{{ initial }}<br>
+                        {% for name in names %}
+                            &nbsp&nbsp&nbsp
+                            <a href="{{ WZ.httpURL }}sname/{{ name.id }}/{{ browser_tab }}">{{ name.last }}, {{ name.first }}</a><br>
+                        {% endfor %}
+                    </div id="L{{ initial }}">
+                {% endfor %}
+
+            </div id="L">
+        </td>
+    </tr></table>
+{% endblock %}

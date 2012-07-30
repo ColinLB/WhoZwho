@@ -1,0 +1,65 @@
+<!--
+Copyright (C) 2012 C. R. Leavett-Brown
+You may distribute under the terms of either the GNU General Public
+License or the Apache v2 License, as specified in the README file.
+-->
+
+{% extends "WhoZwhoUnauthenticated.html" %}
+
+{% block headers %}
+    <script type="text/javascript">
+        function SubmitForm() {
+            var error = ""; 
+
+            if (document.getElementById("id_first_name").value == "") error = "Error: First name omitted.";
+            else if (document.getElementById("id_last_name").value == "") error = "Error: Last name omitted.";
+            else if (document.getElementById("id_email").value == "") error = "Error: Email address omitted.";
+            else if (document.getElementById("recaptcha_response_field").value == "") error = "Error: Scrambled words omitted.";
+            if (error == "") document.forms["UserForgotLogin"].submit();
+
+            document.getElementById("error_message").innerHTML = error;
+        }
+    </script>
+{% endblock %}
+
+{% block body %}
+    <form id="UserForgotLogin" action="/WhoZwho/fglog" method="post">
+        {% csrf_token %}
+
+        <p id=page_title>Forgotten your Login ID?</p>
+
+        <ul>
+            <li><p>All fields are required.
+        </ul>
+
+        <table>
+          <tr>
+            <td class="left_margin"></td>
+            <td id="error_message" class="error_message">{{ WZ.ErrorMessage }}</td>
+          </tr>
+        </table>
+
+        <table>
+          <tr>
+            <td class="left_margin"></td>
+            <td><label for="id_first_name">First name:</label></td>
+            <td><input id="id_first_name" tabindex="1" type="text" name="first_name" maxlength="16" value="{{ form.cleaned_data.first_name }}" />*</td>
+            <td rowspan=8 valign=bottom>{% autoescape off %}{{ captcha_html }}{% endautoescape %}</td>
+          </tr><tr>
+            <td></td>
+            <td><label for="id_last_name">Last name:</label></td>
+            <td><input id="id_last_name" tabindex="1" type="text" name="last_name" maxlength="16" value="{{ form.cleaned_data.last_name }}" />*</td>
+          </tr><tr>
+            <td></td>
+            <td><label for="id_email">Email:</label></td>
+            <td><input id="id_email" tabindex="2" type="text" name="email" maxlength="32" value="{{ form.cleaned_data.email }}" />*</td>
+            <td></td>
+            <td><input type="button" value="Submit" onclick="SubmitForm();" /></td>
+          </tr>
+        </table>
+
+        <ul>
+            <li><p>Return to <a href="{{ WZ.httpURL }}login">login.</a></p></li>
+        </ul>
+    </form>
+{% endblock %}

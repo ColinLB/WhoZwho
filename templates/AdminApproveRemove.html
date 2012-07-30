@@ -1,0 +1,34 @@
+<!--
+Copyright (C) 2012 C. R. Leavett-Brown
+You may distribute under the terms of either the GNU General Public
+License or the Apache v2 License, as specified in the README file.
+-->
+
+{% extends "DirectoryShowName.html" %}
+
+{% block form  %}
+    <script type="text/javascript">
+        function SubmitForm(opt) {
+        document.getElementById("id_action").value = opt;
+        document.getElementById("AdminApproveRemoveForm").submit();
+        }
+    </script>
+
+    <p>{{ WZ.ErrorMessage }}</p>
+
+    <form id="AdminApproveRemoveForm" enctype="multipart/form-data" action="/WhoZwho/apprv/{{ nid }}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" id="id_action" />
+        <table>
+            <tr>
+                <td class="left_margin"></td>
+                <td>
+                    <input type="button" value="Remove" onclick="SubmitForm('r');" />
+                </td><td>
+                    <input type="button" value="Approve" onclick="SubmitForm('a');" />
+                </td>
+            </tr>
+        </table>
+    </form>
+
+{% endblock %}

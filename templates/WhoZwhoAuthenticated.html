@@ -1,0 +1,43 @@
+<!--
+Copyright (C) 2012 C. R. Leavett-Brown
+You may distribute under the terms of either the GNU General Public
+License or the Apache v2 License, as specified in the README file.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{{ WZ.BrowserTag }}</title>
+        <link href="{{ WZ.httpURL }}static/css/whozwho.css" rel="stylesheet" type="text/css" media="screen" />
+        {% block headers %}{% endblock %}
+
+        <style
+            id="mt2" background-color="#294e40">
+        </style>
+    </head>
+
+    {% if WZ.InitializeBody %}
+        <body onload="initialize()">
+    {% else %}
+        <body>
+    {% endif %}
+        <p id=banner>{{ WZ.Banner }}</p>
+
+        <table>
+            <tr>
+                <td>&nbsp</td>
+                {% for tab in WZ.Tabs %}
+                    {% if forloop.counter0 = WZ.ActiveTab %}
+                        <td class="active_tab"><a href="{{ WZ.httpURL}}{{ tab.3 }}">{{ tab.2 }}&nbsp</a></td>
+                    {% else %}
+                        <td><a href="{{ WZ.httpURL}}{{ tab.3 }}">{{ tab.2 }}&nbsp</a></td>
+                    {% endif %}
+                {% endfor %}
+                <td id="loggedin_logout">Hello {{ WZ.User }} - <a href="{{ WZ.httpURL }}logout" />Logout?</a>&nbsp</td>
+            </tr>
+        </table>
+        <hr id=end_of_page_header />
+
+        {% block body %}{% endblock %}
+    </body>
+</html>

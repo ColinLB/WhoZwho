@@ -1,0 +1,23 @@
+<!--
+Copyright (C) 2012 C. R. Leavett-Brown
+You may distribute under the terms of either the GNU General Public
+License or the Apache v2 License, as specified in the README file.
+-->
+
+{% extends "WhoZwhoAuthenticated.html" %}
+
+{% block body %}
+    <table>
+      <tr>
+        <td class="left_margin"></td>
+        <td>
+            <ul>
+                <li><a href="{{ WZ.httpURL }}nname/0/Admin">Add Name (new family)</a></li>
+                <li><a href="{{ WZ.httpURL }}alist">Approve new registrations</a></li>
+                <li><a href="{{ WZ.httpURL }}rilst">Reinstate Deleted Names</a></li>
+                <li><a href="{{ WZ.httpURL }}aelst">Edit Directory</a></li>
+            </ul>
+        </td>
+      </tr>
+    </table>
+{% endblock %}

@@ -1,0 +1,70 @@
+<!--
+Copyright (C) 2012 C. R. Leavett-Brown
+You may distribute under the terms of either the GNU General Public
+License or the Apache v2 License, as specified in the README file.
+-->
+
+{% extends "WhoZwhoAuthenticated.html" %}
+
+{% block body %}
+    <table>
+        <tr valign="top">
+            <td class=left_margin></td>
+            <td><img class="show_image" src="{{ picture }}"></td>
+            <td class=left_margin></td>
+            <td>{{ name.first }} {{ name.last }}<br>
+
+                {% if name.cell %}
+                    Cell: {{ name.cell }}<br>
+                {% endif %}
+
+                {% if name.email %}
+                    Email: {{ name.email }}<br>
+                {% endif %}
+
+                {% if name.work_email %}
+                    Work Email: {{ name.work_email }}<br>
+                {% endif %}
+
+                <br>
+
+                {% if name.address %}
+                    {{ name.address.street }}<br>
+                    {% if name.address.address_line2 %}
+                        {{ name.address.address_line2 }}<br>
+                        {% if name.address.address_line3 %}
+                            {{ name.address.address_line3 }}<br>
+                        {% endif %}
+                    {% endif %}
+                    {{ name.address.city }}, {{ name.address.province }}<br>
+                    {{ name.address.postcode }}
+                    <a class="more_info" href="{{ WZ.httpURL }}saddr/{{ name.address.id }}/{{ browser_tab }}">&nbsp&nbsp(map)</a><br><br>
+
+                    {% if name.address and name.address.phone %}
+                        Home Phone: {{ name.address.phone }}<br>
+                    {% endif %}
+
+                    {% if name.wedding and name.wedding.email %}
+                        Joint Email: {{ name.wedding.email }}<br>
+                    {% endif %}
+
+                {% endif %}
+            </td><td class="wide_margin"></td><td>
+                    Birthday: {{ birthday }}
+            </td>
+        </tr>
+        {% if name.wedding %}
+            <tr valign="top">
+                <td class=left_margin></td>
+                <td><img class="show_image" src="{{ spicture }}"></td>
+                <td class=left_margin></td>
+                <td>{{ spouse.0.first }} {{ spouse.0.last }}<br>
+            </td><td class="wide_margin"></td><td>
+                    Anniversary: {{ name.wedding.anniversary }}
+            </td>
+            </tr>
+        {% endif %}
+    </table>
+
+    {% block form %}{% endblock %}
+{% endblock %}

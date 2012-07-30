@@ -1,0 +1,70 @@
+<!--
+Copyright (C) 2012 C. R. Leavett-Brown
+You may distribute under the terms of either the GNU General Public
+License or the Apache v2 License, as specified in the README file.
+-->
+
+{% extends "WhoZwhoAuthenticated.html" %}
+
+{% block headers %}
+    <style type="text/css">
+        #map_canvas { height: 100% }
+    </style>
+
+
+    <script type="text/javascript"
+        src="http://maps.googleapis.com/maps/api/js?sensor=false">
+    </script>
+
+    <script type="text/javascript">
+        var geocoder;
+        var map;
+
+        function initialize() {
+            var address = "{{ map }}";
+            var myOptions = {
+                zoom: 15,
+                center: new google.maps.LatLng(0, 0),
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+                }
+            map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+
+            geocoder = new google.maps.Geocoder();
+            geocoder.geocode( { 'address': address}, function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    map.setCenter(results[0].geometry.location);
+                    var marker = new google.maps.Marker({
+                        map: map,
+                        position: results[0].geometry.location
+                        });
+                } else {
+                    alert("Geocode was not successful for the following reason: " + status);
+                }
+            });
+        }
+    </script>
+{% endblock %}
+
+{% block body %}
+    <table>
+        <tr valign="top">
+            <td class=left_margin></td>
+            <td><div id="map_canvas" style="width:550px; height:550px"></div></td>
+            <td>
+                {{ address.street }}<br>
+                {% if address.address_line2 %}
+                    {{ address.address_line2 }}<br>
+                    {% if address.address_line3 %}
+                        {{ address.address_line3 }}<br>
+                    {% endif %}
+                {% endif %}
+                {{ address.city }}, {{ address.province }}<br>
+                {{ address.postcode }}<br><br>
+
+                {% if address.phone %}
+                    Home Phone: {{ address.phone }}<br>
+                {% endif %}
+            <td>
+        </tr>
+    </table>
+{% endblock %}

@@ -1,0 +1,64 @@
+<!--
+Copyright (C) 2012 C. R. Leavett-Brown
+You may distribute under the terms of either the GNU General Public
+License or the Apache v2 License, as specified in the README file.
+-->
+
+{% extends "WhoZwhoUnauthenticated.html" %}
+
+{% block headers %}
+    <script type="text/javascript">
+        function SubmitForm() {
+            var error = ""
+
+            if (document.getElementById("id_login_id").value == "") error = "Error: Login ID omitted.";
+            else if (document.getElementById("id_password").value == "") error = "Error: Password omitted.";
+
+            if (error == "") document.forms["UserLogin"].submit();
+
+            document.getElementById("error_message").innerHTML = error;
+        }
+    </script>
+{% endblock %}
+
+{% block body %}
+    <form id="UserLogin" action="/WhoZwho/login/" method="post">
+        {% csrf_token %}
+
+        <p id=page_title>Directory Login</p>
+
+        <ul>
+            <li><p>Please enter your login ID and password.</p></li>
+        </ul>
+
+        <table>
+          <tr>
+            <td class="left_margin"></td>
+            <td id="error_message" class="error_message">{{ WZ.ErrorMessage }}</td>
+          </tr>
+        </table>
+
+        <table>
+          <tr>
+            <td class="left_margin"></td>
+            <td><label for="id_login_id">Login id:</label></td>
+            <td><input id="id_login_id" type="text" name="login_id" maxlength="16" value="{{ form.cleaned_data.login_id }}" /></td>
+          </tr><tr>
+            <td></td>
+            <td><label for="id_password">Password:</label></td>
+            <td><input id="id_password" type="password" name="password" maxlength="16" value="{{ form.cleaned_data.password }}" /></td>
+          </tr><tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><input type="button" value="Submit" onclick="SubmitForm();" /></td>
+          </tr>
+        </table><br><br>
+
+        <ul>
+            <li><p>Forgotten your <a href="{{ WZ.httpURL }}fgpwd">password?</a></p></li>
+            <li><p>Forgotten your <a href="{{ WZ.httpURL }}fglog">Login ID?</a></p></li>
+            <li><p>Need to <a href="{{ WZ.httpURL }}registration/">register?</a></p></li>
+        </ul>
+    </form>
+{% endblock %}
