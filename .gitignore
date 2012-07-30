@@ -1,0 +1,4 @@
+fixtures/*
+static/pics/names/*.jpg
+static/pics/names/old/*
+static/pics/names/printable/*
