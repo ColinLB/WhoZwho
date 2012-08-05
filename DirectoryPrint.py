@@ -45,8 +45,8 @@ def do(request, browser_tab):
     for name in names:
         list += [ FormatName(WZ, name, None) + FormatAddress(name.address) ]
 
-    for item in sorted(list):
-        print str(item)
+#   for item in sorted(list):
+#       print str(item)
 
     response = HttpResponse(mimetype='application/pdf')
     response['Content-Disposition'] = 'attachment; filename=WhoZwho.pdf'
