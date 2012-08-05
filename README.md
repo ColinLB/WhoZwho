@@ -3,6 +3,12 @@ WhoZwho
 
 Django based web directory/address book
 
+1. Install python 2.6.6 or greater.
+2. Install setuptools: curl http://python-distribute.org/distribute_setup.py | python
+3. Install pip: curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py | python
+4. Install django: pip install Django
+5.
+6.
 
 License
 
