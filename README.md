@@ -15,9 +15,14 @@ As root:
  7. Create non-privileged user: adduser [ my_ID ]
 
 As the non-privileged user ( [ my_ID ] ):
- 1. Create Django application container: mkdir -p ~/django; cd ~/django; django-admin.py startproject [ my_site ]
- 2. Retrieve WhoZwho web directory code: mkdir -i ~/Git; cd ~/Git; git clone git@github.com:ColinLB/WhoZwho.git
- 3.
+ 1. Retrieve WhoZwho web directory code: mkdir -i ~/Git; cd ~/Git; git clone git@github.com:ColinLB/WhoZwho.git
+ 2. Create Django application container: mkdir -p ~/django; cd ~/django; django-admin.py startproject [ my_site ]
+ 3. Link application container to code: ln -s ~/Git/WhoZwho
+ 4. Customize applications settings, in particular:
+      BANNER
+      SITENAME
+ 5. Create apache WhoZwho.conf using sample provided in ~/Git/WhoZwho/samples/apache.conf
+ 6. Restart apache.
 
 License
 
