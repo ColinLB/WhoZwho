@@ -2,6 +2,8 @@
 # You may distribute under the terms of either the GNU General Public
 # License or the Apache v2 License, as specified in the README file.
 
+import settings
+
 #
 # Privileges and Authority Levels.
 #
@@ -24,12 +26,6 @@ BadPasswordAttempts = 5
 BadPasswordTimeout = 3600
 MaximumInactivity = 300
 TemporaryPasswordLife = 1200
-
-#
-# Captcha keys.
-#
-captcha_private_key = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-captcha_public_key = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 
 #
 # Standard picture sizes.
@@ -92,6 +88,8 @@ def SetWhoZwho(request, active_tab='None'):
         'AuthorizedOwner': 0,
         'Banner': 'Esquimalt Church of the Nazarene Directory',
         'BrowserTag': 'WhoZwho',
+        'CaptchaPrivate': CAPTCHA_PRIVATE_KEY,
+        'CaptchaPublic': CAPTCHA_PUBLIC_KEY,
         'ErrorMessage': '',
         'httpURL': 'https://' + request.META['HTTP_HOST'] + '/WhoZwho/',
         'InitializeBody': 0,

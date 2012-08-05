@@ -38,7 +38,7 @@ def do(request):
     if request.method == 'POST': # If the form has been submitted...
         form = UserChangePasswordForm(request.POST, request.FILES)
         if form.is_valid(): # All validation rules pass
-            check_captcha = captcha.submit (form.cleaned_data['recaptcha_challenge_field'], form.cleaned_data['recaptcha_response_field'], Z.captcha_private_key, "127.0.0.1")
+            check_captcha = captcha.submit (form.cleaned_data['recaptcha_challenge_field'], form.cleaned_data['recaptcha_response_field'], WZ['CaptchaPrivate'], "127.0.0.1")
             if not check_captcha.is_valid:
                 WZ['ErrorMessage'] = "[CP01]: Captcha response was incorrect."
             else:
@@ -71,7 +71,7 @@ def do(request):
     else:
         form = UserChangePasswordForm()
 
-    captcha_html = captcha.displayhtml(Z.captcha_public_key, use_ssl = True)
+    captcha_html = captcha.displayhtml(WZ['CaptchaPublic'], use_ssl = True)
 
     context = {
         'captcha_html': captcha_html,
