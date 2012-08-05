@@ -6,18 +6,18 @@ Django based web directory/address book
 Installation:
 
 As root:
-1. Install apache, mod_wsgi, mod_ssl.
-2. Install python 2.6.6 or greater.
-3. Install setuptools: curl http://python-distribute.org/distribute_setup.py | python
-4. Install pip: curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py | python
-5. Install django: pip install Django
-6. Install git
-7. Create non-privileged user: adduser <my_ID>
+ 1. Install apache, mod_wsgi, mod_ssl.
+ 2. Install python 2.6.6 or greater.
+ 3. Install setuptools: curl http://python-distribute.org/distribute_setup.py | python
+ 4. Install pip: curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py | python
+ 5. Install django: pip install Django
+ 6. Install git
+ 7. Create non-privileged user: adduser <my_ID>
 
 As the non-privileged user (<my_ID>):
-1. Create Django application container: mkdir -p ~/django; cd ~/django; django-admin.py startproject <my_site>
-2. Retrieve WhoZwho web directory code: mkdir -i ~/Git; cd ~/Git; git clone xxxx
-6.
+ 1. Create Django application container: mkdir -p ~/django; cd ~/django; django-admin.py startproject <my_site>
+ 2. Retrieve WhoZwho web directory code: mkdir -i ~/Git; cd ~/Git; git clone git@github.com:ColinLB/WhoZwho.git
+ 3.
 
 License
 
