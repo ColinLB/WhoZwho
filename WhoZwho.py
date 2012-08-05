@@ -2,7 +2,7 @@
 # You may distribute under the terms of either the GNU General Public
 # License or the Apache v2 License, as specified in the README file.
 
-import settings
+import esquimalt.settings
 
 #
 # Privileges and Authority Levels.
@@ -88,8 +88,8 @@ def SetWhoZwho(request, active_tab='None'):
         'AuthorizedOwner': 0,
         'Banner': 'Esquimalt Church of the Nazarene Directory',
         'BrowserTag': 'WhoZwho',
-        'CaptchaPrivate': CAPTCHA_PRIVATE_KEY,
-        'CaptchaPublic': CAPTCHA_PUBLIC_KEY,
+        'CaptchaPrivate': esquimalt.settings.CAPTCHA_PRIVATE_KEY,
+        'CaptchaPublic': esquimalt.settings.CAPTCHA_PUBLIC_KEY,
         'ErrorMessage': '',
         'httpURL': 'https://' + request.META['HTTP_HOST'] + '/WhoZwho/',
         'InitializeBody': 0,
