@@ -1,3 +1,4 @@
+*.pyc
 fixtures/*
 static/pics/names/*.jpg
 static/pics/names/old/*
