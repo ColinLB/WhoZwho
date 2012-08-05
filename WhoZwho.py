@@ -28,8 +28,8 @@ TemporaryPasswordLife = 1200
 #
 # Captcha keys.
 #
-captcha_private_key = '6LfHotASAAAAAAvxx9WZxFdZo0huia_HYBmmCZCW'
-captcha_public_key = '6LfHotASAAAAADtIMW9CPR-mFDVSxw0RjkQkVTFU'
+captcha_private_key = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+captcha_public_key = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 
 #
 # Standard picture sizes.
