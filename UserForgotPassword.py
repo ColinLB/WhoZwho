@@ -54,7 +54,7 @@ def do(request):
                         'time, you may visit ' + WZ['httpURL'] + '/fgpwd at any time to request another ' + \
                         'temporary password.\n\nLogin ID: ' + users[0].username + \
                         '\nTemporary password: ' + temporary_password,
-                        'crlb@telus.net',
+                        WZ['AdminEmail'],
                         [users[0].email],
                         fail_silently=False)
 

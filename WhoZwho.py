@@ -82,6 +82,7 @@ from django.contrib.auth.models import User
 def SetWhoZwho(request, active_tab='None'):
     WZ = {
         'ActiveTab': 0,
+        'AdminEmail': esquimalt.settings.ADMINS[0][1],
         'Approved': 0,
         'Authenticated': 0,
         'Authority': 0,

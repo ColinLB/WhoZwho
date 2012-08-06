@@ -85,7 +85,7 @@ def do(request, nid, browser_tab):
                     'A new account, ' + new_user.username + \
                     ', has been created for you on the WhoZwho directory. ' + \
                     'To obtain a password, visit ' + WZ['httpURL'] + '/fgpwd.',
-                    'crlb@telus.net',
+                    WZ['AdminEmail'],
                     [new_user.email],
                     fail_silently=False)
 

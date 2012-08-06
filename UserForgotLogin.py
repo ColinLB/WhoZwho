@@ -41,7 +41,7 @@ def do(request):
                     send_mail(
                         'Forgotten login ID.',
                         'Login ID: ' + users[0].username,
-                        'crlb@telus.net',
+                        WZ['AdminEmail'],
                         [users[0].email],
                         fail_silently=False)
 

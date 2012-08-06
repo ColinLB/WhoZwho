@@ -42,7 +42,7 @@ def do(request, nid):
                     'Account approved.',
                     'Your Login ID, ' + name.user.username + ', has been approved. Visit ' + \
                     WZ['httpURL'] + '/login to access the WhoZwho directory.',
-                    'crlb@telus.net',
+                    WZ['AdminEmail'],
                     [name.user.email],
                     fail_silently=False)
 
