@@ -10,9 +10,10 @@ As root:
  2. Install python 2.6.6 or greater.
  3. Install setuptools: curl http://python-distribute.org/distribute_setup.py | python
  4. Install pip: curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py | python
- 5. Install django: pip install Django
- 6. Install git
- 7. Create non-privileged user: adduser [ my_ID ]
+ 5. Install Python Imaging Library: pip install pil
+ 6. Install django: pip install Django
+ 7. Install git
+ 8. Create non-privileged user: adduser [ my_ID ]
 
 As the non-privileged user ( [ my_ID ] ):
  1. Retrieve WhoZwho web directory code: mkdir -i ~/Git; cd ~/Git; git clone git@github.com:ColinLB/WhoZwho.git

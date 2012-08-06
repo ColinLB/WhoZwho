@@ -95,6 +95,7 @@ def SetWhoZwho(request, active_tab='None'):
         'httpURL': 'https://' + request.META['HTTP_HOST'] + '/WhoZwho/',
         'InitializeBody': 0,
         'Nid': request.user.id,
+        'PythonPath': esquimalt.settings.PYTHON_PATH,
         'StaticPath': getcwd() + '/django/' + esquimalt.settings.SITENAME + '/WhoZwho/static/',
         'Tab': {},
         'Tabs': [],

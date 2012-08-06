@@ -141,17 +141,19 @@ def ProcessNewPicture(request, WZ, nid):
     std_jpg_size = Z.jpg_width * Z.jpg_height
     std_jpg_width_height_ratio = Z.jpg_width * 1.0 / Z.jpg_height
 
+    os.environ['PATH'] = WZ['PythonPath']
+
     SaveFileUpload(request.FILES['picture'], WZ['StaticPath'] + 'pics/names/new/' + nid +'.jpg')
 
     # Retrieve image information and check image type.
-    p = Popen(['/usr/bin/identify', WZ['StaticPath'] + 'pics/names/new/' + nid +'.jpg'], stdout=PIPE, stderr=PIPE)
+    p = Popen(['identify', WZ['StaticPath'] + 'pics/names/new/' + nid +'.jpg'], stdout=PIPE, stderr=PIPE)
     stdout, stderr = p.communicate()
     if stderr != '':
         return  "[EN03]: /usr/bin/identify error - " + stderr
 
     file_info = stdout.split()
     if file_info[1] != 'JPEG':
-        p = Popen(['/bin/rm', WZ['StaticPath'] + 'pics/names/new/' + nid +'.jpg'], stdout=PIPE, stderr=PIPE)
+        p = Popen(['rm', '-f',  WZ['StaticPath'] + 'pics/names/new/' + nid +'.jpg'], stdout=PIPE, stderr=PIPE)
         stdout, stderr = p.communicate()
         if stderr != '':
             return  "[EN04]: /bin/rm error - " + stderr
@@ -175,7 +177,7 @@ def ProcessNewPicture(request, WZ, nid):
                 normalized_width = Z.jpg_width
 
         if normalized_height > 0:
-            p = Popen(['/usr/bin/mogrify', '-scale',
+            p = Popen(['mogrify', '-scale',
                 str(normalized_width) + 'x' + str(normalized_height),
                 WZ['StaticPath'] + 'pics/names/new/' + nid +'.jpg'],
                 stdout=PIPE, stderr=PIPE)
@@ -203,7 +205,7 @@ def ProcessNewPicture(request, WZ, nid):
         normalized_width = 0
 
     if normalized_height > 0:
-        p = Popen(['/usr/bin/mogrify', '-crop',
+        p = Popen(['mogrify', '-crop',
             str(normalized_width) + 'x' + str(normalized_height) + '+' + str(normalized_width_offset) + '+' + str(normalized_height_offset),
             WZ['StaticPath'] + 'pics/names/new/' + nid +'.jpg'],
             stdout=PIPE, stderr=PIPE)
@@ -213,7 +215,7 @@ def ProcessNewPicture(request, WZ, nid):
             return  "[EN07]: /usr/bin/mogrify(crop) error - " + stderr
 
     # Still alive? Move the image into production.
-    p = Popen(['/bin/mv',
+    p = Popen(['mv',
         WZ['StaticPath'] + 'pics/names/new/' + nid +'.jpg',
         WZ['StaticPath'] + 'pics/names/' + nid +'.jpg'],
         stdout=PIPE, stderr=PIPE)

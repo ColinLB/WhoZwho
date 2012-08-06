@@ -36,7 +36,8 @@ def do(request, nid, browser_tab):
     if WZ['Authority'] < Z.Admin and name.owner != WZ['AuthorizedOwner']:
         return GoLogout(request, WZ, "[EN02]: URL contained an invalid name ID.")
 
-    p = Popen(['/bin/mv',
+    os.environ['PATH'] = WZ['PythonPath']
+    p = Popen(['mv',
         WZ['StaticPath'] + 'pics/names/' + nid +'.jpg',
         WZ['StaticPath'] + 'pics/names/old/' + nid + '.jpg' + '.' + str(int(time()))],
         stdout=PIPE, stderr=PIPE)
