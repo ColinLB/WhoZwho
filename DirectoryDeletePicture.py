@@ -5,7 +5,7 @@
 import WhoZwho as Z
 from UserLogin import GoLogout
 
-from os import system
+import os
 from time import time
 from datetime import date
 from subprocess import PIPE, Popen, STDOUT
