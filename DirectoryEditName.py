@@ -29,6 +29,7 @@ from WhoZwhoCommonFunctions import SaveFileUpload
 class DirectoryEditNameForm(forms.Form):
     first = forms.CharField(max_length=32)
     last = forms.CharField(max_length=32)
+    Login_ID = forms.CharField(max_length=32)
     Account_Email = forms.EmailField(max_length=32)
     cell = forms.CharField(max_length=32, required=False)
     email = forms.EmailField(max_length=32, required=False)
@@ -58,35 +59,41 @@ def do(request, nid, browser_tab):
     if request.method == 'POST': # If the form has been submitted...
         form = DirectoryEditNameForm(request.POST, request.FILES)
         if form.is_valid():
-            name.first = form.cleaned_data['first']
-            name.last = form.cleaned_data['last']
-            name.email = form.cleaned_data['email']
-            name.cell = form.cleaned_data['cell']
-            name.work_email = form.cleaned_data['work_email']
-            name.work_phone = form.cleaned_data['work_phone']
-            name.birthday = form.cleaned_data['birthday']
-            name.title = form.cleaned_data['title']
-            name.gender = form.cleaned_data['gender']
-            name.save()
+            users = User.objects.all().filter(username__exact=form.cleaned_data['Login_ID']).exclude(id__exact=name.user.id)
+            if len(users) < 1:
+                name.first = form.cleaned_data['first']
+                name.last = form.cleaned_data['last']
+                name.email = form.cleaned_data['email']
+                name.cell = form.cleaned_data['cell']
+                name.work_email = form.cleaned_data['work_email']
+                name.work_phone = form.cleaned_data['work_phone']
+                name.birthday = form.cleaned_data['birthday']
+                name.title = form.cleaned_data['title']
+                name.gender = form.cleaned_data['gender']
+                name.save()
 
-            if name.user.email != form.cleaned_data['Account_Email']:
-                name.user.email = form.cleaned_data['Account_Email']
-                name.user.save()
+                if name.user.username != form.cleaned_data['Login_ID'] or name.user.email != form.cleaned_data['Account_Email']:
+                    name.user.username = form.cleaned_data['Login_ID']
+                    name.user.email = form.cleaned_data['Account_Email']
+                    name.user.save()
 
-            logger.info(WZ['User'] + ' EN ' + str(request.POST))
+                logger.info(WZ['User'] + ' EN ' + str(request.POST))
 
-            if request.FILES.has_key('picture'):
-                WZ['ErrorMessage'] = ProcessNewPicture(request, WZ, nid)
+                if request.FILES.has_key('picture'):
+                    WZ['ErrorMessage'] = ProcessNewPicture(request, WZ, nid)
 
-            if WZ['ErrorMessage'] == "":
-                if WZ['Authority'] >= Z.Admin:
-                    return HttpResponseRedirect('/WhoZwho/aelst')
-                else:
-                    return HttpResponseRedirect('/WhoZwho/delst')
+                if WZ['ErrorMessage'] == "":
+                    if WZ['Authority'] >= Z.Admin:
+                        return HttpResponseRedirect('/WhoZwho/aelst')
+                    else:
+                        return HttpResponseRedirect('/WhoZwho/delst')
+            else:
+                WZ['ErrorMessage'] = "[EN03]: Login ID already used, choose another."
         else:
             WZ['ErrorMessage'] = str(form.errors)
     else:
         form = DirectoryEditNameForm(initial={
+            'Login_ID': name.user.username,
             'first': name.first,
             'last': name.last,
             'email': name.email,
@@ -149,16 +156,16 @@ def ProcessNewPicture(request, WZ, nid):
     p = Popen(['identify', WZ['StaticPath'] + 'pics/names/new/' + nid +'.jpg'], stdout=PIPE, stderr=PIPE)
     stdout, stderr = p.communicate()
     if stderr != '':
-        return  "[EN03]: /usr/bin/identify error - " + stderr
+        return  "[EN04]: /usr/bin/identify error - " + stderr
 
     file_info = stdout.split()
     if file_info[1] != 'JPEG':
         p = Popen(['rm', '-f',  WZ['StaticPath'] + 'pics/names/new/' + nid +'.jpg'], stdout=PIPE, stderr=PIPE)
         stdout, stderr = p.communicate()
         if stderr != '':
-            return  "[EN04]: /bin/rm error - " + stderr
+            return  "[EN05]: /bin/rm error - " + stderr
 
-        return  "[EN05]: Picture rejected; only JPEGs allowed."
+        return  "[EN06]: Picture rejected; only JPEGs allowed."
 
     file_dimensions = file_info[2].split('x')
     raw_width = int(file_dimensions[0])
@@ -184,7 +191,7 @@ def ProcessNewPicture(request, WZ, nid):
 
             stdout, stderr = p.communicate()
             if stderr != '':
-                return  "[EN06]: /usr/bin/mogrify(scale) error - " + stderr
+                return  "[EN07]: /usr/bin/mogrify(scale) error - " + stderr
 
             raw_width = normalized_width
             raw_height = normalized_height
@@ -212,7 +219,7 @@ def ProcessNewPicture(request, WZ, nid):
 
         stdout, stderr = p.communicate()
         if stderr != '':
-            return  "[EN07]: /usr/bin/mogrify(crop) error - " + stderr
+            return  "[EN08]: /usr/bin/mogrify(crop) error - " + stderr
 
     # Still alive? Move the image into production.
     p = Popen(['mv',
@@ -222,7 +229,7 @@ def ProcessNewPicture(request, WZ, nid):
 
     stdout, stderr = p.communicate()
     if stderr != '':
-        return  "[EN08]: /bin/mv error - " + stderr
+        return  "[EN09]: /bin/mv error - " + stderr
 
     logger.info(WZ['User'] + ' EN ' + str(request.FILES))
 
