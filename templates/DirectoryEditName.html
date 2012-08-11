@@ -96,6 +96,9 @@ License or the Apache v2 License, as specified in the README file.
                  {% endif %}
                  {{ name.address.city }}, {{ name.address.province }}<br>
                  {{ name.address.postcode }}
+                 {% if name.address.phone %}
+                   <br>{{ name.address.phone }}
+                 {% endif %}
                  &nbsp&nbsp
                  <a href="{{ WZ.httpURL }}eaddr/{{ name.id }}/{{ name.address.id }}/{{ browser_tab }}">(edit,</a>
                  <a class="more_info" onclick="ToggleOptions('AddressOptions');">&nbsp or)</a><br>
