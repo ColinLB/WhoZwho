@@ -34,7 +34,14 @@ def do(request, browser_tab):
         if names[1].removed == True or names[1].approved == False:
             continue
 
-        list += [ FormatName(WZ, names[0], names[1]) + FormatAddress(names[0].address) ]
+        if names[0].gender == 'm':
+            list += [ FormatName(WZ, names[0], names[1]) + FormatAddress(names[0].address) ]
+            if names[1].last != names[0].last:
+                list += [ FormatName(WZ, names[1], names[0]) + FormatAddress(names[0].address) ]
+        else:
+            list += [ FormatName(WZ, names[1], names[0]) + FormatAddress(names[0].address) ]
+            if names[0].last != names[1].last:
+                list += [ FormatName(WZ, names[0], names[1]) + FormatAddress(names[0].address) ]
 
     names = Name.objects.all(). \
         filter(wedding__exact=None). \
@@ -108,14 +115,18 @@ def FormatName(WZ, n1, n2):
     m = []
 
     if n2:
-        n = n1.last + ', ' + n1.first + ' & ' + n2.first
+        if n2.last == n1.last:
+            n = n1.last + ', ' + n1.first + ' & ' + n2.first
+        else:
+            n = n1.last + ', ' + n1.first + ' & ' + n2.first + " " + n2.last
+
         if os.path.exists(WZ['StaticPath'] + 'pics/names/' + str(n2.id) + '.jpg'):
             p2 = WZ['StaticPath'] + 'pics/names/' + str(n2.id) + '.jpg'
         else:
             p2 = WZ['StaticPath'] + 'pics/names/default.jpg'
 
         if n1.wedding.email:
-            m += [ n1.wedding.email + "  (joint)" ]
+            m += [ n1.wedding.email + "  (both)" ]
 
         if n1.email:
             m += [ n1.email + "  (" + n1.first + ")" ]
