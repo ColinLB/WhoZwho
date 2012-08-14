@@ -13,6 +13,9 @@ from django.core.context_processors import csrf
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 
+import logging
+logger = logging.getLogger('WhoZwho.update')
+
 from models import Name
 
 class LoginForm(forms.Form):
@@ -49,8 +52,10 @@ def do(request):
                                 WZ['Authenticated'] = 0
                                 WZ['ErrorMessage'] = "[UL02]: Your temporary password has expired."
                             else:
+                                logger.info(WZ['User'] + ' logged in, authority ' + str(WZ['Authority']) + ', change password.')
                                 return HttpResponseRedirect('/WhoZwho/chpwd')
                         else:
+                            logger.info(WZ['User'] + ' logged in, authority ' + str(WZ['Authority']) + '.')
                             return HttpResponseRedirect('/WhoZwho/' + WZ['Tabs'][WZ['ActiveTab']][3])
                     else:
                         WZ['ErrorMessage'] = "[UL03]: The login ID or password is invalid."
