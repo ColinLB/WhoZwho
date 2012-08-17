@@ -1,0 +1,82 @@
+<!--
+Copyright (C) 2012 C. R. Leavett-Brown
+You may distribute under the terms of either the GNU General Public
+License or the Apache v2 License, as specified in the README file.
+-->
+
+{% extends "WhoZwhoAuthenticated.html" %}
+
+{% block headers %}
+    <script type="text/javascript" src="{{ WZ.httpURL }}static/js/Cookie.js"></script>
+    <script type="text/javascript" src="{{ WZ.httpURL }}static/js/AdminListAnniversaries.js"></script>
+{% endblock %}
+
+{% block body %}
+    <table><tr>
+	<td class="left_margin"></td>
+	<td>
+	    List anniversaries falling within the month of:
+	    {% for month in months %}
+		<a onclick="DisplaySelectedList('{{ month }}');">&nbsp{{ month|slice:"3" }}</a>
+	    {% endfor %}
+	</td>
+    </tr></table>
+
+    <br>
+
+    <div id='X'>
+	<table><tr>
+	    <td class="left_margin"></td>
+	    <td>
+		{% for month in months %}
+		    {% if month = 'January' %}
+			<div id='X1{{ month }}' style="display:block">
+		    {% else %}
+			<div id='X1{{ month }}' style="display:none">
+		    {% endif %}
+			{{ month }}
+		    </div id="X1{{ month }}">
+		{% endfor %}
+	    <td>
+	</tr><tr>
+	    <td class="left_margin"></td>
+	    <td valign="top" width=400px>
+		{% for month, days in birthdays.items %}
+		    {% if month = 'January' %}
+			<div id='X2{{ month }}' style="display:block">
+		    {% else %}
+			<div id='X2{{ month }}' style="display:none">
+		    {% endif %}
+			&nbsp&nbsp&nbsp
+			Birthdays:
+
+			{% for day in days %}
+			    <br>
+			    &nbsp&nbsp&nbsp
+			    &nbsp&nbsp&nbsp
+			    {{ day }}
+			{% endfor %}
+		    </div id="X2{{ month }}">
+		{% endfor %}
+	    </td>
+	    <td valign="top">
+		{% for month, days in anniversaries.items %}
+		    {% if month = 'January' %}
+			<div id='X3{{ month }}' style="display:block">
+		    {% else %}
+			<div id='X3{{ month }}' style="display:none">
+		    {% endif %}
+			&nbsp&nbsp&nbsp
+			Anniversaries:
+
+			{% for day in days %}
+			    <br>
+			    &nbsp&nbsp&nbsp
+			    &nbsp&nbsp&nbsp
+			    {{ day }}
+			{% endfor %}
+		    </div id="X3{{ month }}">
+		{% endfor %}
+	</tr></table>
+    </div id='X'>
+{% endblock %}
