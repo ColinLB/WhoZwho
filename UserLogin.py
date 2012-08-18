@@ -38,6 +38,8 @@ def do(request):
                     auth_user.name.bad_password_timeout = time()
                     auth_user.name.save()
                     WZ['ErrorMessage'] = "[UL01]: The login ID or password is invalid."
+                elif auth_user.name.removed == True:
+                    WZ['ErrorMessage'] = "[UL02]: The login ID or password is invalid."
                 else:
                     if auth_user.is_active:
                         login(request, auth_user)
@@ -50,7 +52,7 @@ def do(request):
                             if WZ['TemporaryPasswordTimestamp'] < int(time()) - Z.TemporaryPasswordLife:
                                 auth.logout(request)
                                 WZ['Authenticated'] = 0
-                                WZ['ErrorMessage'] = "[UL02]: Your temporary password has expired."
+                                WZ['ErrorMessage'] = "[UL03]: Your temporary password has expired."
                             else:
                                 logger.info(WZ['User'] + ' logged in, authority ' + str(WZ['Authority']) + ', change password.')
                                 return HttpResponseRedirect('/WhoZwho/chpwd')
@@ -58,7 +60,7 @@ def do(request):
                             logger.info(WZ['User'] + ' logged in, authority ' + str(WZ['Authority']) + '.')
                             return HttpResponseRedirect('/WhoZwho/' + WZ['Tabs'][WZ['ActiveTab']][3])
                     else:
-                        WZ['ErrorMessage'] = "[UL03]: The login ID or password is invalid."
+                        WZ['ErrorMessage'] = "[UL04]: The login ID or password is invalid."
             else:
                 # Increment bad passwords
                 try:
@@ -84,9 +86,9 @@ def do(request):
                 except:
                     pass
 
-                WZ['ErrorMessage'] = "[UL04]: The login ID or password is invalid."
+                WZ['ErrorMessage'] = "[UL05]: The login ID or password is invalid."
         else:
-            WZ['ErrorMessage'] = "[UL05]: The login ID or password is invalid."
+            WZ['ErrorMessage'] = "[UL06]: The login ID or password is invalid."
     else:
         form = LoginForm() # An unbound form
         WZ['ErrorMessage'] = ""
