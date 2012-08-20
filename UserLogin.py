@@ -54,10 +54,10 @@ def do(request):
                                 WZ['Authenticated'] = 0
                                 WZ['ErrorMessage'] = "[UL03]: Your temporary password has expired."
                             else:
-                                logger.info(WZ['User'] + ' logged in, authority ' + str(WZ['Authority']) + ', change password.')
+				logger.info(WZ['User'] + ' (' + request.META['REMOTE_ADDR'] + ') logged in, authority ' + str(WZ['Authority']) + ', change password.')
                                 return HttpResponseRedirect('/WhoZwho/chpwd')
                         else:
-                            logger.info(WZ['User'] + ' logged in, authority ' + str(WZ['Authority']) + '.')
+                            logger.info(WZ['User'] + ' (' + request.META['REMOTE_ADDR'] + ') logged in, authority ' + str(WZ['Authority']) + '.')
                             return HttpResponseRedirect('/WhoZwho/' + WZ['Tabs'][WZ['ActiveTab']][3])
                     else:
                         WZ['ErrorMessage'] = "[UL04]: The login ID or password is invalid."
