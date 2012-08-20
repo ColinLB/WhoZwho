@@ -29,6 +29,8 @@ urlpatterns = patterns('',
     url(r'^rmpic/(?P<nid>\d+)/(?P<browser_tab>[a-zA-Z]+)$',               'WhoZwho.DirectoryDeletePicture.do'),
     url(r'^print/(?P<browser_tab>[a-zA-Z]+)$',                            'WhoZwho.DirectoryPrint.do'),
 
+    url(r'^newpc/(?P<nid>\d+)/(?P<browser_tab>[a-zA-Z]+)$',               'WhoZwho.DirectoryEditPC.donew'),
+
     url(r'^rlist$',                                                       'WhoZwho.NewROList.do'),
     url(r'^wlist$',                                                       'WhoZwho.NewRWList.do'),
 
