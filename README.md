@@ -31,7 +31,7 @@ As the non-privileged user ( my_ID ):
  6. Generate self-signed certificates (see http://slacksite.com/apache/certificate.php for a guide) and place them
 in the location defined by WhoZwho.conf apache configuration file created above. It is strongly recommended that you
 use only encrypted traffic for this web site.
- 7. Restart apache.
+ 7. Restart apache. Site should be visible at https://host.doman/WhoZwho/login.
 
 License
 
