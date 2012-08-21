@@ -20,13 +20,12 @@ As the non-privileged user ( my_ID ):
  2. Create Django application container: mkdir -p ~/django/my_project; cd ~/django/my_project; django-admin.py startproject my_site
  3. Link application container to code: ln -s ~/Git/WhoZwho
  4. Replace settings.py in the my_site directory with the sample provided in ~/django/my_project/WhoZwho/samples directory. Customize as required, in particular:
-
-    o ADMINS name and email address
-    o DATABASES ENGINE and NAME
-    o BANNER
-    o SITENAME
-    o CAPTCHA_PRIVATE_KEY and CAPTCHA_PUBLIC_KEY
-    o EMAIL_HOST and EMAIL_PORT
+<br>    o ADMINS name and email address
+<br>    o DATABASES ENGINE and NAME
+<br>    o BANNER
+<br>    o SITENAME
+<br>    o CAPTCHA_PRIVATE_KEY and CAPTCHA_PUBLIC_KEY
+<br>    o EMAIL_HOST and EMAIL_PORT
     
  5. Copy ~/django/my_project/WhoZwho/samples/WhoZwho.conf to the apache "conf.d" directory and customize as required.
  6. Generate self-signed certificates (see http://slacksite.com/apache/certificate.php for a guide) and place them in the location defined by WhoZwho.conf apache configuration file.
