@@ -13,13 +13,13 @@ As root:
  5. Install Python Imaging Library: pip install pil
  6. Install django: pip install Django
  7. Install git
- 8. Create non-privileged user: adduser [ my_ID ]
+ 8. Create non-privileged user: adduser my_id
 
-As the non-privileged user ( [ my_ID ] ):
+As the non-privileged user ( my_ID ):
  1. Retrieve WhoZwho web directory code: mkdir -i ~/Git; cd ~/Git; git clone git@github.com:ColinLB/WhoZwho.git
- 2. Create Django application container: mkdir -p ~/django; cd ~/django; django-admin.py startproject [ my_site ]
+ 2. Create Django application container: mkdir -p ~/django/my_project; cd ~/django/my_project; django-admin.py startproject my_site
  3. Link application container to code: ln -s ~/Git/WhoZwho
- 4. Customize applications settings, in particular:
+ 4. Replace settings.py in the my_site directory with the sample provided in ~/django/my_project/WhoZwho/samples directory. Customize as required, in particular:
       BANNER
       SITENAME
  5. Create apache WhoZwho.conf using sample provided in ~/Git/WhoZwho/samples/apache.conf
