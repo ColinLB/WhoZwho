@@ -26,6 +26,7 @@ As the non-privileged user ( my_ID ):
 <br>    o SITENAME
 <br>    o CAPTCHA_PRIVATE_KEY and CAPTCHA_PUBLIC_KEY
 <br>    o EMAIL_HOST and EMAIL_PORT
+<br>    o TEMPLATE_DIRS
     
  5. Copy ~/django/my_project/WhoZwho/samples/WhoZwho.conf to the apache "conf.d" directory and customize as required.
  6. Generate self-signed certificates (see http://slacksite.com/apache/certificate.php for a guide) and place them
