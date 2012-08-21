@@ -28,7 +28,9 @@ As the non-privileged user ( my_ID ):
 <br>    o EMAIL_HOST and EMAIL_PORT
     
  5. Copy ~/django/my_project/WhoZwho/samples/WhoZwho.conf to the apache "conf.d" directory and customize as required.
- 6. Generate self-signed certificates (see http://slacksite.com/apache/certificate.php for a guide) and place them in the location defined by WhoZwho.conf apache configuration file.
+ 6. Generate self-signed certificates (see http://slacksite.com/apache/certificate.php for a guide) and place them
+in the location defined by WhoZwho.conf apache configuration file created above. It is strongly recommended that you
+use only encrypted traffic for this web site.
  7. Restart apache.
 
 License
