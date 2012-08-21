@@ -1,4 +1,4 @@
 *.pyc
 fixtures/*
-static/pics/names/*
+static/pics/*
 
