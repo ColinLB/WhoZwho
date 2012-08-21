@@ -28,11 +28,13 @@ As the non-privileged user ( my_ID ):
 <br>    o EMAIL_HOST and EMAIL_PORT
 <br>    o TEMPLATE_DIRS
     
- 5. Copy ~/django/my_project/WhoZwho/samples/WhoZwho.conf to the apache "conf.d" directory and customize as required.
- 6. Generate self-signed certificates (see http://slacksite.com/apache/certificate.php for a guide) and place them
+ 5. Create picture directories ("mkdir -p ~/django/my_project/WhoZwho/static/pics/names/{new,old,printable}") and
+ copy the sample default jpeg to the ~/django/my_project/WhoZwho/static/pics/names directory.
+ 6. Copy ~/django/my_project/WhoZwho/samples/WhoZwho.conf to the apache "conf.d" directory and customize as required.
+ 7. Generate self-signed certificates (see http://slacksite.com/apache/certificate.php for a guide) and place them
 in the location defined by WhoZwho.conf apache configuration file created above. It is strongly recommended that you
 use only encrypted traffic for this web site.
- 7. Restart apache. Site should be visible at https://host.doman/WhoZwho/login.
+ 8. Restart apache. Site should be visible at https://host.doman/WhoZwho/login.
 
 License
 
