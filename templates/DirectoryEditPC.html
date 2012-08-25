@@ -25,7 +25,7 @@ License or the Apache v2 License, as specified in the README file.
         <table>
           <tr>
             <td class="left_margin"></td>
-            <td id=page_title>Edit: {{ EditPCTitle }}</td>
+            <td id=page_title>{{ EditPCTitle }}</td>
           </tr><tr>
             <td></td>
             <td>
@@ -47,13 +47,8 @@ License or the Apache v2 License, as specified in the README file.
           <tr>
             <td class="left_margin"></td>
             <td rowspan="0" valign="top">
-              <img class="show_image" src="{{ picture }}"><br>
-
-              {% if WZ.Authority >= Admin %}
-                <br><br>
-                <br><br>
-                <a class="more_info" href="{{ WZ.httpURL }}rmnam/{{ nid }}">(delete name)</a>
-              {% endif %}
+              <img class="show_image" src="{{ picture }}"><br><br>
+              <a class="more_info" href="{{ WZ.httpURL }}purge/{{ nid }}/{{ browser_tab }}">(delete name)</a>
             </td>
             <td class="left_margin"></td>
             <td valign="top">
@@ -72,70 +67,72 @@ License or the Apache v2 License, as specified in the README file.
             </td>
             <td class="left_margin"></td>
             <td valign="top">
-               {% if not name.address_id %}
-                 {% if addresses|length > 0 %}
+               {% if nid != '0' %}
+                   {% if not name.address_id %}
+                     {% if addresses|length > 0 %}
 
-                   <a href="{{ WZ.httpURL }}caddr/{{ name.id }}/{{ browser_tab }}">(choose address,</a>
-                   <a class="more_info" onclick="ToggleOptions('AddressOptions');">&nbsp or)</a><br>
-                   <div id="AddressOptions" style="display:none">
-                     <a class="more_info" href="{{ WZ.httpURL }}eaddr/{{ name.id }}/0/{{ browser_tab }}">(add address)</a><br>
-                   </div>
-                 {% else %}
-                   <a href="{{ WZ.httpURL }}eaddr/{{ name.id }}/0/{{ browser_tab }}">(add address)</a><br>
-                 {% endif %}
-               {% else %}
-                 {{ name.address.street }}<br>
-                 {% if name.address.address_line2 %}
-                   {{ name.address.address_line2 }}<br>
-                   {% if name.address.address_line3 %}
-                     {{ name.address.address_line3 }}<br>
+                       <a href="{{ WZ.httpURL }}caddr/{{ name.id }}/{{ browser_tab }}">(choose address,</a>
+                       <a class="more_info" onclick="ToggleOptions('AddressOptions');">&nbsp or)</a><br>
+                       <div id="AddressOptions" style="display:none">
+                         <a class="more_info" href="{{ WZ.httpURL }}eaddr/{{ name.id }}/0/{{ browser_tab }}">(add address)</a><br>
+                       </div>
+                     {% else %}
+                       <a href="{{ WZ.httpURL }}eaddr/{{ name.id }}/0/{{ browser_tab }}">(add address)</a><br>
+                     {% endif %}
+                   {% else %}
+                     {{ name.address.street }}<br>
+                     {% if name.address.address_line2 %}
+                       {{ name.address.address_line2 }}<br>
+                       {% if name.address.address_line3 %}
+                         {{ name.address.address_line3 }}<br>
+                       {% endif %}
+                     {% endif %}
+                     {{ name.address.city }}, {{ name.address.province }}<br>
+                     {{ name.address.postcode }}
+                     {% if name.address.phone %}
+                       <br>{{ name.address.phone }}
+                     {% endif %}
+                     &nbsp&nbsp
+                     <a href="{{ WZ.httpURL }}eaddr/{{ name.id }}/{{ name.address.id }}/{{ browser_tab }}">(edit,</a>
+                     <a class="more_info" onclick="ToggleOptions('AddressOptions');">&nbsp or)</a><br>
+                     <div id="AddressOptions" style="display:none">
+                       &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+                       <a class="more_info" href="{{ WZ.httpURL }}caddr/{{ name.id }}/{{ browser_tab }}">(choose address)</a><br>
+                       &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+                       <a class="more_info" href="{{ WZ.httpURL }}eaddr/{{ name.id }}/0/{{ browser_tab }}">(add address)</a><br>
+                     </div>
                    {% endif %}
-                 {% endif %}
-                 {{ name.address.city }}, {{ name.address.province }}<br>
-                 {{ name.address.postcode }}
-                 {% if name.address.phone %}
-                   <br>{{ name.address.phone }}
-                 {% endif %}
-                 &nbsp&nbsp
-                 <a href="{{ WZ.httpURL }}eaddr/{{ name.id }}/{{ name.address.id }}/{{ browser_tab }}">(edit,</a>
-                 <a class="more_info" onclick="ToggleOptions('AddressOptions');">&nbsp or)</a><br>
-                 <div id="AddressOptions" style="display:none">
-                   &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
-                   <a class="more_info" href="{{ WZ.httpURL }}caddr/{{ name.id }}/{{ browser_tab }}">(choose address)</a><br>
-                   &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
-                   <a class="more_info" href="{{ WZ.httpURL }}eaddr/{{ name.id }}/0/{{ browser_tab }}">(add address)</a><br>
-                 </div>
-               {% endif %}
 
-               <br>
+                   <br>
 
-               {% if WZ.Authority >= Admin %}
-                 <a href="{{ WZ.httpURL }}nname/{{ nid }}/{{ browser_tab }}">(add family member)</a>
+                   {% if WZ.Authority >= Admin %}
+                     <a href="{{ WZ.httpURL }}nname/{{ nid }}/{{ browser_tab }}">(add family member)</a>
 
-                 <br><br>
-               {% endif %}
+                     <br><br>
+                   {% endif %}
 
-               {% if name.wedding %}
-                 Spouse: {{ spouse.0.first }} {{ spouse.0.last }}<br>
-                 &nbsp &nbsp
-                 {{ name.wedding.anniversary }}<br>
-                 {% if name.wedding.email %}
-                   &nbsp &nbsp
-                   {{ name.wedding.email }}<br>
-                  
-                 {% endif %}
+                   {% if name.wedding %}
+                     Spouse: {{ spouse.0.first }} {{ spouse.0.last }}<br>
+                     &nbsp &nbsp
+                     {{ name.wedding.anniversary }}<br>
+                     {% if name.wedding.email %}
+                       &nbsp &nbsp
+                       {{ name.wedding.email }}<br>
+                      
+                     {% endif %}
 
-                 &nbsp &nbsp
-                 <a href="{{ WZ.httpURL }}ewedd/{{ name.id }}/{{ browser_tab }}">(edit,</a>
-                 <a class="more_info" onclick="ToggleOptions('WeddingOptions');">&nbsp or)</a><br>
-                 <div id="WeddingOptions" style="display:none">
-                   &nbsp &nbsp 
-                   <a class="more_info" href="{{ WZ.httpURL }}dwedd/{{ name.id }}/{{ browser_tab }}">(delete wedding)</a><br>
-                 </div>
-               {% else %}
-                 {% if schoices|length > 0 %}
-                   <a class="more_info" href="{{ WZ.httpURL }}ewedd/{{ name.id }}/{{ browser_tab }}">(add wedding)</a><br>
-                 {% endif %}
+                     &nbsp &nbsp
+                     <a href="{{ WZ.httpURL }}ewedd/{{ name.id }}/{{ browser_tab }}">(edit,</a>
+                     <a class="more_info" onclick="ToggleOptions('WeddingOptions');">&nbsp or)</a><br>
+                     <div id="WeddingOptions" style="display:none">
+                       &nbsp &nbsp 
+                       <a class="more_info" href="{{ WZ.httpURL }}dwedd/{{ name.id }}/{{ browser_tab }}">(delete wedding)</a><br>
+                     </div>
+                   {% else %}
+                     {% if schoices|length > 0 %}
+                       <a class="more_info" href="{{ WZ.httpURL }}ewedd/{{ name.id }}/{{ browser_tab }}">(add wedding)</a><br>
+                     {% endif %}
+                   {% endif %}
                {% endif %}
             </td>
           </tr><tr>
