@@ -39,7 +39,12 @@ License or the Apache v2 License, as specified in the README file.
                         <br>{{ initial }}<br>
                         {% for name in names %}
                             &nbsp&nbsp&nbsp
-                            <a href="{{ WZ.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">{{ name.first }} {{ name.last }}</a><br>
+                            {% if name.private > 0 %}
+                                <a href="{{ WZ.httpURL }}editpc/{{ name.id }}/{{ browser_tab }}">{{ name.first }} {{ name.last }}</a> *
+                            {% else %}
+                                <a href="{{ WZ.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">{{ name.first }} {{ name.last }}</a>
+                            {% endif %}
+                            <br>
                         {% endfor %}
                     </div id="F{{ initial }}">
                 {% endfor %}
@@ -70,7 +75,12 @@ License or the Apache v2 License, as specified in the README file.
                         <br>{{ initial }}<br>
                         {% for name in names %}
                             &nbsp&nbsp&nbsp
-                            <a href="{{ WZ.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">{{ name.last }}, {{ name.first }}</a><br>
+                            {% if name.private > 0 %}
+                                <a href="{{ WZ.httpURL }}editpc/{{ name.id }}/{{ browser_tab }}">{{ name.last }}, {{ name.first }}</a> *
+                            {% else %}
+                                <a href="{{ WZ.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">{{ name.last }}, {{ name.first }}</a>
+                            {% endif %}
+                            <br>
                         {% endfor %}
                     </div id="L{{ initial }}">
                 {% endfor %}

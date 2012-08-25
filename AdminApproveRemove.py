@@ -60,7 +60,7 @@ def do(request, nid):
     if os.path.exists(WZ['StaticPath'] + 'pics/names/' + str(name.id) + '.jpg'):
         picture = WZ['httpURL'] + 'static/pics/names/' + str(name.id) + '.jpg'
     else:
-        picture = WZ['httpURL'] + 'static/pics/names/default.jpg'
+        picture = WZ['httpURL'] + 'static/pics/defaults/greenman.gif'
 
     context = {
         'browser_tab': WZ['Tabs'][WZ['ActiveTab']][2],

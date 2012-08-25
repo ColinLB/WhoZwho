@@ -50,7 +50,9 @@ License or the Apache v2 License, as specified in the README file.
             <td class="left_margin"></td>
             <td rowspan="0" valign="top">
               <img class="show_image" src="{{ picture }}"><br>
-              <a class="more_info" href="{{ WZ.httpURL }}rmpic/{{ name.id }}/{{ browser_tab }}">(delete picture)</a>
+              {% if "default" not in picture %}
+                  <a class="more_info" href="{{ WZ.httpURL }}rmpic/{{ name.id }}/{{ browser_tab }}">(delete picture)</a>
+              {% endif %}
 
               {% if WZ.Authority >= Admin %}
                 <br><br>

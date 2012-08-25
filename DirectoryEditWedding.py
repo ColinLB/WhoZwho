@@ -77,7 +77,10 @@ def do(request, nid, browser_tab):
 
                 logger.info(WZ['User'] + ' EW ' + str(request.POST))
 
-                return HttpResponseRedirect('/WhoZwho/ename/' + nid + '/' + browser_tab)
+                if name.private == True:
+                    return HttpResponseRedirect('/WhoZwho/editpc/' + nid + '/' + browser_tab)
+                else:
+                    return HttpResponseRedirect('/WhoZwho/ename/' + nid + '/' + browser_tab)
         else:
             WZ['ErrorMessage'] = str(form.errors)
     else:
@@ -150,4 +153,7 @@ def dont(request, nid, browser_tab):
 
     logger.info(WZ['User'] + ' EW ' + str(request.POST))
 
-    return HttpResponseRedirect('/WhoZwho/ename/' + nid + '/' + browser_tab)
+    if name.private == True:
+        return HttpResponseRedirect('/WhoZwho/editpc/' + nid + '/' + browser_tab)
+    else:
+        return HttpResponseRedirect('/WhoZwho/ename/' + nid + '/' + browser_tab)

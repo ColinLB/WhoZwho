@@ -37,14 +37,13 @@ def do(request, nid, browser_tab):
         return GoLogout(request, WZ, "[EN02]: URL contained an invalid name ID.")
 
     os.environ['PATH'] = WZ['PythonPath']
-    p = Popen(['mv',
-        WZ['StaticPath'] + 'pics/names/' + nid +'.jpg',
-        WZ['StaticPath'] + 'pics/names/old/' + nid + '.jpg' + '.' + str(int(time()))],
+    p = Popen(['rm', '-f',
+        WZ['StaticPath'] + 'pics/names/' + nid +'.jpg'],
         stdout=PIPE, stderr=PIPE)
 
     stdout, stderr = p.communicate()
     if stderr != '':
-        return  "[EN03]: /bin/mv error - " + stderr
+        return  "[EN03]: command error (rm) - " + stderr
 
     if WZ['Authority'] >= Z.Admin:
         return HttpResponseRedirect('/WhoZwho/aelst')

@@ -1,4 +1,5 @@
 *.pyc
 fixtures/*
-static/pics/*
-
+static/pics/names/*
+static/pics/new_names/*
+static/pics/print_directory/*

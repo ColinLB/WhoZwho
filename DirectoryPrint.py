@@ -123,7 +123,10 @@ def FormatName(WZ, n1, n2):
         if os.path.exists(WZ['StaticPath'] + 'pics/names/' + str(n2.id) + '.jpg'):
             p2 = WZ['StaticPath'] + 'pics/names/' + str(n2.id) + '.jpg'
         else:
-            p2 = WZ['StaticPath'] + 'pics/names/default.jpg'
+            if n2.private == False:
+                p2 = WZ['StaticPath'] + 'pics/defaults/greenman.gif'
+            else:
+                p2 = WZ['StaticPath'] + 'pics/defaults/greyman.gif'
 
         if n1.wedding.email:
             m += [ n1.wedding.email + "  (both)" ]
@@ -142,7 +145,10 @@ def FormatName(WZ, n1, n2):
     if os.path.exists(WZ['StaticPath'] + 'pics/names/' + str(n1.id) + '.jpg'):
         p1 = WZ['StaticPath'] + 'pics/names/' + str(n1.id) + '.jpg'
     else:
-        p1 = WZ['StaticPath'] + 'pics/names/default.jpg'
+        if n1.private == False:
+            p1 = WZ['StaticPath'] + 'pics/defaults/greenman.gif'
+        else:
+            p1 = WZ['StaticPath'] + 'pics/defaults/greyman.gif'
 
     while len(m) < 3:
         m += [ '' ]

@@ -42,7 +42,10 @@ def do(request, nid, browser_tab):
     if os.path.exists(WZ['StaticPath'] + 'pics/names/' + str(name.id) + '.jpg'):
         picture = WZ['httpURL'] + 'static/pics/names/' + str(name.id) + '.jpg'
     else:
-        picture = WZ['httpURL'] + 'static/pics/names/default.jpg'
+        if name.private == False:
+            picture = WZ['httpURL'] + 'static/pics/defaults/greenman.gif'
+        else:
+            picture = WZ['httpURL'] + 'static/pics/defaults/greyman.gif'
 
     if name.wedding:
         spouse = name.wedding.name_set.all(). \
@@ -51,7 +54,10 @@ def do(request, nid, browser_tab):
         if os.path.exists(WZ['StaticPath'] + 'pics/names/' + str(spouse[0].id) + '.jpg'):
             spicture = WZ['httpURL'] + 'static/pics/names/' + str(spouse[0].id) + '.jpg'
         else:
-            spicture = WZ['httpURL'] + 'static/pics/names/default.jpg'
+            if name.private == False:
+                spicture = WZ['httpURL'] + 'static/pics/defaults/greenman.gif'
+            else:
+                spicture = WZ['httpURL'] + 'static/pics/defaults/greyman.gif'
     else:
         spicture = ''
         spouse = []

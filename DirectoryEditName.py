@@ -109,7 +109,7 @@ def do(request, nid, browser_tab):
     if os.path.exists(WZ['StaticPath'] + 'pics/names/' + str(name.id) + '.jpg'):
         picture = WZ['httpURL'] + 'static/pics/names/' + str(name.id) + '.jpg'
     else:
-        picture = WZ['httpURL'] + 'static/pics/names/default.jpg'
+        picture = WZ['httpURL'] + 'static/pics/defaults/greenman.gif'
 
     addresses = Address.objects.all(). \
         filter(owner__exact=WZ['AuthorizedOwner']). \
@@ -150,17 +150,17 @@ def ProcessNewPicture(request, WZ, nid):
 
     os.environ['PATH'] = WZ['PythonPath']
 
-    SaveFileUpload(request.FILES['picture'], WZ['StaticPath'] + 'pics/names/new/' + nid +'.jpg')
+    SaveFileUpload(request.FILES['picture'], WZ['StaticPath'] + 'pics/new_names/' + nid +'.jpg')
 
     # Retrieve image information and check image type.
-    p = Popen(['identify', WZ['StaticPath'] + 'pics/names/new/' + nid +'.jpg'], stdout=PIPE, stderr=PIPE)
+    p = Popen(['identify', WZ['StaticPath'] + 'pics/new_names/' + nid +'.jpg'], stdout=PIPE, stderr=PIPE)
     stdout, stderr = p.communicate()
     if stderr != '':
         return  "[EN04]: /usr/bin/identify error - " + stderr
 
     file_info = stdout.split()
     if file_info[1] != 'JPEG':
-        p = Popen(['rm', '-f',  WZ['StaticPath'] + 'pics/names/new/' + nid +'.jpg'], stdout=PIPE, stderr=PIPE)
+        p = Popen(['rm', '-f',  WZ['StaticPath'] + 'pics/new_names/' + nid +'.jpg'], stdout=PIPE, stderr=PIPE)
         stdout, stderr = p.communicate()
         if stderr != '':
             return  "[EN05]: /bin/rm error - " + stderr
@@ -186,7 +186,7 @@ def ProcessNewPicture(request, WZ, nid):
         if normalized_height > 0:
             p = Popen(['mogrify', '-scale',
                 str(normalized_width) + 'x' + str(normalized_height),
-                WZ['StaticPath'] + 'pics/names/new/' + nid +'.jpg'],
+                WZ['StaticPath'] + 'pics/new_names/' + nid +'.jpg'],
                 stdout=PIPE, stderr=PIPE)
 
             stdout, stderr = p.communicate()
@@ -214,7 +214,7 @@ def ProcessNewPicture(request, WZ, nid):
     if normalized_height > 0:
         p = Popen(['mogrify', '-crop',
             str(normalized_width) + 'x' + str(normalized_height) + '+' + str(normalized_width_offset) + '+' + str(normalized_height_offset),
-            WZ['StaticPath'] + 'pics/names/new/' + nid +'.jpg'],
+            WZ['StaticPath'] + 'pics/new_names/' + nid +'.jpg'],
             stdout=PIPE, stderr=PIPE)
 
         stdout, stderr = p.communicate()
@@ -223,7 +223,7 @@ def ProcessNewPicture(request, WZ, nid):
 
     # Still alive? Move the image into production.
     p = Popen(['mv',
-        WZ['StaticPath'] + 'pics/names/new/' + nid +'.jpg',
+        WZ['StaticPath'] + 'pics/new_names/' + nid +'.jpg',
         WZ['StaticPath'] + 'pics/names/' + nid +'.jpg'],
         stdout=PIPE, stderr=PIPE)
 

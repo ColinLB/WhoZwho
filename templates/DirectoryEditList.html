@@ -14,20 +14,23 @@ License or the Apache v2 License, as specified in the README file.
         </tr>
     </table>
 
+    <br>
+
     <table>
-        {% for name in names %}
-            <tr>
-                <td class="left_margin"></td>
-                <td><a href="{{ WZ.httpURL }}ename/{{ name.id }}/{{ browser_tab }}"> {{ name.first }} {{ name.last }}</a></td>
-            </tr>
-        {% endfor %}
-            <tr>
-                <td class="left_margin"></td>
-                <td><a class="more_info" href="{{ WZ.httpURL }}nname/{{ WZ.Nid }}/{{ browser_tab }}">(add family member)</a></td>
-            </tr>
-            <tr>
-                <td class="left_margin"></td>
-                <td><a class="more_info" href="{{ WZ.httpURL }}newpc/0/{{ browser_tab }}">(add personal contact)</a></td>
-            </tr>
+        <tr>
+            <td class="left_margin"></td>
+            <td>
+                {% for name in names %}
+                    {% if name.private > 0 %}
+                        <a href="{{ WZ.httpURL }}editpc/{{ name.id }}/{{ browser_tab }}"> {{ name.first }} {{ name.last }}</a>&nbsp;*<br>
+                    {% else %}
+                        <a href="{{ WZ.httpURL }}ename/{{ name.id }}/{{ browser_tab }}"> {{ name.first }} {{ name.last }}</a><br>
+                    {% endif %}
+                {% endfor %}
+                <br>
+                <a class="more_info" href="{{ WZ.httpURL }}nname/{{ WZ.Nid }}/{{ browser_tab }}">(add family member)</a><br>
+                <a class="more_info" href="{{ WZ.httpURL }}editpc/0/{{ browser_tab }}">(add personal contact)</a><br>
+            </td>
+        </tr>
     </table>
 {% endblock %}

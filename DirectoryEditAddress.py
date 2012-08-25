@@ -80,7 +80,10 @@ def do(request, nid, aid, browser_tab):
 
             logger.info(WZ['User'] + ' EA ' + str(request.POST))
 
-            return HttpResponseRedirect('/WhoZwho/ename/' + nid + '/' + browser_tab)
+            if name.private == True:
+                return HttpResponseRedirect('/WhoZwho/editpc/' + nid + '/' + browser_tab)
+            else:
+                return HttpResponseRedirect('/WhoZwho/ename/' + nid + '/' + browser_tab)
         else:
             WZ['ErrorMessage'] = str(form.errors)
     else:
