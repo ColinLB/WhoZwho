@@ -49,9 +49,9 @@ def do(request, nid, browser_tab):
         return  "[BN03]: command error (rm) - " + stderr
 
     owner = name.owner
+    logger.info(WZ['User'] + ' BN User and Name deleted for ID ' + str(nid) + ', ' + name.first + ' ' + name.last + '.')
     User.objects.filter(id=name.user.id).delete()
     Name.objects.filter(id=name.id).delete()
-    logger.info(WZ['User'] + ' BN User and Name deleted for ID ' + str(nid) + '.')
 
     addresses = Address.objects.all(). \
         filter(owner__exact=owner). \

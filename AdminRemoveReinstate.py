@@ -18,6 +18,8 @@ from django.shortcuts import render_to_response
 from django.template import Context, loader
 from models import Name
 
+import DirectoryDeleteByName
+
 class AdminRemoveReinstateForm(forms.Form):
     action = forms.CharField()
 
@@ -37,6 +39,8 @@ def do(request, nid):
             if form.cleaned_data['action'] == 'i':
                 name.removed = False
                 name.save()
+            elif form.cleaned_data['action'] == 'p':
+                DirectoryDeleteByName.do(request, nid, 'Admin')
 
             return HttpResponseRedirect('/WhoZwho/rilst')
         else:
