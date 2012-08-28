@@ -17,7 +17,7 @@ def do(request):
     names = Name.objects.all(). \
         exclude(removed__exact=True). \
         filter(owner__exact=WZ['AuthorizedOwner']). \
-        order_by('first', 'last')
+        order_by('last', 'first')
 
     template = loader.get_template('DirectoryEditList.html')
     context = Context({
