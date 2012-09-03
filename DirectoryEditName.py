@@ -85,8 +85,10 @@ def do(request, nid, browser_tab):
                 if WZ['ErrorMessage'] == "":
                     if WZ['Authority'] >= Z.Admin:
                         return HttpResponseRedirect('/WhoZwho/aelst')
-                    else:
+                    elif WZ['Authority'] >= Z.UserRW:
                         return HttpResponseRedirect('/WhoZwho/delst')
+                    else:
+                        return HttpResponseRedirect('/WhoZwho/wlist')
             else:
                 WZ['ErrorMessage'] = "[EN03]: Login ID already used, choose another."
         else:
