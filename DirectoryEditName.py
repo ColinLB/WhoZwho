@@ -209,7 +209,7 @@ def ProcessNewPicture(request, WZ, nid):
         normalized_height = int(raw_width / std_jpg_width_height_ratio)
         normalized_height_offset = int((raw_height - normalized_height) / 2)
         normalized_width = raw_width
-        normalized_width = 0
+        normalized_width_offset = 0
 
     if normalized_height > 0:
         p = Popen(['mogrify', '-crop',
