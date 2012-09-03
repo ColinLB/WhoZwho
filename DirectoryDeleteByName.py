@@ -53,6 +53,20 @@ def do(request, nid, browser_tab):
     User.objects.filter(id=name.user.id).delete()
     Name.objects.filter(id=name.id).delete()
 
+    names = Name.objects.all(). \
+        filter(owner__exact=owner). \
+	exclude(private__exact=True)
+
+    if len(names) < 1:
+	names = Name.objects.all(). \
+	    filter(owner__exact=owner). \
+	    filter(private__exact=True)
+
+	for name in names:
+	    logger.info(WZ['User'] + ' BN User and Name deleted for ID ' + str(name.id) + ', ' + name.first + ' ' + name.last + ', personal contact.')
+            name.user.delete()
+            name.delete()
+
     addresses = Address.objects.all(). \
         filter(owner__exact=owner). \
         order_by('street')
