@@ -8,6 +8,7 @@ from django.contrib.auth.views import login, logout
 
 urlpatterns = patterns('',
     url(r'^amenu$',                                                       'WhoZwho.AdminMenu.do'),
+    url(r'^stats$',                                                       'WhoZwho.AdminLoginStats.do'),
     url(r'^alist$',                                                       'WhoZwho.AdminApprovalList.do'),
     url(r'^anlst$',                                                       'WhoZwho.AdminListAnniversaries.do'),
     url(r'^apprv/(?P<nid>\d+)$',                                          'WhoZwho.AdminApproveRemove.do'),
