@@ -1,0 +1,27 @@
+<!--
+Copyright (C) 2012 C. R. Leavett-Brown
+You may distribute under the terms of either the GNU General Public
+License or the Apache v2 License, as specified in the README file.
+-->
+
+{% extends "WhoZwhoAuthenticated.html" %}
+
+{% block body %}
+    <table>
+        <tr>
+            <td class="left_margin"></td>
+            <td>Login Statistics:</td>
+        </tr>
+    </table>
+
+    <table>
+	<tr>
+	    <td class="left_margin"></td>
+	    <td>
+		{% for stat in stats %}
+		    <br/>{{ stat }}
+		{% endfor %}
+	    </td>
+	</tr>
+    </table>
+{% endblock %}

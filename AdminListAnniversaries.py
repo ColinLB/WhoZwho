@@ -24,7 +24,7 @@ def do(request):
     weddings = Wedding.objects.all()
     for wedding in weddings:
         names = wedding.name_set.all(). \
-            exclude(Q(private__exact=True) & ~Q(owner__exact=WZ['AuthorizedOwner']))
+            exclude(private__exact=True)
         if len(names) != 2:
             continue
 
@@ -44,7 +44,7 @@ def do(request):
 
     list = []
     names = Name.objects.all(). \
-        exclude(Q(private__exact=True) & ~Q(owner__exact=WZ['AuthorizedOwner'])). \
+        exclude(private__exact=True). \
         exclude(removed__exact=True). \
         exclude(approved__exact=False)
 
