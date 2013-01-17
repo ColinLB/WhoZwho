@@ -16,7 +16,7 @@ from reportlab.lib.pagesizes import letter
 
 
 def do(request):
-    WZ = Z.SetWhoZwho(request, 'Admin')
+    WZ = Z.SetWhoZwho(request, 'Info')
     if WZ['ErrorMessage']:
         return GoLogout(request, WZ, '')
 
@@ -68,7 +68,7 @@ def do(request):
 #    else:
 #        dlist_parm = 'F..'
 
-    template = loader.get_template('AdminListAnniversaries.html')
+    template = loader.get_template('InfoAnniversaries.html')
     context = Context({
         'months': months,
         'birthdays': birthdays,

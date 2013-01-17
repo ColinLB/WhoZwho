@@ -11,19 +11,20 @@ from django.template import Context, loader
 from models import Name
 
 def do(request):
-    WZ = Z.SetWhoZwho(request, 'Admin')
+    WZ = Z.SetWhoZwho(request, 'Info')
     if WZ['ErrorMessage']:
         return GoLogout(request, WZ, '')
 
+#	'/var/log/WhoZwho-update.log',
     p = Popen(['awk',
 	'/logged in/ {if (x[$4]=="") {x[$4]=0} x[$4]+=1} END{for(y in x) printf "%-24s = %d\\n", y, x[y]}',
-	'/var/log/WhoZwho-update.log',
+	'/var/log/django/WhoZwho.log',
 	], stdout=PIPE, stderr=PIPE)
     stdout, stderr = p.communicate()
 
     stats = stdout.splitlines()
 
-    template = loader.get_template('AdminLoginStats.html')
+    template = loader.get_template('InfoLoginStats.html')
     context = Context({
         'stats': sorted(stats),
         'WZ': WZ,

@@ -143,6 +143,7 @@ def SetWhoZwho(request, active_tab='None'):
         [NewRO,  NewRO,  'List',      'rlist'],
         [NewRW,  NewRW,  'Edit',      'wlist'],
         [UserRO, Admin,  'Directory', 'dlist'],
+        [UserRO, Admin,  'Info',      'imenu'],
         [UserRW, UserRW, 'Edit',      'delst'],
         [Admin,  Admin,  'Admin',     'amenu'],
         ]

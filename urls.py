@@ -8,9 +8,7 @@ from django.contrib.auth.views import login, logout
 
 urlpatterns = patterns('',
     url(r'^amenu$',                                                       'WhoZwho.AdminMenu.do'),
-    url(r'^stats$',                                                       'WhoZwho.AdminLoginStats.do'),
     url(r'^alist$',                                                       'WhoZwho.AdminApprovalList.do'),
-    url(r'^anlst$',                                                       'WhoZwho.AdminListAnniversaries.do'),
     url(r'^apprv/(?P<nid>\d+)$',                                          'WhoZwho.AdminApproveRemove.do'),
     url(r'^aelst$',                                                       'WhoZwho.AdminEditList.do'),
     url(r'^rilst$',                                                       'WhoZwho.AdminReinstateList.do'),
@@ -32,6 +30,10 @@ urlpatterns = patterns('',
 
     url(r'^editpc/(?P<nid>\d+)/(?P<browser_tab>[a-zA-Z]+)$',              'WhoZwho.DirectoryEditPC.do'),
     url(r'^purge/(?P<nid>\d+)/(?P<browser_tab>[a-zA-Z]+)$',               'WhoZwho.DirectoryDeleteByName.do'),
+
+    url(r'^imenu$',                                                       'WhoZwho.InfoMenu.do'),
+    url(r'^anlst$',                                                       'WhoZwho.InfoAnniversaries.do'),
+    url(r'^stats$',                                                       'WhoZwho.InfoLoginStats.do'),
 
     url(r'^rlist$',                                                       'WhoZwho.NewROList.do'),
     url(r'^wlist$',                                                       'WhoZwho.NewRWList.do'),
