@@ -100,6 +100,7 @@ def SetWhoZwho(request, active_tab='None'):
         'Tab': {},
         'Tabs': [],
         'TemporaryPasswordTimestamp': 0,
+        'UpdateLogFN': esquimalt.settings.LOGGING['handlers']['write_log']['filename'],
         'User': request.user.username,
         }
 

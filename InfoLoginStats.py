@@ -16,9 +16,11 @@ def do(request):
         return GoLogout(request, WZ, '')
 
 #	'/var/log/WhoZwho-update.log',
+#	'/var/log/django/WhoZwho.log',
+
     p = Popen(['awk',
 	'/logged in/ {if (x[$4]=="") {x[$4]=0} x[$4]+=1} END{for(y in x) printf "%-24s = %d\\n", y, x[y]}',
-	'/var/log/django/WhoZwho.log',
+    WZ['UpdateLogFN'],
 	], stdout=PIPE, stderr=PIPE)
     stdout, stderr = p.communicate()
 
