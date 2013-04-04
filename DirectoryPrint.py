@@ -140,7 +140,8 @@ def FormatName(WZ, n1, n2):
     else:
         p2 = ''
         n = n1.last + ', ' + n1.first
-        m += [ n1.email ]
+        if n1.email:
+            m += [ n1.email ]
 
     if os.path.exists(WZ['StaticPath'] + 'pics/names/' + str(n1.id) + '.jpg'):
         p1 = WZ['StaticPath'] + 'pics/names/' + str(n1.id) + '.jpg'
