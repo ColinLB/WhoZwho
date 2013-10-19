@@ -2,7 +2,7 @@
 # You may distribute under the terms of either the GNU General Public
 # License or the Apache v2 License, as specified in the README file.
 
-import WhoZwho as Z
+import SessionSettings as Z
 from UserLogin import GoLogout
 
 import logging
@@ -33,24 +33,24 @@ class DirectoryEditWeddingForm(forms.ModelForm):
     Joint_Email = forms.EmailField(max_length=32, required=False)
 
 def do(request, nid, browser_tab):
-    WZ = Z.SetWhoZwho(request, browser_tab)
-    if WZ['ErrorMessage']:
-        return GoLogout(request, WZ)
+    ZS = Z.SetWhoZwho(request, browser_tab)
+    if ZS['ErrorMessage']:
+        return GoLogout(request, ZS)
 
     try:
         name = Name.objects.get(pk=int(nid))
     except:
-        return GoLogout(request, WZ, "[EW01]: URL containd an invalid name ID.")
+        return GoLogout(request, ZS, "[EW01]: URL containd an invalid name ID.")
 
-        if WZ['Authority'] < Z.Admin and name.owner != WZ['AuthorizedOwner']:
-            return GoLogout(request, WZ, "[EW02]: URL containd an invalid name ID.")
+        if ZS['Authority'] < Z.Admin and name.owner != ZS['AuthorizedOwner']:
+            return GoLogout(request, ZS, "[EW02]: URL containd an invalid name ID.")
 
     if request.method == 'POST': # If the form has been submitted...
         form = DirectoryEditWeddingForm(request.POST)
         if form.is_valid():
             spouse = form.cleaned_data['Select_Spouse']
-            if WZ['Authority'] < Z.Admin and spouse.owner != WZ['AuthorizedOwner']:
-                WZ['ErrorMessage'] = "[EW03]: Invalid spouse ID selected."
+            if ZS['Authority'] < Z.Admin and spouse.owner != ZS['AuthorizedOwner']:
+                ZS['ErrorMessage'] = "[EW03]: Invalid spouse ID selected."
 
             else: 
                 if name.wedding:
@@ -75,14 +75,14 @@ def do(request, nid, browser_tab):
                 spouse.wedding_id = wedding.id
                 spouse.save()
 
-                logger.info(WZ['User'] + ' EW ' + str(request.POST))
+                logger.info(ZS['User'] + ' EW ' + str(request.POST))
 
                 if name.private == True:
                     return HttpResponseRedirect('/WhoZwho/editpc/' + nid + '/' + browser_tab)
                 else:
                     return HttpResponseRedirect('/WhoZwho/ename/' + nid + '/' + browser_tab)
         else:
-            WZ['ErrorMessage'] = str(form.errors)
+            ZS['ErrorMessage'] = str(form.errors)
     else:
         if name.wedding:
             form = DirectoryEditWeddingForm(initial={
@@ -119,27 +119,27 @@ def do(request, nid, browser_tab):
 
     context = {
         'EditWeddingTitle': EditWeddingTitle,
-        'browser_tab': WZ['Tabs'][WZ['ActiveTab']][2],
+        'browser_tab': ZS['Tabs'][ZS['ActiveTab']][2],
         'form': form,
         'nid': nid,
-        'WZ': WZ
+        'ZS': ZS
         }
 
     context.update(csrf(request))
     return render_to_response('DirectoryEditWedding.html', context )
 
 def dont(request, nid, browser_tab):
-    WZ = Z.SetWhoZwho(request, browser_tab)
-    if WZ['ErrorMessage']:
-        return GoLogout(request, WZ)
+    ZS = Z.SetWhoZwho(request, browser_tab)
+    if ZS['ErrorMessage']:
+        return GoLogout(request, ZS)
 
     try:
         name = Name.objects.get(pk=int(nid))
     except:
-        return GoLogout(request, WZ, "[EW04]: URL containd an invalid name ID.")
+        return GoLogout(request, ZS, "[EW04]: URL containd an invalid name ID.")
 
-        if WZ['Authority'] < Z.Admin and name.owner != WZ['AuthorizedOwner']:
-            return GoLogout(request, WZ, "[EW05]: URL containd an invalid name ID.")
+        if ZS['Authority'] < Z.Admin and name.owner != ZS['AuthorizedOwner']:
+            return GoLogout(request, ZS, "[EW05]: URL containd an invalid name ID.")
 
     wedding = name.wedding
 
@@ -151,7 +151,7 @@ def dont(request, nid, browser_tab):
 
     wedding.delete()
 
-    logger.info(WZ['User'] + ' EW ' + str(request.POST))
+    logger.info(ZS['User'] + ' EW ' + str(request.POST))
 
     if name.private == True:
         return HttpResponseRedirect('/WhoZwho/editpc/' + nid + '/' + browser_tab)

@@ -38,7 +38,7 @@ License or the Apache v2 License, as specified in the README file.
                     {% endif %}
                     {{ name.address.city }}, {{ name.address.province }}<br>
                     {{ name.address.postcode }}
-                    <a class="more_info" href="{{ WZ.httpURL }}saddr/{{ name.address.id }}/{{ browser_tab }}">&nbsp&nbsp(map)</a><br><br>
+                    <a class="more_info" href="{{ ZS.httpURL }}saddr/{{ name.address.id }}/{{ browser_tab }}">&nbsp&nbsp(map)</a><br><br>
 
                     {% if name.address and name.address.phone %}
                         Home Phone: {{ name.address.phone }}<br>

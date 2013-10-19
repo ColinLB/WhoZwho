@@ -2,7 +2,7 @@
 # You may distribute under the terms of either the GNU General Public
 # License or the Apache v2 License, as specified in the README file.
 
-import WhoZwho as Z
+import SessionSettings as Z
 from UserLogin import GoLogout
 
 import os.path
@@ -16,9 +16,9 @@ from reportlab.lib.pagesizes import letter
 
 
 def do(request):
-    WZ = Z.SetWhoZwho(request, 'Info')
-    if WZ['ErrorMessage']:
-        return GoLogout(request, WZ, '')
+    ZS = Z.SetWhoZwho(request, 'Info')
+    if ZS['ErrorMessage']:
+        return GoLogout(request, ZS, '')
 
     list = []
     weddings = Wedding.objects.all()
@@ -73,7 +73,7 @@ def do(request):
         'months': months,
         'birthdays': birthdays,
         'anniversaries': anniversaries,
-        'WZ': WZ,
+        'ZS': ZS,
         })
 
     return HttpResponse(template.render(context))

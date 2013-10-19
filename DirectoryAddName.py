@@ -2,7 +2,7 @@
 # You may distribute under the terms of either the GNU General Public
 # License or the Apache v2 License, as specified in the README file.
 
-import WhoZwho as Z
+import SessionSettings as Z
 from UserLogin import GoLogout
 
 import logging
@@ -21,7 +21,7 @@ from django.shortcuts import render_to_response
 from django.template import Context, loader
 
 from models import Name
-from WhoZwhoCommonFunctions import GenerateTemporaryPassword
+from SessionFunctions import GenerateTemporaryPassword
 
 class DirectoryAddNameForm(forms.Form):
     first_name = forms.CharField(max_length=32)
@@ -31,18 +31,18 @@ class DirectoryAddNameForm(forms.Form):
     privileges = forms.ChoiceField(widget=Select, choices=Z.Privileges)
 
 def do(request, nid, browser_tab):
-    WZ = Z.SetWhoZwho(request, browser_tab)
-    if WZ['ErrorMessage']:
-        return GoLogout(request, WZ)
+    ZS = Z.SetWhoZwho(request, browser_tab)
+    if ZS['ErrorMessage']:
+        return GoLogout(request, ZS)
 
     if nid != '0':
         try:
             name = Name.objects.get(pk=int(nid))
         except:
-            return GoLogout(request, WZ, "[AN01]: URL containd an invalid name ID.")
+            return GoLogout(request, ZS, "[AN01]: URL containd an invalid name ID.")
 
-        if WZ['Authority'] < Z.Admin and name.owner != WZ['AuthorizedOwner']:
-            return GoLogout(request, WZ, "[AN02]: URL containd an invalid name ID.")
+        if ZS['Authority'] < Z.Admin and name.owner != ZS['AuthorizedOwner']:
+            return GoLogout(request, ZS, "[AN02]: URL containd an invalid name ID.")
 
     if request.method == 'POST': # If the form has been submitted...
         form = DirectoryAddNameForm(request.POST, request.FILES)
@@ -78,22 +78,22 @@ def do(request, nid, browser_tab):
                     new_name.owner = new_name.id
                     new_name.save()
 
-                logger.info(WZ['User'] + ' AN ' + str(request.POST))
+                logger.info(ZS['User'] + ' AN ' + str(request.POST))
 
                 send_mail(
                     'Your new WhoZwho directory account.',
                     'A new account, ' + new_user.username + \
                     ', has been created for you on the WhoZwho directory. ' + \
-                    'To obtain a password, visit ' + WZ['httpURL'] + '/fgpwd.',
-                    WZ['AdminEmail'],
+                    'To obtain a password, visit ' + ZS['httpURL'] + '/fgpwd.',
+                    ZS['AdminEmail'],
                     [new_user.email],
                     fail_silently=False)
 
                 return HttpResponseRedirect('/WhoZwho/ename/' + str(new_name.id) + '/' + browser_tab)
             else:
-                WZ['ErrorMessage'] = "Error: The selected Login ID is already in use."
+                ZS['ErrorMessage'] = "Error: The selected Login ID is already in use."
         else:
-            WZ['ErrorMessage'] = str(form.errors)
+            ZS['ErrorMessage'] = str(form.errors)
     else:
         form = DirectoryAddNameForm(initial={
             'privileges': str(Z.NewRW),
@@ -106,10 +106,10 @@ def do(request, nid, browser_tab):
 
     context = {
         'AddNameTitle': AddNameTitle,
-        'browser_tab': WZ['Tabs'][WZ['ActiveTab']][2],
+        'browser_tab': ZS['Tabs'][ZS['ActiveTab']][2],
         'form': form,
         'nid': nid,
-        'WZ': WZ
+        'ZS': ZS
         }
 
     context.update(csrf(request))

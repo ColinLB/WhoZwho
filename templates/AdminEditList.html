@@ -7,8 +7,8 @@ License or the Apache v2 License, as specified in the README file.
 {% extends "WhoZwhoAuthenticated.html" %}
 
 {% block headers %}
-    <script type="text/javascript" src="{{ WZ.httpURL }}static/js/Cookie.js"></script>
-    <script type="text/javascript" src="{{ WZ.httpURL }}static/js/DirectoryList.js"></script>
+    <script type="text/javascript" src="{{ ZS.httpURL }}static/js/Cookie.js"></script>
+    <script type="text/javascript" src="{{ ZS.httpURL }}static/js/DirectoryList.js"></script>
 {% endblock %}
 
 {% block body %}
@@ -40,9 +40,9 @@ License or the Apache v2 License, as specified in the README file.
                         {% for name in names %}
                             &nbsp&nbsp&nbsp
                             {% if name.private > 0 %}
-                                <a href="{{ WZ.httpURL }}editpc/{{ name.id }}/{{ browser_tab }}">{{ name.first }} {{ name.last }}</a> *
+                                <a href="{{ ZS.httpURL }}editpc/{{ name.id }}/{{ browser_tab }}">{{ name.first }} {{ name.last }}</a> *
                             {% else %}
-                                <a href="{{ WZ.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">{{ name.first }} {{ name.last }}</a>
+                                <a href="{{ ZS.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">{{ name.first }} {{ name.last }}</a>
                             {% endif %}
                             <br>
                         {% endfor %}
@@ -76,9 +76,9 @@ License or the Apache v2 License, as specified in the README file.
                         {% for name in names %}
                             &nbsp&nbsp&nbsp
                             {% if name.private > 0 %}
-                                <a href="{{ WZ.httpURL }}editpc/{{ name.id }}/{{ browser_tab }}">{{ name.last }}, {{ name.first }}</a> *
+                                <a href="{{ ZS.httpURL }}editpc/{{ name.id }}/{{ browser_tab }}">{{ name.last }}, {{ name.first }}</a> *
                             {% else %}
-                                <a href="{{ WZ.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">{{ name.last }}, {{ name.first }}</a>
+                                <a href="{{ ZS.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">{{ name.last }}, {{ name.first }}</a>
                             {% endif %}
                             <br>
                         {% endfor %}

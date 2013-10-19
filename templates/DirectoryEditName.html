@@ -41,7 +41,7 @@ License or the Apache v2 License, as specified in the README file.
         <table>
           <tr>
             <td class="left_margin"></td>
-            <td id="error_message" class="error_message">{{ WZ.ErrorMessage }}</td>
+            <td id="error_message" class="error_message">{{ ZS.ErrorMessage }}</td>
           </tr>
         </table>
 
@@ -51,13 +51,13 @@ License or the Apache v2 License, as specified in the README file.
             <td rowspan="0" valign="top">
               <img class="show_image" src="{{ picture }}"><br>
               {% if "default" not in picture %}
-                  <a class="more_info" href="{{ WZ.httpURL }}rmpic/{{ name.id }}/{{ browser_tab }}">(delete picture)</a>
+                  <a class="more_info" href="{{ ZS.httpURL }}rmpic/{{ name.id }}/{{ browser_tab }}">(delete picture)</a>
               {% endif %}
 
-              {% if WZ.Authority >= Admin %}
+              {% if ZS.Authority >= Admin %}
                 <br><br>
                 <br><br>
-                <a class="more_info" href="{{ WZ.httpURL }}rmnam/{{ nid }}">(delete name)</a>
+                <a class="more_info" href="{{ ZS.httpURL }}rmnam/{{ nid }}">(delete name)</a>
               {% endif %}
             </td>
             <td class="left_margin"></td>
@@ -80,13 +80,13 @@ License or the Apache v2 License, as specified in the README file.
                {% if not name.address_id %}
                  {% if addresses|length > 0 %}
 
-                   <a href="{{ WZ.httpURL }}caddr/{{ name.id }}/{{ browser_tab }}">(choose address,</a>
+                   <a href="{{ ZS.httpURL }}caddr/{{ name.id }}/{{ browser_tab }}">(choose address,</a>
                    <a class="more_info" onclick="ToggleOptions('AddressOptions');">&nbsp or)</a><br>
                    <div id="AddressOptions" style="display:none">
-                     <a class="more_info" href="{{ WZ.httpURL }}eaddr/{{ name.id }}/0/{{ browser_tab }}">(add address)</a><br>
+                     <a class="more_info" href="{{ ZS.httpURL }}eaddr/{{ name.id }}/0/{{ browser_tab }}">(add address)</a><br>
                    </div>
                  {% else %}
-                   <a href="{{ WZ.httpURL }}eaddr/{{ name.id }}/0/{{ browser_tab }}">(add address)</a><br>
+                   <a href="{{ ZS.httpURL }}eaddr/{{ name.id }}/0/{{ browser_tab }}">(add address)</a><br>
                  {% endif %}
                {% else %}
                  {{ name.address.street }}<br>
@@ -102,20 +102,20 @@ License or the Apache v2 License, as specified in the README file.
                    <br>{{ name.address.phone }}
                  {% endif %}
                  &nbsp&nbsp
-                 <a href="{{ WZ.httpURL }}eaddr/{{ name.id }}/{{ name.address.id }}/{{ browser_tab }}">(edit,</a>
+                 <a href="{{ ZS.httpURL }}eaddr/{{ name.id }}/{{ name.address.id }}/{{ browser_tab }}">(edit,</a>
                  <a class="more_info" onclick="ToggleOptions('AddressOptions');">&nbsp or)</a><br>
                  <div id="AddressOptions" style="display:none">
                    &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
-                   <a class="more_info" href="{{ WZ.httpURL }}caddr/{{ name.id }}/{{ browser_tab }}">(choose address)</a><br>
+                   <a class="more_info" href="{{ ZS.httpURL }}caddr/{{ name.id }}/{{ browser_tab }}">(choose address)</a><br>
                    &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
-                   <a class="more_info" href="{{ WZ.httpURL }}eaddr/{{ name.id }}/0/{{ browser_tab }}">(add address)</a><br>
+                   <a class="more_info" href="{{ ZS.httpURL }}eaddr/{{ name.id }}/0/{{ browser_tab }}">(add address)</a><br>
                  </div>
                {% endif %}
 
                <br>
 
-               {% if WZ.Authority >= Admin %}
-                 <a href="{{ WZ.httpURL }}nname/{{ nid }}/{{ browser_tab }}">(add family member)</a>
+               {% if ZS.Authority >= Admin %}
+                 <a href="{{ ZS.httpURL }}nname/{{ nid }}/{{ browser_tab }}">(add family member)</a>
 
                  <br><br>
                {% endif %}
@@ -131,15 +131,15 @@ License or the Apache v2 License, as specified in the README file.
                  {% endif %}
 
                  &nbsp &nbsp
-                 <a href="{{ WZ.httpURL }}ewedd/{{ name.id }}/{{ browser_tab }}">(edit,</a>
+                 <a href="{{ ZS.httpURL }}ewedd/{{ name.id }}/{{ browser_tab }}">(edit,</a>
                  <a class="more_info" onclick="ToggleOptions('WeddingOptions');">&nbsp or)</a><br>
                  <div id="WeddingOptions" style="display:none">
                    &nbsp &nbsp 
-                   <a class="more_info" href="{{ WZ.httpURL }}dwedd/{{ name.id }}/{{ browser_tab }}">(delete wedding)</a><br>
+                   <a class="more_info" href="{{ ZS.httpURL }}dwedd/{{ name.id }}/{{ browser_tab }}">(delete wedding)</a><br>
                  </div>
                {% else %}
                  {% if schoices|length > 0 %}
-                   <a class="more_info" href="{{ WZ.httpURL }}ewedd/{{ name.id }}/{{ browser_tab }}">(add wedding)</a><br>
+                   <a class="more_info" href="{{ ZS.httpURL }}ewedd/{{ name.id }}/{{ browser_tab }}">(add wedding)</a><br>
                  {% endif %}
                {% endif %}
             </td>

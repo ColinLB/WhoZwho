@@ -2,7 +2,7 @@
 # You may distribute under the terms of either the GNU General Public
 # License or the Apache v2 License, as specified in the README file.
 
-import WhoZwho as Z
+import SessionSettings as Z
 
 from time import time
 from django import forms
@@ -24,13 +24,13 @@ class ForgotLoginForm(forms.Form):
     recaptcha_response_field = forms.CharField(max_length=128)
 
 def do(request):
-    WZ = Z.SetWhoZwho(request)
+    ZS = Z.SetWhoZwho(request)
     if request.method == 'POST': # If the form has been submitted...
         form = ForgotLoginForm(request.POST) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
-            check_captcha = captcha.submit (form.cleaned_data['recaptcha_challenge_field'], form.cleaned_data['recaptcha_response_field'], WZ['CaptchaPrivate'], "127.0.0.1")
+            check_captcha = captcha.submit (form.cleaned_data['recaptcha_challenge_field'], form.cleaned_data['recaptcha_response_field'], ZS['CaptchaPrivate'], "127.0.0.1")
             if not check_captcha.is_valid:
-                WZ['ErrorMessage'] = "[FL01]: Captcha response was incorrect."
+                ZS['ErrorMessage'] = "[FL01]: Captcha response was incorrect."
             else:
                 users = User.objects.all(). \
                     filter(first_name__exact=form.cleaned_data['first_name']). \
@@ -41,20 +41,20 @@ def do(request):
                     send_mail(
                         'Forgotten login ID.',
                         'Login ID: ' + users[0].username,
-                        WZ['AdminEmail'],
+                        ZS['AdminEmail'],
                         [users[0].email],
                         fail_silently=False)
 
-                    WZ['ErrorMessage'] = "[FL02]: Login ID sent to your email."
+                    ZS['ErrorMessage'] = "[FL02]: Login ID sent to your email."
                 else:
-                    WZ['ErrorMessage'] = "[FL03]: Invalid Login ID."
+                    ZS['ErrorMessage'] = "[FL03]: Invalid Login ID."
         else:
-            WZ['ErrorMessage'] = str(form.errors)
+            ZS['ErrorMessage'] = str(form.errors)
     else:
         form = ForgotLoginForm()
 
-    captcha_html = captcha.displayhtml(WZ['CaptchaPublic'], use_ssl = True)
+    captcha_html = captcha.displayhtml(ZS['CaptchaPublic'], use_ssl = True)
 
-    c = { 'form': form, 'WZ': WZ, 'captcha_html': captcha_html }
+    c = { 'form': form, 'ZS': ZS, 'captcha_html': captcha_html }
     c.update(csrf(request))
     return render_to_response('UserForgotLogin.html', c )

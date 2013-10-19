@@ -7,7 +7,7 @@ Installation:
 
 As root:
  1. Install apache, mod_wsgi, mod_ssl.
- 2. Install python 2.6.6 or greater.
+ 2. Install python and python-dev 2.6.6 or greater.
  3. Install setuptools: curl http://python-distribute.org/distribute_setup.py | python
  4. Install pip: curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py | python
  5. Install Python Imaging Library: pip install pil
@@ -15,11 +15,12 @@ As root:
  7. Install git
  8. Create non-privileged user: adduser my_id
 
-As the non-privileged user ( my_ID ):
+As the non-privileged user ( my_id ):
  1. Retrieve WhoZwho web directory code: mkdir -i ~/Git; cd ~/Git; git clone git@github.com:ColinLB/WhoZwho.git
- 2. Create Django application container: mkdir -p ~/django/my_project; cd ~/django/my_project; django-admin.py startproject my_site
+ 2. Create Django application container: mkdir -p ~/django/my_site; cd ~/django/my_site; django-admin.py startproject my_site
  3. Link application container to code: ln -s ~/Git/WhoZwho
- 4. Replace settings.py in the my_site directory with the sample provided in ~/django/my_project/WhoZwho/samples directory. Customize as required, in particular:
+ 4. Replace the application settings: cp WhoZwho/samples/my_site/settings.py my_site/settings.py
+ 5. Customize the following in my_site/settings.py:
 <br>    o ADMINS name and email address
 <br>    o DATABASES ENGINE and NAME
 <br>    o BANNER
@@ -28,9 +29,9 @@ As the non-privileged user ( my_ID ):
 <br>    o EMAIL_HOST and EMAIL_PORT
 <br>    o TEMPLATE_DIRS
     
- 5. Create picture directories ("mkdir -p ~/django/my_project/WhoZwho/static/pics/names/{new,old,printable}") and
- copy the sample default jpeg to the ~/django/my_project/WhoZwho/static/pics/names directory.
- 6. Copy ~/django/my_project/WhoZwho/samples/WhoZwho.conf to the apache "conf.d" directory and customize as required.
+ 5. Create picture directories ("mkdir -p ~/django/my_site/WhoZwho/static/pics/names/{new,old,printable}") and
+ copy the sample default jpeg to the ~/django/my_site/WhoZwho/static/pics/names directory.
+ 6. Copy ~/django/my_site/WhoZwho/samples/WhoZwho.conf to the apache "conf.d" directory and customize as required.
  7. Generate self-signed certificates (see http://slacksite.com/apache/certificate.php for a guide) and place them
 in the location defined by WhoZwho.conf apache configuration file created above. It is strongly recommended that you
 use only encrypted traffic for this web site.

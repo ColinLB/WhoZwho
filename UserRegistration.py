@@ -2,7 +2,7 @@
 # You may distribute under the terms of either the GNU General Public
 # License or the Apache v2 License, as specified in the README file.
 
-import WhoZwho as Z
+import SessionSettings as Z
 from UserLogin import GoLogout
 
 from time import time
@@ -28,13 +28,13 @@ class RegistrationForm(forms.Form):
     recaptcha_response_field = forms.CharField(max_length=128)
 
 def now(request):
-    WZ = Z.SetWhoZwho(request)
+    ZS = Z.SetWhoZwho(request)
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid(): 
-            check_captcha = captcha.submit (form.cleaned_data['recaptcha_challenge_field'], form.cleaned_data['recaptcha_response_field'], WZ['CaptchaPrivate'], "127.0.0.1")
+            check_captcha = captcha.submit (form.cleaned_data['recaptcha_challenge_field'], form.cleaned_data['recaptcha_response_field'], ZS['CaptchaPrivate'], "127.0.0.1")
             if not check_captcha.is_valid:
-                WZ['ErrorMessage'] = "[UR01]: Captcha response was incorrect."
+                ZS['ErrorMessage'] = "[UR01]: Captcha response was incorrect."
             else:
                 users = User.objects.all().filter(username__exact=form.cleaned_data['login_id'])
                 if len(users) < 1:
@@ -61,23 +61,23 @@ def now(request):
                     if auth_user is not None:
                         if auth_user.is_active:
                             login(request, auth_user)
-                            WZ['Authenticated'] = 1
+                            ZS['Authenticated'] = 1
                             request.session['last_time'] = time()
-                            WZ = Z.SetWhoZwho(request, '.')
-                            return HttpResponseRedirect('/WhoZwho/' + WZ['Tabs'][WZ['ActiveTab']][3])
+                            ZS = Z.SetWhoZwho(request, '.')
+                            return HttpResponseRedirect('/WhoZwho/' + ZS['Tabs'][ZS['ActiveTab']][3])
                         else:
-                            WZ['ErrorMessage'] = "[UR02]: Login ID disabled."
+                            ZS['ErrorMessage'] = "[UR02]: Login ID disabled."
                     else:
-                        WZ['ErrorMessage'] = "[UR03]: Login ID is invalid."
+                        ZS['ErrorMessage'] = "[UR03]: Login ID is invalid."
                 else:
-                    WZ['ErrorMessage'] = "[UR04]: The selected Login ID is already in use."
+                    ZS['ErrorMessage'] = "[UR04]: The selected Login ID is already in use."
         else:
-            WZ['ErrorMessage'] = str(form.errors)
+            ZS['ErrorMessage'] = str(form.errors)
     else:
         form = RegistrationForm() # An unbound form
 
-    captcha_html = captcha.displayhtml(WZ['CaptchaPublic'], use_ssl = True)
+    captcha_html = captcha.displayhtml(ZS['CaptchaPublic'], use_ssl = True)
 
-    c = { 'form': form, 'WZ': WZ, 'captcha_html': captcha_html }
+    c = { 'form': form, 'ZS': ZS, 'captcha_html': captcha_html }
     c.update(csrf(request))
     return render_to_response('UserRegistration.html', c )

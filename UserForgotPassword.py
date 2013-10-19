@@ -2,7 +2,7 @@
 # You may distribute under the terms of either the GNU General Public
 # License or the Apache v2 License, as specified in the README file.
 
-import WhoZwho as Z
+import SessionSettings as Z
 
 from time import time
 from django import forms
@@ -14,7 +14,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 
 from models import Name
-from WhoZwhoCommonFunctions import GenerateTemporaryPassword
+from SessionFunctions import GenerateTemporaryPassword
 
 import captcha
 
@@ -25,13 +25,13 @@ class ForgotPasswordForm(forms.Form):
     recaptcha_response_field = forms.CharField(max_length=128)
 
 def do(request):
-    WZ = Z.SetWhoZwho(request)
+    ZS = Z.SetWhoZwho(request)
     if request.method == 'POST': # If the form has been submitted...
         form = ForgotPasswordForm(request.POST) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
-            check_captcha = captcha.submit (form.cleaned_data['recaptcha_challenge_field'], form.cleaned_data['recaptcha_response_field'], WZ['CaptchaPrivate'], "127.0.0.1")
+            check_captcha = captcha.submit (form.cleaned_data['recaptcha_challenge_field'], form.cleaned_data['recaptcha_response_field'], ZS['CaptchaPrivate'], "127.0.0.1")
             if not check_captcha.is_valid:
-                WZ['ErrorMessage'] = "[FP01]: Captcha response was incorrect."
+                ZS['ErrorMessage'] = "[FP01]: Captcha response was incorrect."
             else:
                 users = User.objects.all(). \
                     filter(username__exact=form.cleaned_data['login_id']). \
@@ -49,25 +49,25 @@ def do(request):
                     send_mail(
                         'Password Reset',
                         'A password reset request for your account has been received and a new ' + \
-                        'temporary password has been assigned (see below). Visit ' + WZ['httpURL'] + '/login ' + \
+                        'temporary password has been assigned (see below). Visit ' + ZS['httpURL'] + '/login ' + \
                         'within the next 20 minutes and choose a new permanent password. If you need more ' + \
-                        'time, you may visit ' + WZ['httpURL'] + '/fgpwd at any time to request another ' + \
+                        'time, you may visit ' + ZS['httpURL'] + '/fgpwd at any time to request another ' + \
                         'temporary password.\n\nLogin ID: ' + users[0].username + \
                         '\nTemporary password: ' + temporary_password,
-                        WZ['AdminEmail'],
+                        ZS['AdminEmail'],
                         [users[0].email],
                         fail_silently=False)
 
-                    WZ['ErrorMessage'] = "[FP02]: Temporary password sent to your email."
+                    ZS['ErrorMessage'] = "[FP02]: Temporary password sent to your email."
                 else:
-                    WZ['ErrorMessage'] = "[FP03]: Invalid Login ID/email."
+                    ZS['ErrorMessage'] = "[FP03]: Invalid Login ID/email."
         else:
-            WZ['ErrorMessage'] = str(form.errors)
+            ZS['ErrorMessage'] = str(form.errors)
     else:
         form = ForgotPasswordForm()
 
-    captcha_html = captcha.displayhtml(WZ['CaptchaPublic'], use_ssl = True)
+    captcha_html = captcha.displayhtml(ZS['CaptchaPublic'], use_ssl = True)
 
-    c = { 'form': form, 'WZ': WZ, 'captcha_html': captcha_html }
+    c = { 'form': form, 'ZS': ZS, 'captcha_html': captcha_html }
     c.update(csrf(request))
     return render_to_response('UserForgotPassword.html', c )

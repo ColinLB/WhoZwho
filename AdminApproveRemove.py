@@ -2,7 +2,7 @@
 # You may distribute under the terms of either the GNU General Public
 # License or the Apache v2 License, as specified in the README file.
 
-import WhoZwho as Z
+import SessionSettings as Z
 from UserLogin import GoLogout
 
 import logging
@@ -22,9 +22,9 @@ class AdminApproveRemoveForm(forms.Form):
     action = forms.CharField()
 
 def do(request, nid):
-    WZ = Z.SetWhoZwho(request, 'Admin')
-    if WZ['ErrorMessage']:
-        return GoLogout(request, WZ, '')
+    ZS = Z.SetWhoZwho(request, 'Admin')
+    if ZS['ErrorMessage']:
+        return GoLogout(request, ZS, '')
 
     name = Name.objects.get(pk=int(nid))
 
@@ -32,7 +32,7 @@ def do(request, nid):
         form = AdminApproveRemoveForm(request.POST)
         if form.is_valid():
 
-            logger.info(WZ['User'] + ' AA ' + str(request.POST))
+            logger.info(ZS['User'] + ' AA ' + str(request.POST))
 
             if form.cleaned_data['action'] == 'a':
                 name.approved = True
@@ -41,8 +41,8 @@ def do(request, nid):
                 send_mail(
                     'Account approved.',
                     'Your Login ID, ' + name.user.username + ', has been approved. Visit ' + \
-                    WZ['httpURL'] + '/login to access the WhoZwho directory.',
-                    WZ['AdminEmail'],
+                    ZS['httpURL'] + '/login to access the WhoZwho directory.',
+                    ZS['AdminEmail'],
                     [name.user.email],
                     fail_silently=False)
 
@@ -53,22 +53,22 @@ def do(request, nid):
                 name.save()
                 return HttpResponseRedirect('/WhoZwho/alist')
         else:
-            WZ['ErrorMessage'] = str(form.errors)
+            ZS['ErrorMessage'] = str(form.errors)
     else:
         form = AdminApproveRemoveForm(initial={ 'action': "" }) 
 
-    if os.path.exists(WZ['StaticPath'] + 'pics/names/' + str(name.id) + '.jpg'):
-        picture = WZ['httpURL'] + 'static/pics/names/' + str(name.id) + '.jpg'
+    if os.path.exists(ZS['StaticPath'] + 'pics/names/' + str(name.id) + '.jpg'):
+        picture = ZS['httpURL'] + 'static/pics/names/' + str(name.id) + '.jpg'
     else:
-        picture = WZ['httpURL'] + 'static/pics/defaults/greenman.gif'
+        picture = ZS['httpURL'] + 'static/pics/defaults/greenman.gif'
 
     context = {
-        'browser_tab': WZ['Tabs'][WZ['ActiveTab']][2],
+        'browser_tab': ZS['Tabs'][ZS['ActiveTab']][2],
         'form': form,
         'name': name,
         'nid': nid,
         'picture': picture,
-        'WZ': WZ
+        'ZS': ZS
         }
 
     context.update(csrf(request))

@@ -2,7 +2,7 @@
 # You may distribute under the terms of either the GNU General Public
 # License or the Apache v2 License, as specified in the README file.
 
-import WhoZwho as Z
+import SessionSettings as Z
 from UserLogin import GoLogout
 
 from django.http import HttpResponse, HttpResponseRedirect
@@ -10,20 +10,20 @@ from django.template import Context, loader
 from models import Name
 
 def do(request):
-    WZ = Z.SetWhoZwho(request, 'List')
-    if WZ['ErrorMessage']:
-        return GoLogout(request, WZ)
+    ZS = Z.SetWhoZwho(request, 'List')
+    if ZS['ErrorMessage']:
+        return GoLogout(request, ZS)
 
     names = Name.objects.all(). \
         exclude(removed__exact=True). \
-        filter(owner__exact=WZ['AuthorizedOwner']). \
+        filter(owner__exact=ZS['AuthorizedOwner']). \
         order_by('first', 'last')
 
     template = loader.get_template('NewROList.html')
     context = Context({
-        'browser_tab': WZ['Tabs'][WZ['ActiveTab']][2],
+        'browser_tab': ZS['Tabs'][ZS['ActiveTab']][2],
         'names': names,
-        'WZ': WZ,
+        'ZS': ZS,
         })
 
     return HttpResponse(template.render(context))

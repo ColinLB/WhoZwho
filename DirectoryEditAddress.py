@@ -2,7 +2,7 @@
 # You may distribute under the terms of either the GNU General Public
 # License or the Apache v2 License, as specified in the README file.
 
-import WhoZwho as Z
+import SessionSettings as Z
 from UserLogin import GoLogout
 
 import logging
@@ -20,7 +20,7 @@ from django.shortcuts import render_to_response
 from django.template import Context, loader
 
 from models import Address, Name
-from WhoZwhoCommonFunctions import SaveFileUpload
+from SessionFunctions import SaveFileUpload
 
 class DirectoryEditAddressForm(forms.Form):
     street = forms.CharField(max_length=32)
@@ -33,29 +33,29 @@ class DirectoryEditAddressForm(forms.Form):
     home_phone = forms.CharField(max_length=32, required=False)
 
 def do(request, nid, aid, browser_tab):
-    WZ = Z.SetWhoZwho(request, browser_tab)
-    if WZ['ErrorMessage']:
-        return GoLogout(request, WZ)
+    ZS = Z.SetWhoZwho(request, browser_tab)
+    if ZS['ErrorMessage']:
+        return GoLogout(request, ZS)
 
     try:
         name = Name.objects.get(pk=int(nid))
     except:
-        return GoLogout(request, WZ, "[EA01]: URL containd an invalid name ID.")
+        return GoLogout(request, ZS, "[EA01]: URL containd an invalid name ID.")
 
-        if WZ['Authority'] < Z.Admin and name.owner != WZ['AuthorizedOwner']:
-            return GoLogout(request, WZ, "[EA02]: URL containd an invalid name ID.")
+        if ZS['Authority'] < Z.Admin and name.owner != ZS['AuthorizedOwner']:
+            return GoLogout(request, ZS, "[EA02]: URL containd an invalid name ID.")
 
     if aid != '0':
         try:
             address = Address.objects.get(pk=int(aid))
         except:
-            return GoLogout(request, WZ, "[EA03]: URL containd an invalid addressID.")
+            return GoLogout(request, ZS, "[EA03]: URL containd an invalid addressID.")
 
         if address.owner != name.owner:
-            return GoLogout(request, WZ, "[EA04]: URL containd an invalid address ID.")
+            return GoLogout(request, ZS, "[EA04]: URL containd an invalid address ID.")
 
-        if WZ['Authority'] < Z.Admin and address.owner != WZ['AuthorizedOwner']:
-            return GoLogout(request, WZ, "[EA05]: URL containd an invalid ID.")
+        if ZS['Authority'] < Z.Admin and address.owner != ZS['AuthorizedOwner']:
+            return GoLogout(request, ZS, "[EA05]: URL containd an invalid ID.")
 
     if request.method == 'POST': # If the form has been submitted...
         form = DirectoryEditAddressForm(request.POST, request.FILES)
@@ -78,14 +78,14 @@ def do(request, nid, aid, browser_tab):
                 name.address_id = address.id
                 name.save()
 
-            logger.info(WZ['User'] + ' EA ' + str(request.POST))
+            logger.info(ZS['User'] + ' EA ' + str(request.POST))
 
             if name.private == True:
                 return HttpResponseRedirect('/WhoZwho/editpc/' + nid + '/' + browser_tab)
             else:
                 return HttpResponseRedirect('/WhoZwho/ename/' + nid + '/' + browser_tab)
         else:
-            WZ['ErrorMessage'] = str(form.errors)
+            ZS['ErrorMessage'] = str(form.errors)
     else:
         if aid == '0':
             form = DirectoryEditAddressForm()
@@ -109,10 +109,10 @@ def do(request, nid, aid, browser_tab):
     context = {
         'EditAddressTitle': EditAddressTitle,
         'aid': aid,
-        'browser_tab': WZ['Tabs'][WZ['ActiveTab']][2],
+        'browser_tab': ZS['Tabs'][ZS['ActiveTab']][2],
         'form': form,
         'nid': nid,
-        'WZ': WZ
+        'ZS': ZS
         }
 
     context.update(csrf(request))

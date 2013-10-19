@@ -2,7 +2,7 @@
 # You may distribute under the terms of either the GNU General Public
 # License or the Apache v2 License, as specified in the README file.
 
-import WhoZwho as Z
+import SessionSettings as Z
 from UserLogin import GoLogout
 
 import logging
@@ -24,9 +24,9 @@ class AdminRemoveReinstateForm(forms.Form):
     action = forms.CharField()
 
 def do(request, nid):
-    WZ = Z.SetWhoZwho(request, 'Admin')
-    if WZ['ErrorMessage']:
-        return GoLogout(request, WZ, '')
+    ZS = Z.SetWhoZwho(request, 'Admin')
+    if ZS['ErrorMessage']:
+        return GoLogout(request, ZS, '')
 
     name = Name.objects.get(pk=int(nid))
 
@@ -34,7 +34,7 @@ def do(request, nid):
         form = AdminRemoveReinstateForm(request.POST)
         if form.is_valid():
 
-            logger.info(WZ['User'] + ' AI ' + str(request.POST))
+            logger.info(ZS['User'] + ' AI ' + str(request.POST))
 
             if form.cleaned_data['action'] == 'i':
                 name.removed = False
@@ -44,31 +44,31 @@ def do(request, nid):
 
             return HttpResponseRedirect('/WhoZwho/rilst')
         else:
-            WZ['ErrorMessage'] = str(form.errors)
+            ZS['ErrorMessage'] = str(form.errors)
     else:
         form = AdminRemoveReinstateForm(initial={ 'action': "" }) 
 
-    if os.path.exists(WZ['StaticPath'] + 'pics/names/' + str(name.id) + '.jpg'):
-        picture = WZ['httpURL'] + 'static/pics/names/' + str(name.id) + '.jpg'
+    if os.path.exists(ZS['StaticPath'] + 'pics/names/' + str(name.id) + '.jpg'):
+        picture = ZS['httpURL'] + 'static/pics/names/' + str(name.id) + '.jpg'
     else:
-        picture = WZ['httpURL'] + 'static/pics/defaults/greenman.gif'
+        picture = ZS['httpURL'] + 'static/pics/defaults/greenman.gif'
 
     context = {
-        'browser_tab': WZ['Tabs'][WZ['ActiveTab']][2],
+        'browser_tab': ZS['Tabs'][ZS['ActiveTab']][2],
         'form': form,
         'name': name,
         'nid': nid,
         'picture': picture,
-        'WZ': WZ
+        'ZS': ZS
         }
 
     context.update(csrf(request))
     return render_to_response('AdminRemoveReinstate.html', context )
 
 def dorm(request, nid):
-    WZ = Z.SetWhoZwho(request, 'Admin')
-    if WZ['ErrorMessage']:
-        return GoLogout(request, WZ, '')
+    ZS = Z.SetWhoZwho(request, 'Admin')
+    if ZS['ErrorMessage']:
+        return GoLogout(request, ZS, '')
 
     name = Name.objects.get(pk=int(nid))
 

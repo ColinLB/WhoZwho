@@ -2,7 +2,7 @@
 # You may distribute under the terms of either the GNU General Public
 # License or the Apache v2 License, as specified in the README file.
 
-import WhoZwho as Z
+import SessionSettings as Z
 from UserLogin import GoLogout
 
 import logging
@@ -24,24 +24,24 @@ from django.template import Context, loader
 from django.contrib.auth.models import User
 
 from models import Address, Name, Wedding
-from WhoZwhoCommonFunctions import SaveFileUpload
+from SessionFunctions import SaveFileUpload
 
 def do(request, nid, browser_tab):
-    WZ = Z.SetWhoZwho(request, browser_tab)
-    if WZ['ErrorMessage']:
-        return GoLogout(request, WZ)
+    ZS = Z.SetWhoZwho(request, browser_tab)
+    if ZS['ErrorMessage']:
+        return GoLogout(request, ZS)
 
     try:
         name = Name.objects.get(pk=int(nid))
     except:
-        return GoLogout(request, WZ, "[BN01]: URL contained an invalid name ID.")
+        return GoLogout(request, ZS, "[BN01]: URL contained an invalid name ID.")
 
-    if WZ['Authority'] < Z.Admin and name.owner != WZ['AuthorizedOwner']:
-        return GoLogout(request, WZ, "[BN02]: URL contained an invalid name ID.")
+    if ZS['Authority'] < Z.Admin and name.owner != ZS['AuthorizedOwner']:
+        return GoLogout(request, ZS, "[BN02]: URL contained an invalid name ID.")
 
-    os.environ['PATH'] = WZ['PythonPath']
+    os.environ['PATH'] = ZS['PythonPath']
     p = Popen(['rm', '-f',
-        WZ['StaticPath'] + 'pics/names/' + nid +'.jpg'],
+        ZS['StaticPath'] + 'pics/names/' + nid +'.jpg'],
         stdout=PIPE, stderr=PIPE)
 
     stdout, stderr = p.communicate()
@@ -49,7 +49,7 @@ def do(request, nid, browser_tab):
         return  "[BN03]: command error (rm) - " + stderr
 
     owner = name.owner
-    logger.info(WZ['User'] + ' BN User and Name deleted for ID ' + str(nid) + ', ' + name.first + ' ' + name.last + '.')
+    logger.info(ZS['User'] + ' BN User and Name deleted for ID ' + str(nid) + ', ' + name.first + ' ' + name.last + '.')
     User.objects.filter(id=name.user.id).delete()
     Name.objects.filter(id=name.id).delete()
 
@@ -63,7 +63,7 @@ def do(request, nid, browser_tab):
 	    filter(private__exact=True)
 
 	for name in names:
-	    logger.info(WZ['User'] + ' BN User and Name deleted for ID ' + str(name.id) + ', ' + name.first + ' ' + name.last + ', personal contact.')
+	    logger.info(ZS['User'] + ' BN User and Name deleted for ID ' + str(name.id) + ', ' + name.first + ' ' + name.last + ', personal contact.')
             name.user.delete()
             name.delete()
 
@@ -74,7 +74,7 @@ def do(request, nid, browser_tab):
     for address in addresses:
         names = address.name_set.all()
         if len(names) < 1:
-            logger.info(WZ['User'] + ' BN Unused address deleted for owner ' + \
+            logger.info(ZS['User'] + ' BN Unused address deleted for owner ' + \
                 str(owner) + ': ' + address.street + ', ' + address.city + ', ' + \
                 address.province + ', ' + address.postcode)
             address.delete()
@@ -85,11 +85,11 @@ def do(request, nid, browser_tab):
     for wedding in weddings:
         names = wedding.name_set.all()
         if len(names) < 1:
-            logger.info(WZ['User'] + ' BN Unused wedding deleted for owner ' + \
+            logger.info(ZS['User'] + ' BN Unused wedding deleted for owner ' + \
                 str(owner) + ': ' + str(wedding.anniversary) + '.')
             wedding.delete()
 
-    if WZ['Authority'] >= Z.Admin:
+    if ZS['Authority'] >= Z.Admin:
         return HttpResponseRedirect('/WhoZwho/aelst')
     else:
         return HttpResponseRedirect('/WhoZwho/delst')

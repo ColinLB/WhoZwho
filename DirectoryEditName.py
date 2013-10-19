@@ -2,7 +2,7 @@
 # You may distribute under the terms of either the GNU General Public
 # License or the Apache v2 License, as specified in the README file.
 
-import WhoZwho as Z
+import SessionSettings as Z
 from UserLogin import GoLogout
 
 import logging
@@ -24,7 +24,7 @@ from django.template import Context, loader
 from django.contrib.auth.models import User
 
 from models import Address, Name, Wedding
-from WhoZwhoCommonFunctions import SaveFileUpload
+from SessionFunctions import SaveFileUpload
 
 class DirectoryEditNameForm(forms.Form):
     first = forms.CharField(max_length=32)
@@ -41,20 +41,20 @@ class DirectoryEditNameForm(forms.Form):
     gender = forms.ChoiceField(widget=RadioSelect, choices=Z.Genders)
 
 def do(request, nid, browser_tab):
-    WZ = Z.SetWhoZwho(request, browser_tab)
-    if WZ['ErrorMessage']:
-        return GoLogout(request, WZ)
+    ZS = Z.SetWhoZwho(request, browser_tab)
+    if ZS['ErrorMessage']:
+        return GoLogout(request, ZS)
 
     try:
         name = Name.objects.get(pk=int(nid))
     except:
-        return GoLogout(request, WZ, "[EN01]: URL contained an invalid name ID.")
+        return GoLogout(request, ZS, "[EN01]: URL contained an invalid name ID.")
 
-    if WZ['Authority'] < Z.Admin and name.owner != WZ['AuthorizedOwner']:
-        return GoLogout(request, WZ, "[EN02]: URL contained an invalid name ID.")
+    if ZS['Authority'] < Z.Admin and name.owner != ZS['AuthorizedOwner']:
+        return GoLogout(request, ZS, "[EN02]: URL contained an invalid name ID.")
 
-    if WZ['Authority'] >= Z.Admin:
-        WZ['AuthorizedOwner'] = name.owner
+    if ZS['Authority'] >= Z.Admin:
+        ZS['AuthorizedOwner'] = name.owner
 
     if request.method == 'POST': # If the form has been submitted...
         form = DirectoryEditNameForm(request.POST, request.FILES)
@@ -77,22 +77,22 @@ def do(request, nid, browser_tab):
                     name.user.email = form.cleaned_data['Account_Email']
                     name.user.save()
 
-                logger.info(WZ['User'] + ' EN ' + str(request.POST))
+                logger.info(ZS['User'] + ' EN ' + str(request.POST))
 
                 if request.FILES.has_key('picture'):
-                    WZ['ErrorMessage'] = ProcessNewPicture(request, WZ, nid)
+                    ZS['ErrorMessage'] = ProcessNewPicture(request, ZS, nid)
 
-                if WZ['ErrorMessage'] == "":
-                    if WZ['Authority'] >= Z.Admin:
+                if ZS['ErrorMessage'] == "":
+                    if ZS['Authority'] >= Z.Admin:
                         return HttpResponseRedirect('/WhoZwho/aelst')
-                    elif WZ['Authority'] >= Z.UserRW:
+                    elif ZS['Authority'] >= Z.UserRW:
                         return HttpResponseRedirect('/WhoZwho/delst')
                     else:
                         return HttpResponseRedirect('/WhoZwho/wlist')
             else:
-                WZ['ErrorMessage'] = "[EN03]: Login ID already used, choose another."
+                ZS['ErrorMessage'] = "[EN03]: Login ID already used, choose another."
         else:
-            WZ['ErrorMessage'] = str(form.errors)
+            ZS['ErrorMessage'] = str(form.errors)
     else:
         form = DirectoryEditNameForm(initial={
             'Login_ID': name.user.username,
@@ -108,13 +108,13 @@ def do(request, nid, browser_tab):
             'gender': name.gender
             }) 
 
-    if os.path.exists(WZ['StaticPath'] + 'pics/names/' + str(name.id) + '.jpg'):
-        picture = WZ['httpURL'] + 'static/pics/names/' + str(name.id) + '.jpg'
+    if os.path.exists(ZS['StaticPath'] + 'pics/names/' + str(name.id) + '.jpg'):
+        picture = ZS['httpURL'] + 'static/pics/names/' + str(name.id) + '.jpg'
     else:
-        picture = WZ['httpURL'] + 'static/pics/defaults/greenman.gif'
+        picture = ZS['httpURL'] + 'static/pics/defaults/greenman.gif'
 
     addresses = Address.objects.all(). \
-        filter(owner__exact=WZ['AuthorizedOwner']). \
+        filter(owner__exact=ZS['AuthorizedOwner']). \
         order_by('street')
 
     if name.wedding:
@@ -124,7 +124,7 @@ def do(request, nid, browser_tab):
     else:
         spouse = []
         schoices = Name.objects.all(). \
-            filter(owner__exact=WZ['AuthorizedOwner']). \
+            filter(owner__exact=ZS['AuthorizedOwner']). \
             filter(wedding__exact=None). \
             exclude(gender__exact=name.gender). \
             exclude(id__exact=name.id). \
@@ -133,36 +133,36 @@ def do(request, nid, browser_tab):
     context = {
         'addresses': addresses,
         'Admin': Z.Admin,
-        'browser_tab': WZ['Tabs'][WZ['ActiveTab']][2],
+        'browser_tab': ZS['Tabs'][ZS['ActiveTab']][2],
         'form': form,
         'name': name,
         'nid': nid,
         'picture': picture,
         'spouse': spouse,
         'schoices': schoices,
-        'WZ': WZ
+        'ZS': ZS
         }
 
     context.update(csrf(request))
     return render_to_response('DirectoryEditName.html', context )
 
-def ProcessNewPicture(request, WZ, nid):
+def ProcessNewPicture(request, ZS, nid):
     std_jpg_size = Z.jpg_width * Z.jpg_height
     std_jpg_width_height_ratio = Z.jpg_width * 1.0 / Z.jpg_height
 
-    os.environ['PATH'] = WZ['PythonPath']
+    os.environ['PATH'] = ZS['PythonPath']
 
-    SaveFileUpload(request.FILES['picture'], WZ['StaticPath'] + 'pics/new_names/' + nid +'.jpg')
+    SaveFileUpload(request.FILES['picture'], ZS['StaticPath'] + 'pics/new_names/' + nid +'.jpg')
 
     # Retrieve image information and check image type.
-    p = Popen(['identify', WZ['StaticPath'] + 'pics/new_names/' + nid +'.jpg'], stdout=PIPE, stderr=PIPE)
+    p = Popen(['identify', ZS['StaticPath'] + 'pics/new_names/' + nid +'.jpg'], stdout=PIPE, stderr=PIPE)
     stdout, stderr = p.communicate()
     if stderr != '':
         return  "[EN04]: /usr/bin/identify error - " + stderr
 
     file_info = stdout.split()
     if file_info[1] != 'JPEG':
-        p = Popen(['rm', '-f',  WZ['StaticPath'] + 'pics/new_names/' + nid +'.jpg'], stdout=PIPE, stderr=PIPE)
+        p = Popen(['rm', '-f',  ZS['StaticPath'] + 'pics/new_names/' + nid +'.jpg'], stdout=PIPE, stderr=PIPE)
         stdout, stderr = p.communicate()
         if stderr != '':
             return  "[EN05]: /bin/rm error - " + stderr
@@ -188,7 +188,7 @@ def ProcessNewPicture(request, WZ, nid):
         if normalized_height > 0:
             p = Popen(['mogrify', '-scale',
                 str(normalized_width) + 'x' + str(normalized_height),
-                WZ['StaticPath'] + 'pics/new_names/' + nid +'.jpg'],
+                ZS['StaticPath'] + 'pics/new_names/' + nid +'.jpg'],
                 stdout=PIPE, stderr=PIPE)
 
             stdout, stderr = p.communicate()
@@ -216,7 +216,7 @@ def ProcessNewPicture(request, WZ, nid):
     if normalized_height > 0:
         p = Popen(['mogrify', '-crop',
             str(normalized_width) + 'x' + str(normalized_height) + '+' + str(normalized_width_offset) + '+' + str(normalized_height_offset),
-            WZ['StaticPath'] + 'pics/new_names/' + nid +'.jpg'],
+            ZS['StaticPath'] + 'pics/new_names/' + nid +'.jpg'],
             stdout=PIPE, stderr=PIPE)
 
         stdout, stderr = p.communicate()
@@ -225,14 +225,14 @@ def ProcessNewPicture(request, WZ, nid):
 
     # Still alive? Move the image into production.
     p = Popen(['mv',
-        WZ['StaticPath'] + 'pics/new_names/' + nid +'.jpg',
-        WZ['StaticPath'] + 'pics/names/' + nid +'.jpg'],
+        ZS['StaticPath'] + 'pics/new_names/' + nid +'.jpg',
+        ZS['StaticPath'] + 'pics/names/' + nid +'.jpg'],
         stdout=PIPE, stderr=PIPE)
 
     stdout, stderr = p.communicate()
     if stderr != '':
         return  "[EN09]: /bin/mv error - " + stderr
 
-    logger.info(WZ['User'] + ' EN ' + str(request.FILES))
+    logger.info(ZS['User'] + ' EN ' + str(request.FILES))
 
     return ''

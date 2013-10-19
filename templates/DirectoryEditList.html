@@ -22,14 +22,14 @@ License or the Apache v2 License, as specified in the README file.
             <td>
                 {% for name in names %}
                     {% if name.private > 0 %}
-                        <a href="{{ WZ.httpURL }}editpc/{{ name.id }}/{{ browser_tab }}"> {{ name.last }}, {{ name.first }}</a>&nbsp;*<br>
+                        <a href="{{ ZS.httpURL }}editpc/{{ name.id }}/{{ browser_tab }}"> {{ name.last }}, {{ name.first }}</a>&nbsp;*<br>
                     {% else %}
-                        <a href="{{ WZ.httpURL }}ename/{{ name.id }}/{{ browser_tab }}"> {{ name.last }}, {{ name.first }}</a><br>
+                        <a href="{{ ZS.httpURL }}ename/{{ name.id }}/{{ browser_tab }}"> {{ name.last }}, {{ name.first }}</a><br>
                     {% endif %}
                 {% endfor %}
                 <br>
-                <a class="more_info" href="{{ WZ.httpURL }}nname/{{ WZ.Nid }}/{{ browser_tab }}">(add family member)</a><br>
-                <a class="more_info" href="{{ WZ.httpURL }}editpc/0/{{ browser_tab }}">(add personal contact)</a><br>
+                <a class="more_info" href="{{ ZS.httpURL }}nname/{{ ZS.Nid }}/{{ browser_tab }}">(add family member)</a><br>
+                <a class="more_info" href="{{ ZS.httpURL }}editpc/0/{{ browser_tab }}">(add personal contact)</a><br>
             </td>
         </tr>
     </table>

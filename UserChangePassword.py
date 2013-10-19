@@ -2,7 +2,7 @@
 # You may distribute under the terms of either the GNU General Public
 # License or the Apache v2 License, as specified in the README file.
 
-import WhoZwho as Z
+import SessionSettings as Z
 from UserLogin import GoLogout
 
 import os.path
@@ -20,7 +20,7 @@ from django.shortcuts import render_to_response
 from django.template import Context, loader
 
 from models import Address, Name
-from WhoZwhoCommonFunctions import GenerateTemporaryPassword
+from SessionFunctions import GenerateTemporaryPassword
 
 import captcha
 
@@ -31,21 +31,21 @@ class UserChangePasswordForm(forms.Form):
     recaptcha_response_field = forms.CharField(max_length=128)
 
 def do(request):
-    WZ = Z.SetWhoZwho(request)
-    if WZ['ErrorMessage']:
-        return GoLogout(request, WZ)
+    ZS = Z.SetWhoZwho(request)
+    if ZS['ErrorMessage']:
+        return GoLogout(request, ZS)
 
     if request.method == 'POST': # If the form has been submitted...
         form = UserChangePasswordForm(request.POST, request.FILES)
         if form.is_valid(): # All validation rules pass
-            check_captcha = captcha.submit (form.cleaned_data['recaptcha_challenge_field'], form.cleaned_data['recaptcha_response_field'], WZ['CaptchaPrivate'], "127.0.0.1")
+            check_captcha = captcha.submit (form.cleaned_data['recaptcha_challenge_field'], form.cleaned_data['recaptcha_response_field'], ZS['CaptchaPrivate'], "127.0.0.1")
             if not check_captcha.is_valid:
-                WZ['ErrorMessage'] = "[CP01]: Captcha response was incorrect."
+                ZS['ErrorMessage'] = "[CP01]: Captcha response was incorrect."
             else:
                 try:
-                    user = User.objects.get(username__exact=WZ['User'])
+                    user = User.objects.get(username__exact=ZS['User'])
                 except:
-                    return GoLogout(request, WZ, "[CP02]: Password change disabled.")
+                    return GoLogout(request, ZS, "[CP02]: Password change disabled.")
 
  
                 user.set_password(form.cleaned_data['password'])
@@ -54,29 +54,29 @@ def do(request):
                 user.name.password_timeout = None
                 user.name.save()
 
-                auth_user = authenticate(username=WZ['User'], password=form.cleaned_data['password'])
+                auth_user = authenticate(username=ZS['User'], password=form.cleaned_data['password'])
                 if auth_user is not None:
                     if auth_user.is_active:
                         login(request, auth_user)
-                        WZ['Authenticated'] = 1
+                        ZS['Authenticated'] = 1
                         request.session['last_time'] = time()
-                        WZ = Z.SetWhoZwho(request, '.')
-                        return HttpResponseRedirect('/WhoZwho/' + WZ['Tabs'][WZ['ActiveTab']][3])
+                        ZS = Z.SetWhoZwho(request, '.')
+                        return HttpResponseRedirect('/WhoZwho/' + ZS['Tabs'][ZS['ActiveTab']][3])
                     else:
-                        WZ['ErrorMessage'] = "[CP03]: Login ID disabled."
+                        ZS['ErrorMessage'] = "[CP03]: Login ID disabled."
                 else:
-                    WZ['ErrorMessage'] = "[CP04]: Login ID disabled."
+                    ZS['ErrorMessage'] = "[CP04]: Login ID disabled."
         else:
-            WZ['ErrorMessage'] = str(form.errors)
+            ZS['ErrorMessage'] = str(form.errors)
     else:
         form = UserChangePasswordForm()
 
-    captcha_html = captcha.displayhtml(WZ['CaptchaPublic'], use_ssl = True)
+    captcha_html = captcha.displayhtml(ZS['CaptchaPublic'], use_ssl = True)
 
     context = {
         'captcha_html': captcha_html,
         'form': form,
-        'WZ': WZ
+        'ZS': ZS
         }
 
     context.update(csrf(request))

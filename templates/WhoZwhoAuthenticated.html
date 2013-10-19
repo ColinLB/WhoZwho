@@ -7,8 +7,8 @@ License or the Apache v2 License, as specified in the README file.
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>{{ WZ.BrowserTag }}</title>
-        <link href="{{ WZ.httpURL }}static/css/whozwho.css" rel="stylesheet" type="text/css" media="screen" />
+        <title>{{ ZS.BrowserTag }}</title>
+        <link href="{{ ZS.httpURL }}static/css/whozwho.css" rel="stylesheet" type="text/css" media="screen" />
         {% block headers %}{% endblock %}
 
         <style
@@ -16,24 +16,24 @@ License or the Apache v2 License, as specified in the README file.
         </style>
     </head>
 
-    {% if WZ.InitializeBody %}
+    {% if ZS.InitializeBody %}
         <body onload="initialize()">
     {% else %}
         <body>
     {% endif %}
-        <p id=banner>{{ WZ.Banner }}</p>
+        <p id=banner>{{ ZS.Banner }}</p>
 
         <table>
             <tr>
                 <td>&nbsp</td>
-                {% for tab in WZ.Tabs %}
-                    {% if forloop.counter0 = WZ.ActiveTab %}
-                        <td class="active_tab"><a href="{{ WZ.httpURL}}{{ tab.3 }}">{{ tab.2 }}&nbsp</a></td>
+                {% for tab in ZS.Tabs %}
+                    {% if forloop.counter0 = ZS.ActiveTab %}
+                        <td class="active_tab"><a href="{{ ZS.httpURL}}{{ tab.3 }}">{{ tab.2 }}&nbsp</a></td>
                     {% else %}
-                        <td><a href="{{ WZ.httpURL}}{{ tab.3 }}">{{ tab.2 }}&nbsp</a></td>
+                        <td><a href="{{ ZS.httpURL}}{{ tab.3 }}">{{ tab.2 }}&nbsp</a></td>
                     {% endif %}
                 {% endfor %}
-                <td id="loggedin_logout">Hello {{ WZ.User }} - <a href="{{ WZ.httpURL }}logout" />Logout?</a>&nbsp</td>
+                <td id="loggedin_logout">Hello {{ ZS.User }} - <a href="{{ ZS.httpURL }}logout" />Logout?</a>&nbsp</td>
             </tr>
         </table>
         <hr id=end_of_page_header />

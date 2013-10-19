@@ -7,8 +7,8 @@ License or the Apache v2 License, as specified in the README file.
 {% extends "WhoZwhoAuthenticated.html" %}
 
 {% block headers %}
-    <script type="text/javascript" src="{{ WZ.httpURL }}static/js/Cookie.js"></script>
-    <script type="text/javascript" src="{{ WZ.httpURL }}static/js/DirectoryList.js"></script>
+    <script type="text/javascript" src="{{ ZS.httpURL }}static/js/Cookie.js"></script>
+    <script type="text/javascript" src="{{ ZS.httpURL }}static/js/DirectoryList.js"></script>
 {% endblock %}
 
 {% block body %}
@@ -28,7 +28,7 @@ License or the Apache v2 License, as specified in the README file.
 
                 &nbsp&nbsp&nbsp
                 &nbsp&nbsp&nbsp
-                <a class="more_info" href="{{ WZ.httpURL }}print/{{ browser_tab }}">(or print)</a>
+                <a class="more_info" href="{{ ZS.httpURL }}print/{{ browser_tab }}">(or print)</a>
 
                 {% for initial, names in first_names.items %}
                     {% if select.1 = '.' and forloop.counter = 1 %}
@@ -42,7 +42,7 @@ License or the Apache v2 License, as specified in the README file.
                         <br>{{ initial }}<br>
                         {% for name in names %}
                             &nbsp&nbsp&nbsp
-                            <a href="{{ WZ.httpURL }}sname/{{ name.id }}/{{ browser_tab }}">
+                            <a href="{{ ZS.httpURL }}sname/{{ name.id }}/{{ browser_tab }}">
                                 {{ name.first }} {{ name.last }}
                             </a>
                             {% if name.private > 0 %}
@@ -68,7 +68,7 @@ License or the Apache v2 License, as specified in the README file.
 
                 &nbsp&nbsp&nbsp
                 &nbsp&nbsp&nbsp
-                <a class="more_info" href="{{ WZ.httpURL }}print/{{ browser_tab }}">(or print)</a>
+                <a class="more_info" href="{{ ZS.httpURL }}print/{{ browser_tab }}">(or print)</a>
 
                 {% for initial, names in last_names.items %}
                     {% if select.2 = '.' and forloop.counter = 1 %}
@@ -82,7 +82,7 @@ License or the Apache v2 License, as specified in the README file.
                         <br>{{ initial }}<br>
                         {% for name in names %}
                             &nbsp&nbsp&nbsp
-                            <a href="{{ WZ.httpURL }}sname/{{ name.id }}/{{ browser_tab }}">
+                            <a href="{{ ZS.httpURL }}sname/{{ name.id }}/{{ browser_tab }}">
                                 {{ name.last }}, {{ name.first }}
                             </a>
                             {% if name.private > 0 %}

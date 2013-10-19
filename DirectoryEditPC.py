@@ -2,7 +2,7 @@
 # You may distribute under the terms of either the GNU General Public
 # License or the Apache v2 License, as specified in the README file.
 
-import WhoZwho as Z
+import SessionSettings as Z
 from UserLogin import GoLogout
 
 import logging
@@ -25,7 +25,7 @@ from django.template import Context, loader
 from django.contrib.auth.models import User
 
 from models import Address, Name, Wedding
-from WhoZwhoCommonFunctions import SaveFileUpload
+from SessionFunctions import SaveFileUpload
 
 class DirectoryEditPCForm(forms.Form):
     first = forms.CharField(max_length=32)
@@ -39,30 +39,30 @@ class DirectoryEditPCForm(forms.Form):
     gender = forms.ChoiceField(widget=RadioSelect, choices=Z.Genders)
 
 def do(request, nid, browser_tab):
-    WZ = Z.SetWhoZwho(request, browser_tab)
-    if WZ['ErrorMessage']:
-        return GoLogout(request, WZ)
+    ZS = Z.SetWhoZwho(request, browser_tab)
+    if ZS['ErrorMessage']:
+        return GoLogout(request, ZS)
 
     if nid != '0':
         try:
             name = Name.objects.get(pk=int(nid))
         except:
-            return GoLogout(request, WZ, "[PC01]: URL containd an invalid name ID.")
+            return GoLogout(request, ZS, "[PC01]: URL containd an invalid name ID.")
 
-        if WZ['Authority'] < Z.Admin and name.owner != WZ['AuthorizedOwner']:
-            return GoLogout(request, WZ, "[PC02]: URL containd an invalid name ID.")
+        if ZS['Authority'] < Z.Admin and name.owner != ZS['AuthorizedOwner']:
+            return GoLogout(request, ZS, "[PC02]: URL containd an invalid name ID.")
 
-        if WZ['Authority'] >= Z.Admin:
-            WZ['AuthorizedOwner'] = name.owner
+        if ZS['Authority'] >= Z.Admin:
+            ZS['AuthorizedOwner'] = name.owner
 
     if request.method == 'POST': # If the form has been submitted...
         form = DirectoryEditPCForm(request.POST, request.FILES)
         if form.is_valid():
             if nid == '0':
                 try:
-                    name = Name.objects.get(pk=int(WZ['Nid']))
+                    name = Name.objects.get(pk=int(ZS['Nid']))
                 except:
-                    return GoLogout(request, WZ, "[PC03]: Invalid name ID.")
+                    return GoLogout(request, ZS, "[PC03]: Invalid name ID.")
 
                 new_user = User()
                 new_user.username = 'pc' + str(time.time())
@@ -101,15 +101,15 @@ def do(request, nid, browser_tab):
                 name.gender = form.cleaned_data['gender']
                 name.save()
 
-            logger.info(WZ['User'] + ' PC ' + str(request.POST))
+            logger.info(ZS['User'] + ' PC ' + str(request.POST))
 
-            if WZ['ErrorMessage'] == "":
-                if WZ['Authority'] >= Z.Admin:
+            if ZS['ErrorMessage'] == "":
+                if ZS['Authority'] >= Z.Admin:
                     return HttpResponseRedirect('/WhoZwho/aelst')
                 else:
                     return HttpResponseRedirect('/WhoZwho/delst')
         else:
-            WZ['ErrorMessage'] = str(form.errors)
+            ZS['ErrorMessage'] = str(form.errors)
     else:
         if nid == '0':
             form = DirectoryEditPCForm()
@@ -132,7 +132,7 @@ def do(request, nid, browser_tab):
                 }) 
 
             addresses = Address.objects.all(). \
-                filter(owner__exact=WZ['AuthorizedOwner']). \
+                filter(owner__exact=ZS['AuthorizedOwner']). \
                 order_by('street')
 
             if name.wedding:
@@ -142,7 +142,7 @@ def do(request, nid, browser_tab):
             else:
                 spouse = []
                 schoices = Name.objects.all(). \
-                    filter(owner__exact=WZ['AuthorizedOwner']). \
+                    filter(owner__exact=ZS['AuthorizedOwner']). \
                     filter(wedding__exact=None). \
                     exclude(gender__exact=name.gender). \
                     exclude(id__exact=name.id). \
@@ -155,14 +155,14 @@ def do(request, nid, browser_tab):
             'EditPCTitle': edit_pc_title,
             'Admin': Z.Admin,
             'addresses': addresses,
-            'browser_tab': WZ['Tabs'][WZ['ActiveTab']][2],
+            'browser_tab': ZS['Tabs'][ZS['ActiveTab']][2],
             'form': form,
             'name': name,
             'nid': nid,
-            'picture': WZ['httpURL'] + 'static/pics/defaults/greyman.gif',
+            'picture': ZS['httpURL'] + 'static/pics/defaults/greyman.gif',
             'spouse': spouse,
             'schoices': schoices,
-            'WZ': WZ
+            'ZS': ZS
             }
 
         context.update(csrf(request))

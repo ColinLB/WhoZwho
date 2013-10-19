@@ -2,7 +2,7 @@
 # You may distribute under the terms of either the GNU General Public
 # License or the Apache v2 License, as specified in the README file.
 
-import WhoZwho as Z
+import SessionSettings as Z
 from UserLogin import GoLogout
 
 import os.path
@@ -16,15 +16,15 @@ from reportlab.lib.pagesizes import letter
 
 
 def do(request, browser_tab):
-    WZ = Z.SetWhoZwho(request, browser_tab)
-    if WZ['ErrorMessage']:
-        return GoLogout(request, WZ, '')
+    ZS = Z.SetWhoZwho(request, browser_tab)
+    if ZS['ErrorMessage']:
+        return GoLogout(request, ZS, '')
 
     list = []
     weddings = Wedding.objects.all()
     for wedding in weddings:
         names = wedding.name_set.all(). \
-            exclude(Q(private__exact=True) & ~Q(owner__exact=WZ['AuthorizedOwner']))
+            exclude(Q(private__exact=True) & ~Q(owner__exact=ZS['AuthorizedOwner']))
         if len(names) != 2:
             continue
 
@@ -35,22 +35,22 @@ def do(request, browser_tab):
             continue
 
         if names[0].gender == 'm':
-            list += [ FormatName(WZ, names[0], names[1]) + FormatAddress(names[0].address) ]
+            list += [ FormatName(ZS, names[0], names[1]) + FormatAddress(names[0].address) ]
             if names[1].last != names[0].last:
-                list += [ FormatName(WZ, names[1], names[0]) + FormatAddress(names[0].address) ]
+                list += [ FormatName(ZS, names[1], names[0]) + FormatAddress(names[0].address) ]
         else:
-            list += [ FormatName(WZ, names[1], names[0]) + FormatAddress(names[0].address) ]
+            list += [ FormatName(ZS, names[1], names[0]) + FormatAddress(names[0].address) ]
             if names[0].last != names[1].last:
-                list += [ FormatName(WZ, names[0], names[1]) + FormatAddress(names[0].address) ]
+                list += [ FormatName(ZS, names[0], names[1]) + FormatAddress(names[0].address) ]
 
     names = Name.objects.all(). \
         filter(wedding__exact=None). \
-        exclude(Q(private__exact=True) & ~Q(owner__exact=WZ['AuthorizedOwner'])). \
+        exclude(Q(private__exact=True) & ~Q(owner__exact=ZS['AuthorizedOwner'])). \
         exclude(removed__exact=True). \
         exclude(approved__exact=False)
 
     for name in names:
-        list += [ FormatName(WZ, name, None) + FormatAddress(name.address) ]
+        list += [ FormatName(ZS, name, None) + FormatAddress(name.address) ]
 
 #   for item in sorted(list):
 #       print str(item)
@@ -63,7 +63,7 @@ def do(request, browser_tab):
     p.setFont("Helvetica", 24)
 
 
-    p.drawString(60, 500, WZ['Banner'])
+    p.drawString(60, 500, ZS['Banner'])
 
     row = 0
     page = 0
@@ -111,7 +111,7 @@ def FormatAddress(addr):
 
     return formatted_address
 
-def FormatName(WZ, n1, n2):
+def FormatName(ZS, n1, n2):
     m = []
 
     if n2:
@@ -120,13 +120,13 @@ def FormatName(WZ, n1, n2):
         else:
             n = n1.last + ', ' + n1.first + ' & ' + n2.first + " " + n2.last
 
-        if os.path.exists(WZ['StaticPath'] + 'pics/names/' + str(n2.id) + '.jpg'):
-            p2 = WZ['StaticPath'] + 'pics/names/' + str(n2.id) + '.jpg'
+        if os.path.exists(ZS['StaticPath'] + 'pics/names/' + str(n2.id) + '.jpg'):
+            p2 = ZS['StaticPath'] + 'pics/names/' + str(n2.id) + '.jpg'
         else:
             if n2.private == False:
-                p2 = WZ['StaticPath'] + 'pics/defaults/greenman.gif'
+                p2 = ZS['StaticPath'] + 'pics/defaults/greenman.gif'
             else:
-                p2 = WZ['StaticPath'] + 'pics/defaults/greyman.gif'
+                p2 = ZS['StaticPath'] + 'pics/defaults/greyman.gif'
 
         if n1.wedding.email:
             m += [ n1.wedding.email + "  (both)" ]
@@ -143,13 +143,13 @@ def FormatName(WZ, n1, n2):
         if n1.email:
             m += [ n1.email ]
 
-    if os.path.exists(WZ['StaticPath'] + 'pics/names/' + str(n1.id) + '.jpg'):
-        p1 = WZ['StaticPath'] + 'pics/names/' + str(n1.id) + '.jpg'
+    if os.path.exists(ZS['StaticPath'] + 'pics/names/' + str(n1.id) + '.jpg'):
+        p1 = ZS['StaticPath'] + 'pics/names/' + str(n1.id) + '.jpg'
     else:
         if n1.private == False:
-            p1 = WZ['StaticPath'] + 'pics/defaults/greenman.gif'
+            p1 = ZS['StaticPath'] + 'pics/defaults/greenman.gif'
         else:
-            p1 = WZ['StaticPath'] + 'pics/defaults/greyman.gif'
+            p1 = ZS['StaticPath'] + 'pics/defaults/greyman.gif'
 
     while len(m) < 3:
         m += [ '' ]

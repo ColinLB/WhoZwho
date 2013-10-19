@@ -2,7 +2,7 @@
 # You may distribute under the terms of either the GNU General Public
 # License or the Apache v2 License, as specified in the README file.
 
-import WhoZwho as Z
+import SessionSettings as Z
 
 from time import time
 from django import forms
@@ -23,7 +23,7 @@ class LoginForm(forms.Form):
     password = forms.CharField(max_length=16, widget=forms.PasswordInput)
 
 def do(request):
-    WZ = Z.SetWhoZwho(request)
+    ZS = Z.SetWhoZwho(request)
     if request.method == 'POST': # If the form has been submitted...
         form = LoginForm(request.POST) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
@@ -37,30 +37,30 @@ def do(request):
                 if time() < temp_bad_password_timeout:
                     auth_user.name.bad_password_timeout = time()
                     auth_user.name.save()
-                    WZ['ErrorMessage'] = "[UL01]: The login ID or password is invalid."
+                    ZS['ErrorMessage'] = "[UL01]: The login ID or password is invalid."
                 elif auth_user.name.removed == True:
-                    WZ['ErrorMessage'] = "[UL02]: The login ID or password is invalid."
+                    ZS['ErrorMessage'] = "[UL02]: The login ID or password is invalid."
                 else:
                     if auth_user.is_active:
                         login(request, auth_user)
-                        WZ['Authenticated'] = 1
+                        ZS['Authenticated'] = 1
                         request.session['last_time'] = time()
 
-                        WZ = Z.SetWhoZwho(request, '.')
+                        ZS = Z.SetWhoZwho(request, '.')
 
-                        if WZ['TemporaryPasswordTimestamp'] > 0:
-                            if WZ['TemporaryPasswordTimestamp'] < int(time()) - Z.TemporaryPasswordLife:
+                        if ZS['TemporaryPasswordTimestamp'] > 0:
+                            if ZS['TemporaryPasswordTimestamp'] < int(time()) - Z.TemporaryPasswordLife:
                                 auth.logout(request)
-                                WZ['Authenticated'] = 0
-                                WZ['ErrorMessage'] = "[UL03]: Your temporary password has expired."
+                                ZS['Authenticated'] = 0
+                                ZS['ErrorMessage'] = "[UL03]: Your temporary password has expired."
                             else:
-				logger.info(WZ['User'] + ' (' + request.META['REMOTE_ADDR'] + ') logged in, authority ' + str(WZ['Authority']) + ', change password.')
+				logger.info(ZS['User'] + ' (' + request.META['REMOTE_ADDR'] + ') logged in, authority ' + str(ZS['Authority']) + ', change password.')
                                 return HttpResponseRedirect('/WhoZwho/chpwd')
                         else:
-                            logger.info(WZ['User'] + ' (' + request.META['REMOTE_ADDR'] + ') logged in, authority ' + str(WZ['Authority']) + '.')
-                            return HttpResponseRedirect('/WhoZwho/' + WZ['Tabs'][WZ['ActiveTab']][3])
+                            logger.info(ZS['User'] + ' (' + request.META['REMOTE_ADDR'] + ') logged in, authority ' + str(ZS['Authority']) + '.')
+                            return HttpResponseRedirect('/WhoZwho/' + ZS['Tabs'][ZS['ActiveTab']][3])
                     else:
-                        WZ['ErrorMessage'] = "[UL04]: The login ID or password is invalid."
+                        ZS['ErrorMessage'] = "[UL04]: The login ID or password is invalid."
             else:
                 # Increment bad passwords
                 try:
@@ -86,27 +86,27 @@ def do(request):
                 except:
                     pass
 
-                WZ['ErrorMessage'] = "[UL05]: The login ID or password is invalid."
+                ZS['ErrorMessage'] = "[UL05]: The login ID or password is invalid."
         else:
-            WZ['ErrorMessage'] = "[UL06]: The login ID or password is invalid."
+            ZS['ErrorMessage'] = "[UL06]: The login ID or password is invalid."
     else:
         form = LoginForm() # An unbound form
-        WZ['ErrorMessage'] = ""
+        ZS['ErrorMessage'] = ""
 
-    c = { 'form': form, 'WZ': WZ }
+    c = { 'form': form, 'ZS': ZS }
     c.update(csrf(request))
     return render_to_response('UserLogin.html', c )
 
-def GoLogout(request, WZ, error_message=''):
+def GoLogout(request, ZS, error_message=''):
     auth.logout(request)
-    WZ['Authenticated'] = 0
+    ZS['Authenticated'] = 0
 
     if error_message:
-        WZ['ErrorMessage'] = error_message
+        ZS['ErrorMessage'] = error_message
 
     form = LoginForm()
 
-    c = { 'form': form, 'WZ': WZ }
+    c = { 'form': form, 'ZS': ZS }
     c.update(csrf(request))
     response = render_to_response('UserLogin.html', c )
     response.set_cookie('dlist_parm', 'F..')
