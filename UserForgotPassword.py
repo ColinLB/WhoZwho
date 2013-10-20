@@ -48,11 +48,11 @@ def do(request):
                     users[0].name.save()
 
                     send_mail(
-                        'Password Reset',
+                        'WhoZwho: password reset',
                         'A password reset request for your account has been received and a new ' + \
-                        'temporary password has been assigned (see below). Visit ' + ZS['httpURL'] + '/login ' + \
+                        'temporary password has been assigned (see below). Visit ' + ZS['httpURL'] + 'login ' + \
                         'within the next 20 minutes and choose a new permanent password. If you need more ' + \
-                        'time, you may visit ' + ZS['httpURL'] + '/fgpwd at any time to request another ' + \
+                        'time, you may visit ' + ZS['httpURL'] + 'fgpwd at any time to request another ' + \
                         'temporary password.\n\nLogin ID: ' + users[0].username + \
                         '\nTemporary password: ' + temporary_password,
                         ZS['AdminEmail'],

@@ -39,8 +39,12 @@ def do(request):
 
                 if len(users) == 1:
                     send_mail(
-                        'Forgotten login ID.',
-                        'Login ID: ' + users[0].username,
+                        'WhoZwho: forgotten login ID.',
+                        'A forgotten login ID request for your account has been received. ' + \
+                        'Visit ' + ZS['httpURL'] + 'login to access your account using the login ID ' + \
+                        'given below. If you have also forgotten your password, you may ' + \
+                        'visit ' + ZS['httpURL'] + 'fgpwd to request a new temporary password.' + \
+                        '\n\nLogin ID: ' + users[0].username,
                         ZS['AdminEmail'],
                         [users[0].email],
                         fail_silently=False)
