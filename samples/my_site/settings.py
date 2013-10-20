@@ -184,5 +184,5 @@ LOGGING = {
 BANNER = 'my_site_descriptive_title'
 SITENAME = 'my_site'
 PYTHON_PATH = '/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin'
-CAPTCHA_PRIVATE_KEY = '6Lc-69QSAAAAAAks0BR6nba_87i4ILDbLTcW863i'
-CAPTCHA_PUBLIC_KEY = '6Lc-69QSAAAAAI39ilMpEMzgg7D_HNCdD-cVRzmZ'
+CAPTCHA_PRIVATE_KEY = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+CAPTCHA_PUBLIC_KEY = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
