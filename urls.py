@@ -42,6 +42,6 @@ urlpatterns = patterns('',
     url(r'^logout/$',                                                     'WhoZwho.UserLogout.do'),
     url(r'^fgpwd$',                                                       'WhoZwho.UserForgotPassword.do'),
     url(r'^fglog$',                                                       'WhoZwho.UserForgotLogin.do'),
-    url(r'^chpwd$',                                                       'WhoZwho.UserChangePassword.do'),
+    url(r'^chpwd/(?P<browser_tab>[a-zA-Z]+)$',                            'WhoZwho.UserChangePassword.do'),
     url(r'^registration/$',                                               'WhoZwho.UserRegistration.now'),
 )

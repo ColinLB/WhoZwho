@@ -22,59 +22,49 @@ from django.template import Context, loader
 from models import Address, Name
 from SessionFunctions import GenerateTemporaryPassword
 
-import captcha
-
 class UserChangePasswordForm(forms.Form):
     password = forms.CharField(max_length=16, widget=forms.PasswordInput)
     vpassword = forms.CharField(max_length=16, widget=forms.PasswordInput)
-    recaptcha_challenge_field = forms.CharField(widget=forms.Textarea)
-    recaptcha_response_field = forms.CharField(max_length=128)
 
-def do(request):
-    ZS = Z.SetWhoZwho(request)
+def do(request, browser_tab):
+    ZS = Z.SetWhoZwho(request, browser_tab)
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS)
 
     if request.method == 'POST': # If the form has been submitted...
         form = UserChangePasswordForm(request.POST, request.FILES)
         if form.is_valid(): # All validation rules pass
-            check_captcha = captcha.submit (form.cleaned_data['recaptcha_challenge_field'], form.cleaned_data['recaptcha_response_field'], ZS['CaptchaPrivate'], "127.0.0.1")
-            if not check_captcha.is_valid:
-                ZS['ErrorMessage'] = "[CP01]: Captcha response was incorrect."
-            else:
-                try:
-                    user = User.objects.get(username__exact=ZS['User'])
-                except:
-                    return GoLogout(request, ZS, "[CP02]: Password change disabled.")
+            try:
+                user = User.objects.get(username__exact=ZS['User'])
+            except:
+                return GoLogout(request, ZS, "[CP02]: Password change disabled.")
 
- 
-                user.set_password(form.cleaned_data['password'])
-                user.save()
 
-                user.name.password_timeout = None
-                user.name.save()
+            user.set_password(form.cleaned_data['password'])
+            user.save()
 
-                auth_user = authenticate(username=ZS['User'], password=form.cleaned_data['password'])
-                if auth_user is not None:
-                    if auth_user.is_active:
-                        login(request, auth_user)
-                        ZS['Authenticated'] = 1
-                        request.session['last_time'] = time()
-                        ZS = Z.SetWhoZwho(request, '.')
-                        return HttpResponseRedirect('/WhoZwho/' + ZS['Tabs'][ZS['ActiveTab']][3])
-                    else:
-                        ZS['ErrorMessage'] = "[CP03]: Login ID disabled."
+            user.name.password_timeout = None
+            user.name.save()
+
+            auth_user = authenticate(username=ZS['User'], password=form.cleaned_data['password'])
+            if auth_user is not None:
+                if auth_user.is_active:
+                    login(request, auth_user)
+                    ZS['Authenticated'] = 1
+                    request.session['last_time'] = time()
+                    ZS = Z.SetWhoZwho(request, '.')
+                    return HttpResponseRedirect('/WhoZwho/' + ZS['Tabs'][ZS['ActiveTab']][3])
                 else:
-                    ZS['ErrorMessage'] = "[CP04]: Login ID disabled."
+                    ZS['ErrorMessage'] = "[CP03]: Login ID disabled."
+            else:
+                ZS['ErrorMessage'] = "[CP04]: Login ID disabled."
         else:
             ZS['ErrorMessage'] = str(form.errors)
     else:
         form = UserChangePasswordForm()
 
-    captcha_html = captcha.displayhtml(ZS['CaptchaPublic'], use_ssl = True)
-
     context = {
-        'captcha_html': captcha_html,
+        'browser_tab': browser_tab,
         'form': form,
         'ZS': ZS
         }

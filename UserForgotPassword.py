@@ -43,7 +43,8 @@ def do(request):
                     users[0].set_password(temporary_password)
                     users[0].save()
 
-                    users[0].name.password_timeout = int(time())
+                    xxx = int(time())
+                    users[0].name.password_timeout = xxx
                     users[0].name.save()
 
                     send_mail(

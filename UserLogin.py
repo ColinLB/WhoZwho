@@ -55,7 +55,7 @@ def do(request):
                                 ZS['ErrorMessage'] = "[UL03]: Your temporary password has expired."
                             else:
 				logger.info(ZS['User'] + ' (' + request.META['REMOTE_ADDR'] + ') logged in, authority ' + str(ZS['Authority']) + ', change password.')
-                                return HttpResponseRedirect('/WhoZwho/chpwd')
+                                return HttpResponseRedirect('/WhoZwho/chpwd/None')
                         else:
                             logger.info(ZS['User'] + ' (' + request.META['REMOTE_ADDR'] + ') logged in, authority ' + str(ZS['Authority']) + '.')
                             return HttpResponseRedirect('/WhoZwho/' + ZS['Tabs'][ZS['ActiveTab']][3])
