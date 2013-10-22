@@ -10,6 +10,7 @@ from django import forms
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.core.context_processors import csrf
+from django.core.mail import send_mail
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 
@@ -64,6 +65,14 @@ def now(request):
                             ZS['Authenticated'] = 1
                             request.session['last_time'] = time()
                             ZS = Z.SetSession(request, '.')
+
+                            send_mail(
+                                'WhoZwho: new user "' + new_user.username + '" is requesting approval.',
+                                'Visit ' + ZS['httpURL'] + 'login to process the approval.', 
+                                ZS['AdminEmail'],
+                                [ZS['AdminEmail']],
+                                fail_silently=False)
+
                             return HttpResponseRedirect('/WhoZwho/' + ZS['Tabs'][ZS['ActiveTab']][3])
                         else:
                             ZS['ErrorMessage'] = "[UR02]: Login ID disabled."
