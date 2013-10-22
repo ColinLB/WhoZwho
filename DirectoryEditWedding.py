@@ -33,7 +33,7 @@ class DirectoryEditWeddingForm(forms.ModelForm):
     Joint_Email = forms.EmailField(max_length=32, required=False)
 
 def do(request, nid, browser_tab):
-    ZS = Z.SetWhoZwho(request, browser_tab)
+    ZS = Z.SetSession(request, browser_tab)
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS)
 
@@ -129,7 +129,7 @@ def do(request, nid, browser_tab):
     return render_to_response('DirectoryEditWedding.html', context )
 
 def dont(request, nid, browser_tab):
-    ZS = Z.SetWhoZwho(request, browser_tab)
+    ZS = Z.SetSession(request, browser_tab)
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS)
 

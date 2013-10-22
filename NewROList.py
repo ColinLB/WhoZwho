@@ -10,7 +10,7 @@ from django.template import Context, loader
 from models import Name
 
 def do(request):
-    ZS = Z.SetWhoZwho(request, 'List')
+    ZS = Z.SetSession(request, 'List')
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS)
 

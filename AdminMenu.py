@@ -9,7 +9,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context, loader
 
 def do(request):
-    ZS = Z.SetWhoZwho(request, 'Admin')
+    ZS = Z.SetSession(request, 'Admin')
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS, '')
 

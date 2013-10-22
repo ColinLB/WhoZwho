@@ -12,7 +12,7 @@ from django.template import Context, loader
 from SessionFunctions import GetIndexedDirectoryNameLists
 
 def do(request):
-    ZS = Z.SetWhoZwho(request, 'Admin')
+    ZS = Z.SetSession(request, 'Admin')
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS)
 

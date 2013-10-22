@@ -27,7 +27,7 @@ class UserChangePasswordForm(forms.Form):
     vpassword = forms.CharField(max_length=16, widget=forms.PasswordInput)
 
 def do(request, browser_tab):
-    ZS = Z.SetWhoZwho(request, browser_tab)
+    ZS = Z.SetSession(request, browser_tab)
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS)
 
@@ -52,7 +52,7 @@ def do(request, browser_tab):
                     login(request, auth_user)
                     ZS['Authenticated'] = 1
                     request.session['last_time'] = time()
-                    ZS = Z.SetWhoZwho(request, '.')
+                    ZS = Z.SetSession(request, '.')
                     return HttpResponseRedirect('/WhoZwho/' + ZS['Tabs'][ZS['ActiveTab']][3])
                 else:
                     ZS['ErrorMessage'] = "[CP03]: Login ID disabled."

@@ -16,7 +16,7 @@ from reportlab.lib.pagesizes import letter
 
 
 def do(request, browser_tab):
-    ZS = Z.SetWhoZwho(request, browser_tab)
+    ZS = Z.SetSession(request, browser_tab)
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS, '')
 

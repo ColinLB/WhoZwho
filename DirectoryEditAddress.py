@@ -33,7 +33,7 @@ class DirectoryEditAddressForm(forms.Form):
     home_phone = forms.CharField(max_length=32, required=False)
 
 def do(request, nid, aid, browser_tab):
-    ZS = Z.SetWhoZwho(request, browser_tab)
+    ZS = Z.SetSession(request, browser_tab)
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS)
 

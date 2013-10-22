@@ -6,5 +6,5 @@ import SessionSettings as Z
 from UserLogin import GoLogout
 
 def do(request):
-    ZS = Z.SetWhoZwho(request, '')
+    ZS = Z.SetSession(request, '')
     return GoLogout(request, ZS, '[UO01]: You have successfully logged out.')

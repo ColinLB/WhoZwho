@@ -28,7 +28,7 @@ class RegistrationForm(forms.Form):
     recaptcha_response_field = forms.CharField(max_length=128)
 
 def now(request):
-    ZS = Z.SetWhoZwho(request)
+    ZS = Z.SetSession(request)
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid(): 
@@ -63,7 +63,7 @@ def now(request):
                             login(request, auth_user)
                             ZS['Authenticated'] = 1
                             request.session['last_time'] = time()
-                            ZS = Z.SetWhoZwho(request, '.')
+                            ZS = Z.SetSession(request, '.')
                             return HttpResponseRedirect('/WhoZwho/' + ZS['Tabs'][ZS['ActiveTab']][3])
                         else:
                             ZS['ErrorMessage'] = "[UR02]: Login ID disabled."

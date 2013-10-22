@@ -79,7 +79,7 @@ from os import getcwd
 from time import time
 from django.contrib.auth.models import User
 
-def SetWhoZwho(request, active_tab='None'):
+def SetSession(request, active_tab='None'):
     ZS = {
         'ActiveTab': 0,
         'AdminEmail': esquimalt.settings.ADMINS[0][1],

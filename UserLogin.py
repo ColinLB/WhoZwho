@@ -23,7 +23,7 @@ class LoginForm(forms.Form):
     password = forms.CharField(max_length=16, widget=forms.PasswordInput)
 
 def do(request):
-    ZS = Z.SetWhoZwho(request)
+    ZS = Z.SetSession(request)
     if request.method == 'POST': # If the form has been submitted...
         form = LoginForm(request.POST) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
@@ -46,7 +46,7 @@ def do(request):
                         ZS['Authenticated'] = 1
                         request.session['last_time'] = time()
 
-                        ZS = Z.SetWhoZwho(request, '.')
+                        ZS = Z.SetSession(request, '.')
 
                         if ZS['TemporaryPasswordTimestamp'] > 0:
                             if ZS['TemporaryPasswordTimestamp'] < int(time()) - Z.TemporaryPasswordLife:

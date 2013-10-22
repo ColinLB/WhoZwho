@@ -41,7 +41,7 @@ class DirectoryEditNameForm(forms.Form):
     gender = forms.ChoiceField(widget=RadioSelect, choices=Z.Genders)
 
 def do(request, nid, browser_tab):
-    ZS = Z.SetWhoZwho(request, browser_tab)
+    ZS = Z.SetSession(request, browser_tab)
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS)
 

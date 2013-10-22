@@ -24,7 +24,7 @@ class AdminRemoveReinstateForm(forms.Form):
     action = forms.CharField()
 
 def do(request, nid):
-    ZS = Z.SetWhoZwho(request, 'Admin')
+    ZS = Z.SetSession(request, 'Admin')
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS, '')
 
@@ -66,7 +66,7 @@ def do(request, nid):
     return render_to_response('AdminRemoveReinstate.html', context )
 
 def dorm(request, nid):
-    ZS = Z.SetWhoZwho(request, 'Admin')
+    ZS = Z.SetSession(request, 'Admin')
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS, '')
 

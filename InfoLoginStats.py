@@ -11,7 +11,7 @@ from django.template import Context, loader
 from models import Name
 
 def do(request):
-    ZS = Z.SetWhoZwho(request, 'Info')
+    ZS = Z.SetSession(request, 'Info')
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS, '')
 

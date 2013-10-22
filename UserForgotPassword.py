@@ -25,7 +25,7 @@ class ForgotPasswordForm(forms.Form):
     recaptcha_response_field = forms.CharField(max_length=128)
 
 def do(request):
-    ZS = Z.SetWhoZwho(request)
+    ZS = Z.SetSession(request)
     if request.method == 'POST': # If the form has been submitted...
         form = ForgotPasswordForm(request.POST) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass

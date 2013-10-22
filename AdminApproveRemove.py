@@ -22,7 +22,7 @@ class AdminApproveRemoveForm(forms.Form):
     action = forms.CharField()
 
 def do(request, nid):
-    ZS = Z.SetWhoZwho(request, 'Admin')
+    ZS = Z.SetSession(request, 'Admin')
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS, '')
 
