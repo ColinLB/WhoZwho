@@ -45,6 +45,9 @@ def do(request, nid, browser_tab):
     if stderr != '':
         return  "[EN03]: command error (rm) - " + stderr
 
+    name.picture_uploaded = False
+    name.save()
+
     if ZS['Authority'] >= Z.Admin:
         return HttpResponseRedirect('/WhoZwho/aelst')
     else:

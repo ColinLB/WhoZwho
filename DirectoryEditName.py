@@ -82,6 +82,16 @@ def do(request, nid, browser_tab):
                 if request.FILES.has_key('picture'):
                     ZS['ErrorMessage'] = ProcessNewPicture(request, ZS, nid)
 
+                # Check if the name has a picture and set indicator appropriately.
+                if os.path.exists(ZS['StaticPath'] + 'pics/names/' + str(name.id) + '.jpg'):
+                    if not name.picture_uploaded:
+                        name.picture_uploaded = True
+                        name.save()
+                else:
+                    if name.picture_uploaded:
+                        name.picture_uploaded = False
+                        name.save()
+
                 if ZS['ErrorMessage'] == "":
                     if ZS['Authority'] >= Z.Admin:
                         return HttpResponseRedirect('/WhoZwho/aelst')
