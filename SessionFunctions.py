@@ -35,6 +35,16 @@ def GetIndexedDirectoryNameLists(ZS):
             first_initials += [names[ix].first[0]]
         first_names[names[ix].first[0]] = names[ix: iy + 1]
 
+    first_names_men = []
+    for name in names:
+        if name.gender == 'M' or name.gender == 'm':
+            first_names_men += [name]
+
+    first_names_women = []
+    for name in names:
+        if name.gender == 'F' or name.gender == 'f':
+            first_names_women += [name]
+
     names = Name.objects.all(). \
         exclude(Q(private__exact=True) & ~Q(owner__exact=ZS['AuthorizedOwner'])). \
         exclude(removed__exact=True). \
@@ -59,7 +69,7 @@ def GetIndexedDirectoryNameLists(ZS):
             last_initials += [names[ix].last[0]]
         last_names[names[ix].last[0]] = names[ix: iy + 1]
 
-    return [ first_initials, first_names, last_initials, last_names ]
+    return [ first_initials, first_names, last_initials, last_names, first_names_men, first_names_women ]
 
 def SaveFileUpload(infile, outfile):
     destination = open(outfile, 'wb+')
