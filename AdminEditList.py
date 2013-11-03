@@ -30,6 +30,8 @@ def do(request):
         'first_names': name_lists[1],
         'last_initials': name_lists[2],
         'last_names': name_lists[3],
+        'first_names_men': name_lists[4],
+        'first_names_women': name_lists[5],
         'select': dlist_parm.upper(),
         'ZS': ZS,
         })

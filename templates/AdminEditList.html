@@ -9,83 +9,222 @@ License or the Apache v2 License, as specified in the README file.
 {% block headers %}
     <script type="text/javascript" src="{{ ZS.httpURL }}static/js/Cookie.js"></script>
     <script type="text/javascript" src="{{ ZS.httpURL }}static/js/DirectoryList.js"></script>
+    <script type="text/javascript" src="{{ ZS.httpURL }}static/js/SessionFunctions.js"></script>
 {% endblock %}
 
 {% block body %}
     <table><tr>
         <td class="left_margin"></td>
         <td>
-            {% if select.0 = 'F' %}
-                <div id="F" style="display:block">
-            {% else %}
-                <div id="F" style="display:none">
-            {% endif %}
-            
-                List in <a onclick="DisplaySwitchFirstLast();">firstname</a> order, EDIT names beginning with:
+            <div id="subtabs">
+                {% if select.0 = 'F' %}
+                    <a id="subtabsF" class="subtabs_selected" onclick="DirectoryListFLMW('F');">&nbspFirst Name&nbsp</a>
+                {% else %}
+                    <a id="subtabsF" class="subtabs_deselected" onclick="DirectoryListFLMW('F');">&nbspFirst Name&nbsp</a>
+                {% endif %}
 
-                {% for initial in first_initials %}
-                    <a onclick="DisplaySelectedList('F{{ initial }}');">&nbsp{{ initial }}</a>
-                {% endfor %}
+                {% if select.0 = 'L' %}
+                    <a id="subtabsL" class="subtabs_selected" onclick="DirectoryListFLMW('L');">&nbspLast Name&nbsp</a>
+                {% else %}
+                    <a id="subtabsL" class="subtabs_deselected" onclick="DirectoryListFLMW('L');">&nbspLast Name&nbsp</a>
+                {% endif %}
 
-                {% for initial, names in first_names.items %}
-                    {% if select.1 = '.' and forloop.counter = 1 %}
-                        <div id='F{{ initial }}' style="display:block">
-                    {% elif initial = select.1  %}
-                        <div id='F{{ initial }}' style="display:block">
-                    {% else %}
-                        <div id='F{{ initial }}' style="display:none">
-                    {% endif %}
+                {% if select.0 = 'M' %}
+                    <a id="subtabsM" class="subtabs_selected" onclick="DirectoryListFLMW('M');">&nbspAll Male&nbsp</a>
+                {% else %}
+                    <a id="subtabsM" class="subtabs_deselected" onclick="DirectoryListFLMW('M');">&nbspAll Male&nbsp</a>
+                {% endif %}
 
-                        <br>{{ initial }}<br>
-                        {% for name in names %}
-                            &nbsp&nbsp&nbsp
-                            {% if name.private > 0 %}
-                                <a href="{{ ZS.httpURL }}editpc/{{ name.id }}/{{ browser_tab }}">{{ name.first }} {{ name.last }}</a> *
+                {% if select.0 = 'W' %}
+                    <a id="subtabsW" class="subtabs_selected" onclick="DirectoryListFLMW('W');">&nbspAll Female&nbsp</a>
+                {% else %}
+                    <a id="subtabsW" class="subtabs_deselected" onclick="DirectoryListFLMW('W');">&nbspAll Female&nbsp</a>
+                {% endif %}
+            </div id="subtabs">
+
+            <div id="List">
+                {% if select.0 = 'F' %}
+                    <div id="ListF" style="display:block">
+                {% else %}
+                    <div id="ListF" style="display:none">
+                {% endif %}
+                
+                    <div id="iF">Edit names beginning with:
+                        {% for initial in first_initials %}
+                            {% if select.1 = '.' and forloop.counter = 1 %}
+                                <a id="iF{{ initial }}" class="text_selected" onclick="DirectoryListABC('F{{ initial }}');">&nbsp{{ initial }}&nbsp</a>
+                            {% elif initial = select.1 %}
+                                <a id="iF{{ initial }}" class="text_selected" onclick="DirectoryListABC('F{{ initial }}');">&nbsp{{ initial }}&nbsp</a>
                             {% else %}
-                                <a href="{{ ZS.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">{{ name.first }} {{ name.last }}</a>
+                                <a id="iF{{ initial }}" class="text_deselected" onclick="DirectoryListABC('F{{ initial }}');">&nbsp{{ initial }}&nbsp</a>
                             {% endif %}
-                            <br>
                         {% endfor %}
-                    </div id="F{{ initial }}">
-                {% endfor %}
+                    </div id="iF">
 
-            </div id="F">
+                    <br>
 
-            {% if select.0 = 'F' %}
-                <div id="L" style="display:none">
-            {% else %}
-                <div id="L" style="display:block">
-            {% endif %}
-            
-                List in <a onclick="DisplaySwitchFirstLast();">lastname</a> order, EDIT names beginning with:
+                    <div id="lF">
+                        {% for initial, names in first_names.items %}
+                            {% if select.1 = '.' and forloop.counter = 1 %}
+                                <div id='lF{{ initial }}' style="display:block">
+                            {% elif initial = select.1  %}
+                                <div id='lF{{ initial }}' style="display:block">
+                                {% else %}
+                                <div id='lF{{ initial }}' style="display:none">
+                            {% endif %}
 
-                {% for initial in last_initials %}
-                    <a onclick="DisplaySelectedList('L{{ initial }}');">&nbsp{{ initial }}</a>
-                {% endfor %}
+                                <table><tr>
+                                {% for name in names %}
+                                    {% if forloop.counter0|divisibleby:8 %}
+                                        <tr>
+                                    {% endif %}
+                                    <td>
 
-                {% for initial, names in last_names.items %}
-                    {% if select.2 = '.' and forloop.counter = 1 %}
-                        <div id='F{{ initial }}' style="display:block">
-                    {% elif initial = select.2  %}
-                        <div id='L{{ initial }}' style="display:block">
-                    {% else %}
-                        <div id='L{{ initial }}' style="display:none">
-                    {% endif %}
+                                    {% if name.private %}
+                                        <a class="more_info" href="{{ ZS.httpURL }}editpc/{{ name.id }}/{{ browser_tab }}">
+                                        <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/greyman.jpg">
+                                    {% elif name.picture_uploaded %}
+                                        <a class="more_info" href="{{ ZS.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">
+                                        <img class="tile_image" src="{{ ZS.httpURL }}static/pics/names/{{ name.id }}.jpg">
+                                    {% else %}
+                                        <a class="more_info" href="{{ ZS.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">
+                                        <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/greenman.jpg">
+                                    {% endif %}
 
-                        <br>{{ initial }}<br>
-                        {% for name in names %}
-                            &nbsp&nbsp&nbsp
-                            {% if name.private > 0 %}
-                                <a href="{{ ZS.httpURL }}editpc/{{ name.id }}/{{ browser_tab }}">{{ name.last }}, {{ name.first }}</a> *
+                                        &nbsp&nbsp&nbsp
+                                        <br>{{ name.first }} {{ name.last }}
+                                    </a>
+                                {% endfor %}
+                                </table>
+                            </div id="lF{{ initial }}">
+                        {% endfor %}
+                    </div id="lF">
+                </div id="F">
+
+                {% if select.0 = 'L' %}
+                    <div id="ListL" style="display:block">
+                {% else %}
+                    <div id="ListL" style="display:none">
+                {% endif %}
+                
+                    <div id="iL">Edit names beginning with:
+                        {% for initial in last_initials %}
+                            {% if select.2 = '.' and forloop.counter = 1 %}
+                                <a id="iL{{ initial }}" class="text_selected" onclick="DirectoryListABC('L{{ initial }}');">&nbsp{{ initial }}&nbsp</a>
+                            {% elif initial = select.2 %}
+                                <a id="iL{{ initial }}" class="text_selected" onclick="DirectoryListABC('L{{ initial }}');">&nbsp{{ initial }}&nbsp</a>
                             {% else %}
-                                <a href="{{ ZS.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">{{ name.last }}, {{ name.first }}</a>
+                                <a id="iL{{ initial }}" class="text_deselected" onclick="DirectoryListABC('L{{ initial }}');">&nbsp{{ initial }}&nbsp</a>
                             {% endif %}
-                            <br>
                         {% endfor %}
-                    </div id="L{{ initial }}">
-                {% endfor %}
+                    </div id="iL">
 
-            </div id="L">
+                    <br>
+
+                    <div id="lL">
+                        {% for initial, names in last_names.items %}
+                            {% if select.2 = '.' and forloop.counter = 1 %}
+                                <div id='lL{{ initial }}' style="display:block">
+                            {% elif initial = select.2  %}
+                                <div id='lL{{ initial }}' style="display:block">
+                            {% else %}
+                                <div id='lL{{ initial }}' style="display:none">
+                            {% endif %}
+
+                                <table><tr>
+                                {% for name in names %}
+                                    {% if forloop.counter0|divisibleby:8 %}
+                                        <tr>
+                                    {% endif %}
+                                    <td>
+
+                                    {% if name.private %}
+                                        <a class="more_info" href="{{ ZS.httpURL }}editpc/{{ name.id }}/{{ browser_tab }}">
+                                        <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/greyman.jpg">
+                                    {% elif name.picture_uploaded %}
+                                        <a class="more_info" href="{{ ZS.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">
+                                        <img class="tile_image" src="{{ ZS.httpURL }}static/pics/names/{{ name.id }}.jpg">
+                                    {% else %}
+                                        <a class="more_info" href="{{ ZS.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">
+                                        <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/greenman.jpg">
+                                    {% endif %}
+
+                                        &nbsp&nbsp&nbsp
+                                        <br>{{ name.last }}, {{ name.first }}
+                                    </a>
+                                {% endfor %}
+                                </table>
+                            </div id="lL{{ initial }}">
+                        {% endfor %}
+                    </div id="lL">
+                </div id="L">
+
+                {% if select.0 = 'M' %}
+                    <div id="ListM" style="display:block">
+                {% else %}
+                    <div id="ListM" style="display:none">
+                {% endif %}
+                
+                    List in firstname order all males:
+
+                    <br><br><table><tr>
+                    {% for name in first_names_men %}
+                        {% if forloop.counter0|divisibleby:8 %}
+                            <tr>
+                        {% endif %}
+                        <td>
+
+                        {% if name.private %}
+                            <a class="more_info" href="{{ ZS.httpURL }}editpc/{{ name.id }}/{{ browser_tab }}">
+                            <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/greyman.jpg">
+                        {% elif name.picture_uploaded %}
+                            <a class="more_info" href="{{ ZS.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">
+                            <img class="tile_image" src="{{ ZS.httpURL }}static/pics/names/{{ name.id }}.jpg">
+                        {% else %}
+                            <a class="more_info" href="{{ ZS.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">
+                            <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/greenman.jpg">
+                        {% endif %}
+
+                            &nbsp&nbsp&nbsp
+                            <br>{{ name.first }} {{ name.last }}
+                        </a>
+                    {% endfor %}
+                    </table>
+                </div id="M">
+
+                {% if select.0 = 'W' %}
+                    <div id="ListW" style="display:block">
+                {% else %}
+                    <div id="ListW" style="display:none">
+                {% endif %}
+                
+                    List in firstname order all females:
+
+                    <br><br><table><tr>
+                    {% for name in first_names_women %}
+                        {% if forloop.counter0|divisibleby:8 %}
+                            <tr>
+                        {% endif %}
+                        <td>
+
+                        {% if name.private %}
+                            <a class="more_info" href="{{ ZS.httpURL }}editpc/{{ name.id }}/{{ browser_tab }}">
+                            <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/greyman.jpg">
+                        {% elif name.picture_uploaded %}
+                            <a class="more_info" href="{{ ZS.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">
+                            <img class="tile_image" src="{{ ZS.httpURL }}static/pics/names/{{ name.id }}.jpg">
+                        {% else %}
+                            <a class="more_info" href="{{ ZS.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">
+                            <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/greenman.jpg">
+                        {% endif %}
+
+                            &nbsp&nbsp&nbsp
+                            <br>{{ name.first }} {{ name.last }}
+                        </a>
+                    {% endfor %}
+                    </table>
+                </div id="W">
+            </div id="List">
         </td>
     </tr></table>
 {% endblock %}
