@@ -48,6 +48,26 @@ body {
     background-color:#294e40;
 }
 
+.subtabs_selected {
+    background-color:#294e40;
+    font:12px/1.4em Verdana,sans-serif;
+}
+
+.subtabs_deselected {
+    background-color:#092e20;
+    font:12px/1.4em Verdana,sans-serif;
+}
+
+.text_selected {
+    background-color:#294e40;
+    font:16px/1.4em Verdana,sans-serif;
+}
+
+.text_deselected {
+    background-color:#092e20;
+    font:16px/1.4em Verdana,sans-serif;
+}
+
 .error_message {
     height:40px;
     color:gold;
@@ -72,6 +92,11 @@ body {
 .show_image {
     height:250px;
     width:200px;
+}
+
+.tile_image {
+    height:150px;
+    width:120px;
 }
 
 .more_info {
