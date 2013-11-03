@@ -13,6 +13,7 @@ from django.core.mail import send_mail
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 
+from UserLogin import GoLogout
 from models import Name
 import captcha
 
@@ -50,6 +51,7 @@ def do(request):
                         fail_silently=False)
 
                     ZS['ErrorMessage'] = "[FL02]: Login ID sent to your email."
+                    return GoLogout(request, ZS)
                 else:
                     ZS['ErrorMessage'] = "[FL03]: Invalid Login ID."
         else:

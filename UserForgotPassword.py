@@ -13,6 +13,7 @@ from django.core.mail import send_mail
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 
+from UserLogin import GoLogout
 from models import Name
 from SessionFunctions import GenerateTemporaryPassword
 
@@ -60,6 +61,7 @@ def do(request):
                         fail_silently=False)
 
                     ZS['ErrorMessage'] = "[FP02]: Temporary password sent to your email."
+                    return GoLogout(request, ZS)
                 else:
                     ZS['ErrorMessage'] = "[FP03]: Invalid Login ID/email."
         else:
