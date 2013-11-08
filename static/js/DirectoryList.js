@@ -5,18 +5,24 @@ License or the Apache v2 License, as specified in the README file.
 */
 
 function DirectoryListSwitchRe() {
-    var re, tab;
+    var re, tab, tabre;
 
-    [tab, re] = DirectoryListSaveParms();
+    tabre = DirectoryListSaveParms();
+    tab = tabre.substring(0,1);
+    re = tabre.substring(1);
+
     if (re != '^' & re != ',') {
         DirectoryListSelect(tab, re);
     }
 }
 
 function DirectoryListSwitchTab(tabID) {
-    var re, tab;
+    var re, tab, tabre;
 
-    [tab, re] = DirectoryListSaveParms(tabID);
+    tabre = DirectoryListSaveParms(tabID);
+    tab = tabre.substring(0,1);
+    re = tabre.substring(1);
+
     SelectHTMLdiv('subtabs', 'subtabs' + tab, 'subtabs_selected', 'subtabs_deselected');
     SelectHTMLdiv('List', 'List' + tab);
     DirectoryListSelect(tab, re);
@@ -33,7 +39,7 @@ function DirectoryListSaveParms(tabID) {
 
     re = document.getElementById('selector').value.toLowerCase();
     setCookie("dlist_parm", tab + re);
-    return [tab, re]
+    return tab + re
 }
 
 function DirectoryListSelect(tab, re, self) { 
