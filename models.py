@@ -70,6 +70,7 @@ class Name(models.Model):
 
     approved = models.BooleanField()
     authority = models.IntegerField()
+    out_of_town = models.BooleanField()
     picture_uploaded = models.BooleanField()
     private = models.BooleanField()
     removed = models.BooleanField()
