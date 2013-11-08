@@ -10,41 +10,7 @@ import random
 def GenerateTemporaryPassword(size=7, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for x in range(size))
 
-def GetIndexedDirectoryNameLists(ZS):
-    names = Name.objects.all(). \
-        exclude(Q(private__exact=True) & ~Q(owner__exact=ZS['AuthorizedOwner'])). \
-        exclude(removed__exact=True). \
-        exclude(approved__exact=False). \
-        exclude(first__isnull=True). \
-        exclude(first__exact=''). \
-        order_by('first', 'last')
-
-    ix = 0
-    iy = 1
-    first_initials = []
-    first_names = {}
-    if len(names) > 0:
-        for iy in range(1, len(names)):
-            if names[iy].first[0] != names[ix].first[0]:
-                if names[ix].first[0] not in first_initials:
-                    first_initials += [names[ix].first[0]]
-                first_names[names[ix].first[0]] = names[ix: iy]
-                ix = iy
-
-        if names[ix].first[0] not in first_initials:
-            first_initials += [names[ix].first[0]]
-        first_names[names[ix].first[0]] = names[ix: iy + 1]
-
-    first_names_men = []
-    for name in names:
-        if name.gender == 'M' or name.gender == 'm':
-            first_names_men += [name]
-
-    first_names_women = []
-    for name in names:
-        if name.gender == 'F' or name.gender == 'f':
-            first_names_women += [name]
-
+def GetDirectoryLists(ZS):
     names = Name.objects.all(). \
         exclude(Q(private__exact=True) & ~Q(owner__exact=ZS['AuthorizedOwner'])). \
         exclude(removed__exact=True). \
@@ -53,23 +19,15 @@ def GetIndexedDirectoryNameLists(ZS):
         exclude(last__exact=''). \
         order_by('last', 'first')
 
-    ix = 0
-    iy = 1
-    last_initials = []
-    last_names = {}
-    if len(names) > 0:
-        for iy in range(1, len(names)):
-            if names[iy].last[0] != names[ix].last[0]:
-                if names[ix].last[0] not in last_initials:
-                    last_initials += [names[ix].last[0]]
-                last_names[names[ix].last[0]] = names[ix: iy]
-                ix = iy
+    church_list = []
+    friend_list = []
+    for name in names:
+        if name.out_of_town or name.private == True:
+            friend_list += [name]
+        else:
+            church_list += [name]
 
-        if names[ix].last[0] not in last_initials:
-            last_initials += [names[ix].last[0]]
-        last_names[names[ix].last[0]] = names[ix: iy + 1]
-
-    return [ first_initials, first_names, last_initials, last_names, first_names_men, first_names_women ]
+    return [ church_list, friend_list ]
 
 def SaveFileUpload(infile, outfile):
     destination = open(outfile, 'wb+')

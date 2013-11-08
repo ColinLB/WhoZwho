@@ -39,6 +39,7 @@ class DirectoryEditNameForm(forms.Form):
     birthday = DateField(widget=SelectDateWidget(years=range(date.today().year, date.today().year - 100, -1)), required=False)
     title = forms.ChoiceField(widget=Select, choices=Z.Titles, required=False)
     gender = forms.ChoiceField(widget=RadioSelect, choices=Z.Genders)
+    out_of_town = forms.BooleanField(required=False)
 
 def do(request, nid, browser_tab):
     ZS = Z.SetSession(request, browser_tab)
@@ -70,6 +71,7 @@ def do(request, nid, browser_tab):
                 name.birthday = form.cleaned_data['birthday']
                 name.title = form.cleaned_data['title']
                 name.gender = form.cleaned_data['gender']
+                name.out_of_town = form.cleaned_data['out_of_town']
                 name.save()
 
                 if name.user.username != form.cleaned_data['Login_ID'] or name.user.email != form.cleaned_data['Account_Email']:
@@ -115,7 +117,8 @@ def do(request, nid, browser_tab):
             'Account_Email': name.user.email,
             'birthday': name.birthday,
             'title': name.title,
-            'gender': name.gender
+            'gender': name.gender,
+            'out_of_town': name.out_of_town
             }) 
 
     if os.path.exists(ZS['StaticPath'] + 'pics/names/' + str(name.id) + '.jpg'):

@@ -94,6 +94,13 @@ body {
     width:200px;
 }
 
+.tile {
+    float:left;
+    font:12px/1.4em Verdana,sans-serif;
+    height:200px;
+    width:160px;
+}
+
 .tile_image {
     height:150px;
     width:120px;

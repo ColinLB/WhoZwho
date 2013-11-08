@@ -109,5 +109,5 @@ def GoLogout(request, ZS, error_message=''):
     c = { 'form': form, 'ZS': ZS }
     c.update(csrf(request))
     response = render_to_response('UserLogin.html', c )
-    response.set_cookie('dlist_parm', 'F..')
+    response.set_cookie('dlist_parm', 'C')
     return response

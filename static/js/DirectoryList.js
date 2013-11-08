@@ -4,45 +4,62 @@ You may distribute under the terms of either the GNU General Public
 License or the Apache v2 License, as specified in the README file.
 */
 
-function DirectoryListABC(opt) {
-    var dlist_parm, p1, p2, p3;
+function DirectoryListSwitchRe() {
+    var re, tab;
 
-    p1 = opt.substring(0,1);
-
-    SelectHTMLdiv('i' + p1, 'i' + opt, 'text_selected', 'text_deselected');
-    SelectHTMLdiv('l' + p1, 'l' + opt);
-
-    dlist_parm = getCookie("dlist_parm");
-    if (dlist_parm === undefined) {
-        p2 = '.'; p3 = '.';
-        }
-    else {
-        p2 = dlist_parm.substring(1,2);
-        p3 = dlist_parm.substring(2,3);
-        }
-
-    if (p1 == "F") {
-        p2 = opt.substring(1,2);
-        }
-    else {
-        p3 = opt.substring(1,2);
-        }
-
-    setCookie("dlist_parm", p1 + p2 + p3);
+    [tab, re] = DirectoryListSaveParms();
+    if (re != '^' & re != ',') {
+        DirectoryListSelect(tab, re);
     }
+}
 
-function DirectoryListFLMW(opt) {
-    var dlist_parm, p2;
+function DirectoryListSwitchTab(tabID) {
+    var re, tab;
 
-    SelectHTMLdiv('subtabs', 'subtabs' + opt, 'subtabs_selected', 'subtabs_deselected');
-    SelectHTMLdiv('List', 'List' + opt);
+    [tab, re] = DirectoryListSaveParms(tabID);
+    SelectHTMLdiv('subtabs', 'subtabs' + tab, 'subtabs_selected', 'subtabs_deselected');
+    SelectHTMLdiv('List', 'List' + tab);
+    DirectoryListSelect(tab, re);
+}
 
-    dlist_parm = getCookie("dlist_parm");
-    if (dlist_parm === undefined) {
-        p2 = '..';
+function DirectoryListSaveParms(tabID) { 
+    var re, tab;
+
+    if (tabID == null) {
+        tab = getCookie("dlist_parm").substring(0,1).toUpperCase();
     } else {
-        p2 = dlist_parm.substring(1,3);
+        tab = tabID.substring(0,1).toUpperCase();
     }
 
-    setCookie("dlist_parm", opt + p2);
+    re = document.getElementById('selector').value.toLowerCase();
+    setCookie("dlist_parm", tab + re);
+    return [tab, re]
+}
+
+function DirectoryListSelect(tab, re, self) { 
+    var children, i, root;
+
+    root = 'List' + tab
+
+    if (self == null) { 
+        if (re == '') {
+            DirectoryListSelect(tab, re, document.getElementById(root));
+        } else {
+            DirectoryListSelect(tab, new RegExp(re), document.getElementById(root));
+        }
+
+    } else {
+        if (self.id == root || re == '' || self.id.toLowerCase().search(re) != -1) { 
+            self.style.display = 'block';
+        } else {
+            self.style.display = 'none'; 
+        }       
+
+        children = self.childNodes;
+        for (i=0;i<children.length;i++) {
+            if (children[i].tagName == 'DIV') {
+                DirectoryListSelect(tab, re, children[i]);
+            }       
+        }       
+    }       
 }
