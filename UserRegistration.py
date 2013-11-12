@@ -37,49 +37,56 @@ def now(request):
             if not check_captcha.is_valid:
                 ZS['ErrorMessage'] = "[UR01]: Captcha response was incorrect."
             else:
-                users = User.objects.all().filter(username__exact=form.cleaned_data['login_id'])
+                users = User.objects.all(). \
+                    filter(first_name__exact=form.cleaned_data['first_name']). \
+                    filter(last_name__exact=form.cleaned_data['last_name']). \
+                    filter(email__exact=form.cleaned_data['email'])
                 if len(users) < 1:
-                    new_user = User()
-                    new_user.username = form.cleaned_data['login_id']
-                    new_user.first_name = form.cleaned_data['first_name']
-                    new_user.last_name = form.cleaned_data['last_name']
-                    new_user.email = form.cleaned_data['email']
-                    new_user.set_password(form.cleaned_data['password'])
-                    new_user.save()
+                    users = User.objects.all().filter(username__exact=form.cleaned_data['login_id'])
+                    if len(users) < 1:
+                        new_user = User()
+                        new_user.username = form.cleaned_data['login_id']
+                        new_user.first_name = form.cleaned_data['first_name']
+                        new_user.last_name = form.cleaned_data['last_name']
+                        new_user.email = form.cleaned_data['email']
+                        new_user.set_password(form.cleaned_data['password'])
+                        new_user.save()
 
-                    new_name = Name()
-                    new_name.preferred = form.cleaned_data['first_name']
-                    new_name.first = form.cleaned_data['first_name']
-                    new_name.last = form.cleaned_data['last_name']
-                    new_name.authority = Z.NewRW
-                    new_name.user = new_user
-                    new_name.save()
+                        new_name = Name()
+                        new_name.preferred = form.cleaned_data['first_name']
+                        new_name.first = form.cleaned_data['first_name']
+                        new_name.last = form.cleaned_data['last_name']
+                        new_name.authority = Z.NewRW
+                        new_name.user = new_user
+                        new_name.save()
 
-                    new_name.owner = new_name.id
-                    new_name.save()
+                        new_name.owner = new_name.id
+                        new_name.save()
 
-                    auth_user = authenticate(username=new_user, password=form.cleaned_data['password'])
-                    if auth_user is not None:
-                        if auth_user.is_active:
-                            login(request, auth_user)
-                            ZS['Authenticated'] = 1
-                            request.session['last_time'] = time()
-                            ZS = Z.SetSession(request, '.')
+                        auth_user = authenticate(username=new_user, password=form.cleaned_data['password'])
+                        if auth_user is not None:
+                            if auth_user.is_active:
+                                login(request, auth_user)
+                                ZS['Authenticated'] = 1
+                                request.session['last_time'] = time()
+                                ZS = Z.SetSession(request, '.')
 
-                            send_mail(
-                                'WhoZwho: new user "' + new_user.username + '" is requesting approval.',
-                                'Visit ' + ZS['httpURL'] + 'login to process the approval.', 
-                                ZS['AdminEmail'],
-                                [ZS['AdminEmail']],
-                                fail_silently=False)
+                                send_mail(
+                                    'WhoZwho: new user "' + new_user.username + '" is requesting approval.',
+                                    'Visit ' + ZS['httpURL'] + 'login to process the approval.', 
+                                    ZS['AdminEmail'],
+                                    [ZS['AdminEmail']],
+                                    fail_silently=False)
 
-                            return HttpResponseRedirect('/WhoZwho/' + ZS['Tabs'][ZS['ActiveTab']][3])
+                                return HttpResponseRedirect('/WhoZwho/' + ZS['Tabs'][ZS['ActiveTab']][3])
+                            else:
+                                ZS['ErrorMessage'] = "[UR02]: Login ID disabled."
                         else:
-                            ZS['ErrorMessage'] = "[UR02]: Login ID disabled."
+                            ZS['ErrorMessage'] = "[UR03]: Login ID is invalid."
                     else:
-                        ZS['ErrorMessage'] = "[UR03]: Login ID is invalid."
+                        ZS['ErrorMessage'] = "[UR04]: The selected Login ID is already in use."
                 else:
-                    ZS['ErrorMessage'] = "[UR04]: The selected Login ID is already in use."
+                    ZS['ErrorMessage'] = '[UR05]: You are already registered. From the "Login" page, try "Forgotten your Login ID?" or "Forgotten your Password?".'
         else:
             ZS['ErrorMessage'] = str(form.errors)
     else:
