@@ -29,10 +29,15 @@ function DirectoryListSwitchTab(tabID) {
 }
 
 function DirectoryListSaveParms(tabID) { 
-    var re, tab;
+    var parm, re, tab;
 
     if (tabID == null) {
-        tab = getCookie("dlist_parm").substring(0,1).toUpperCase();
+        parm = getCookie("dlist_parm");
+        if (parm != null) {
+            tab = parm.substring(0,1).toUpperCase();
+        } else {
+            tab = 'C';
+        }
     } else {
         tab = tabID.substring(0,1).toUpperCase();
     }
