@@ -13,6 +13,8 @@ License or the Apache v2 License, as specified in the README file.
         function SubmitForm() {
             if (document.getElementById("id_first_name").value == "") error = "Error: First name omitted.";
             else if (document.getElementById("id_last_name").value == "") error = "Error: Last name omitted.";
+            else if (document.getElementById("id_gender_0").checked == false &&
+                document.getElementById("id_gender_1").checked == false) error = "Error: Gender omitted.";
             else if (document.getElementById("id_email").value == "") error = "Error: Email address omitted.";
             else if (document.getElementById("id_login_id").value == "") error = "Error: Login ID omitted.";
             else if (document.getElementById("recaptcha_response_field").value == "") error = "Error: Scrambled words omitted.";
@@ -60,18 +62,41 @@ License or the Apache v2 License, as specified in the README file.
             <td class="left_margin"></td>
             <td><label for="id_first_name">First name:</label></td>
             <td><input id="id_first_name" tabindex="1" type="text" name="first_name" maxlength="32" value="{{ form.cleaned_data.first_name }}" /></td>
-            <td rowspan=8 valign=bottom>{% autoescape off %}{{ captcha_html }}{% endautoescape %}</td>
+            <td class="left_margin"></td>
+            <td rowspan=12 valign=bottom>{% autoescape off %}{{ captcha_html }}{% endautoescape %}</td>
           </tr><tr>
             <td></td>
             <td><label for="id_last_name">Last name:</label></td>
             <td><input id="id_last_name" tabindex="2" type="text" name="last_name" maxlength="32" value="{{ form.cleaned_data.last_name }}" /></td>
+            <td class="left_margin"></td>
             <td></td>
           </tr><tr>
-            <td><br></td>
+            <td></td>
+            <td><label for="Gender"><label for="id_gender_0">Gender</label>:</label></td>
+            <td>
+              <ul>
+                {% if form.cleaned_data.gender = "m" %}
+                    <li><label for="id_gender_0"><input type="radio" checked="checked" id="id_gender_0" value="m" name="gender" /> Male</label></li>
+                {% else %}
+                    <li><label for="id_gender_0"><input type="radio" id="id_gender_0" value="m" name="gender" /> Male</label></li>
+                {% endif %}
+
+                {% if form.cleaned_data.gender = "f" %}
+                    <li><label for="id_gender_1"><input type="radio" checked="checked" id="id_gender_1" value="f" name="gender" /> Female</label></li>
+                {% else %}
+                    <li><label for="id_gender_1"><input type="radio" id="id_gender_1" value="f" name="gender" /> Female</label></li>
+                {% endif %}
+              </ul>
+            </td>
+            <td class="left_margin"></td>
+            <td></td>
+          </tr><tr>
+            <td></td>
           </tr><tr>
             <td></td>
             <td><label for="id_email">Email:</label></td>
             <td><input id="id_email" tabindex="3" type="text" name="email" maxlength="32" value="{{ form.cleaned_data.email }}" /></td>
+            <td class="left_margin"></td>
             <td></td>
           </tr><tr>
             <td><br></td>
@@ -79,16 +104,21 @@ License or the Apache v2 License, as specified in the README file.
             <td></td>
             <td><label for="id_login_id">Login id:</label></td>
             <td><input id="id_login_id" tabindex="4" type="text" name="login_id" maxlength="16" value="{{ form.cleaned_data.login_id }}" /></td>
+            <td class="left_margin"></td>
             <td></td>
           </tr><tr>
             <td></td>
             <td><label for="id_password">Password:</label></td>
             <td><input id="id_password" tabindex="5" type="password" name="password" maxlength="16" value="{{ form.cleaned_data.password }}" /></td>
+            <td class="left_margin"></td>
             <td></td>
           </tr><tr>
             <td></td>
             <td><label for="id_vpassword">Verify password:</label></td>
             <td><input id="id_vpassword" tabindex="6" type="password" name="vpassword" maxlength="16" value="{{ form.cleaned_data.vpassword }}" /></td>
+            <td class="left_margin"></td>
+            <td></td>
+            <td class="left_margin"></td>
             <td></td>
             <td><input type="button" value="Submit" onclick="SubmitForm();" /></td>
             <td></td>

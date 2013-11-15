@@ -13,6 +13,7 @@ from django.core.context_processors import csrf
 from django.core.mail import send_mail
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
+from django.forms.widgets import Select, RadioSelect
 
 from models import Name
 
@@ -21,6 +22,7 @@ import captcha
 class RegistrationForm(forms.Form):
     first_name = forms.CharField(max_length=32)
     last_name = forms.CharField(max_length=32)
+    gender = forms.ChoiceField(widget=RadioSelect, choices=Z.Genders)
     email = forms.EmailField(max_length=32)
     login_id = forms.CharField(max_length=16)
     password = forms.CharField(max_length=16, widget=forms.PasswordInput)
@@ -56,6 +58,7 @@ def now(request):
                         new_name.preferred = form.cleaned_data['first_name']
                         new_name.first = form.cleaned_data['first_name']
                         new_name.last = form.cleaned_data['last_name']
+                        new_name.gender = form.cleaned_data['gender']
                         new_name.authority = Z.NewRW
                         new_name.user = new_user
                         new_name.save()
