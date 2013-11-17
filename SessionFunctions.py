@@ -12,6 +12,15 @@ import SessionSettings as Z
 import os
 import string
 import random
+import datetime
+
+def Age(bday=None, d=None):
+    if bday is None:
+        return 100
+    if d is None:
+        d = datetime.date.today()
+
+    return (d.year - bday.year) - int((d.month, d.day) < (bday.month, bday.day))
 
 def GenerateTemporaryPassword(size=7, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for x in range(size))
