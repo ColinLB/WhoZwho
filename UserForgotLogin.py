@@ -38,7 +38,7 @@ def do(request):
                     filter(last_name__exact=form.cleaned_data['last_name']). \
                     filter(email__exact=form.cleaned_data['email'])
 
-                if len(users) == 1:
+                if len(users) == 1 and users[0].name.private == False and users[0].name.removed == False:
                     send_mail(
                         'WhoZwho: forgotten login ID.',
                         'A forgotten login ID request for your account has been received. ' + \

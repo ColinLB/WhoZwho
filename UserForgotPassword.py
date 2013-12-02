@@ -38,7 +38,7 @@ def do(request):
                     filter(username__exact=form.cleaned_data['login_id']). \
                     filter(email__exact=form.cleaned_data['email'])
 
-                if len(users) == 1:
+                if len(users) == 1 and users[0].name.private == False and users[0].name.removed == False:
                     temporary_password = GenerateTemporaryPassword()
 
                     users[0].set_password(temporary_password)
