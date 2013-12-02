@@ -67,10 +67,7 @@ def do(request, nid, browser_tab):
 
             logger.info(ZS['User'] + ' CA ' + str(request.POST))
 
-            if name.private == True:
-                return HttpResponseRedirect('/WhoZwho/editpc/' + nid + '/' + browser_tab)
-            else:
-                return HttpResponseRedirect('/WhoZwho/ename/' + nid + '/' + browser_tab)
+            return HttpResponseRedirect('/WhoZwho/ename/' + nid + '/' + browser_tab)
 
     if not name.address:
         form = DirectoryChooseAddressForm()
