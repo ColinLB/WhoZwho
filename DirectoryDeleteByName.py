@@ -23,7 +23,7 @@ from django.shortcuts import render_to_response
 from django.template import Context, loader
 from django.contrib.auth.models import User
 
-from models import Address, Name, Wedding
+from models import Address, Family, Name
 from SessionFunctions import SaveFileUpload
 
 def do(request, nid, browser_tab):
@@ -31,6 +31,7 @@ def do(request, nid, browser_tab):
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS)
 
+    # Retrieve name to purge and ensure we have the authority.
     try:
         name = Name.objects.get(pk=int(nid))
     except:
@@ -40,54 +41,64 @@ def do(request, nid, browser_tab):
         return GoLogout(request, ZS, "[BN02]: URL contained an invalid name ID.")
 
     os.environ['PATH'] = ZS['PythonPath']
+
+    # Free the address.
+    if name.address:
+        name.address = None
+        name.save()
+
+        # Purge ALL unused addresses.
+        addresses = Address.objects.all()
+        for address in addresses:
+            if address.name_set.count() < 1:
+                logger.info(ZS['User'] + ' BN Unused address deleted: id=' + str(address.id) + ', ' + \
+                    address.street + ', ' + address.city + ', ' + address.province + ', ' + address.postcode)
+                address.delete()
+
+
+    # If there is connected family, save family pointer and disconnect it.
+    if name.family:
+        family = name.family
+        name.family = None
+        name.save()
+
+        # If the disconnected family has no remaining spouses, disconnect all children ...
+        if family.spouses.count() < 1:
+            children = family.children.all()
+            for child in children:
+                child.parents = None
+                child.save()
+
+            # ... remove the family picture ...
+            p = Popen(['rm', '-f',
+                ZS['StaticPath'] + 'pics/families/' + str(family.id) +'.jpg'],
+                stdout=PIPE, stderr=PIPE)
+
+            stdout, stderr = p.communicate()
+            if stderr != '':
+                logger.info(ZS['User'] + ' BN Command error deleting family picture: id=' + str(family.id) + ', ' + \
+                    stderr)
+
+            # ... and purge the family.
+            logger.info(ZS['User'] + ' BN Unused family deleted: id=' + str(family.id) + ', ' + \
+                name.last + ', ' + name.first)
+            family.delete()
+
+    # Remove the personal picture.
     p = Popen(['rm', '-f',
-        ZS['StaticPath'] + 'pics/names/' + nid +'.jpg'],
+        ZS['StaticPath'] + 'pics/names/' + str(name.id) +'.jpg'],
         stdout=PIPE, stderr=PIPE)
 
     stdout, stderr = p.communicate()
     if stderr != '':
-        return  "[BN03]: command error (rm) - " + stderr
+        logger.info(ZS['User'] + ' BN Command error deleting personal picture: id=' + str(name.id) + ', ' + \
+            stderr)
 
-    owner = name.owner
-    logger.info(ZS['User'] + ' BN User and Name deleted for ID ' + str(nid) + ', ' + name.first + ' ' + name.last + '.')
-    User.objects.filter(id=name.user.id).delete()
-    Name.objects.filter(id=name.id).delete()
-
-    names = Name.objects.all(). \
-        filter(owner__exact=owner). \
-	exclude(private__exact=True)
-
-    if len(names) < 1:
-	names = Name.objects.all(). \
-	    filter(owner__exact=owner). \
-	    filter(private__exact=True)
-
-	for name in names:
-	    logger.info(ZS['User'] + ' BN User and Name deleted for ID ' + str(name.id) + ', ' + name.first + ' ' + name.last + ', personal contact.')
-            name.user.delete()
-            name.delete()
-
-    addresses = Address.objects.all(). \
-        filter(owner__exact=owner). \
-        order_by('street')
-
-    for address in addresses:
-        names = address.name_set.all()
-        if len(names) < 1:
-            logger.info(ZS['User'] + ' BN Unused address deleted for owner ' + \
-                str(owner) + ': ' + address.street + ', ' + address.city + ', ' + \
-                address.province + ', ' + address.postcode)
-            address.delete()
-
-    weddings = Wedding.objects.all(). \
-        filter(owner__exact=owner)
-
-    for wedding in weddings:
-        names = wedding.name_set.all()
-        if len(names) < 1:
-            logger.info(ZS['User'] + ' BN Unused wedding deleted for owner ' + \
-                str(owner) + ': ' + str(wedding.anniversary) + '.')
-            wedding.delete()
+    # Purge the person.
+    logger.info(ZS['User'] + ' BN Name deleted: id=' + str(name.id) + ', ' + \
+        name.first + ' ' + name.last)
+    name.user.delete()
+    name.delete()
 
     if ZS['Authority'] >= Z.Admin:
         return HttpResponseRedirect('/WhoZwho/aelst')
