@@ -82,7 +82,44 @@ body {
 }
 
 .wide_margin {
-    width:150px;
+    width:30px;
+}
+
+.table_column_25px {
+    width:25px;
+}
+
+.table_column_50px {
+    width:50px;
+}
+
+.table_column_100px {
+    width:100px;
+}
+
+.table_column_200px {
+    width:200px;
+}
+
+.table_column_225px {
+    width:225px;
+}
+
+.table_column_300px {
+    width:300px;
+}
+
+.table_column_400px {
+    width:400px;
+}
+
+.table_column_500px {
+    width:500px;
+}
+
+.table_image {
+    height:250px;
+    width:200px;
 }
 
 .bottom_right {
