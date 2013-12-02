@@ -52,6 +52,12 @@ class Address(models.Model):
     phone = models.CharField(max_length=32, null=True)
     owner = models.IntegerField(null=True)
 
+class Family(models.Model):
+    anniversary = models.DateField(null=True)
+    email = models.CharField(max_length=32, null=True)
+    one_tax_receipt = models.BooleanField()
+    picture_uploaded = models.BooleanField()
+    owner = models.IntegerField(null=True)
 
 class Name(models.Model):
     preferred = models.CharField(max_length=32, null=True)
@@ -62,6 +68,7 @@ class Name(models.Model):
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True)
     age_group = models.CharField(max_length=1, choices=AGE_GROUP_CHOICES, null=True)
     birthday = models.DateField(blank=True, null=True)
+    member_since = models.DateField(blank=True, null=True)
 
     cell = models.CharField(max_length=32, null=True)
     email = models.CharField(max_length=32, null=True)
@@ -80,6 +87,8 @@ class Name(models.Model):
     password_timeout = models.IntegerField(null=True)
 
     address = models.ForeignKey('Address', null=True)
+    family = models.ForeignKey('Family', related_name='spouses', null=True)
+    parents = models.ForeignKey('Family', related_name='children', null=True)
     wedding = models.ForeignKey('Wedding', null=True)
 
     owner = models.IntegerField(null=True)
