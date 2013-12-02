@@ -9,150 +9,332 @@ import os.path
 from django.http import HttpResponse
 from django.template import Context, loader
 from django.db.models import Q
-from models import Address, Name, Wedding
+from models import Address, Family, Name, Wedding
 
 from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
+from reportlab.lib.pagesizes import letter, landscape
+from SessionFunctions import Age, FamilyAddress, FamilyName, Kids, NameContacts
 
 
-def do(request, browser_tab):
+def do(request, option, browser_tab):
     ZS = Z.SetSession(request, browser_tab)
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS, '')
 
-    list = []
-    weddings = Wedding.objects.all()
-    for wedding in weddings:
-        names = wedding.name_set.all(). \
-            exclude(Q(private__exact=True) & ~Q(owner__exact=ZS['AuthorizedOwner']))
-        if len(names) != 2:
+    # Retrieve information for family entries.
+    listC, listCA, listCM, listF, listFA, listFM = [], [], [], [], [], []
+    families = Family.objects.all()
+    for family in families:
+        spouses = family.spouses.all(). \
+            exclude(approved__exact=False). \
+            exclude(Q(private__exact=True) & ~Q(owner__exact=ZS['AuthorizedOwner'])). \
+            exclude(removed__exact=True)
+        if len(spouses) < 1:
             continue
 
-        if names[0].removed == True or names[0].approved == False:
-            continue
+        attends_church = False
+        if spouses[0].out_of_town == False:
+            attends_church = True
+        elif len(spouses) == 2 and spouses[1].out_of_town == False:
+            attends_church = True
 
-        if names[1].removed == True or names[1].approved == False:
-            continue
+        if family.anniversary:
+            family_anniversary = SortableMonth(family.anniversary) + ['a', FamilyName(spouses[0], 'firstlast')]
+            if attends_church:
+                listCA += [ family_anniversary ]
+            else:
+                listFA += [ family_anniversary ]
 
-        if names[0].gender == 'm':
-            list += [ FormatName(ZS, names[0], names[1]) + FormatAddress(names[0].address) ]
-            if names[1].last != names[0].last:
-                list += [ FormatName(ZS, names[1], names[0]) + FormatAddress(names[0].address) ]
+        if len(spouses) < 2:
+            contacts = PersonalContacts(spouses[0])
         else:
-            list += [ FormatName(ZS, names[1], names[0]) + FormatAddress(names[0].address) ]
-            if names[0].last != names[1].last:
-                list += [ FormatName(ZS, names[0], names[1]) + FormatAddress(names[0].address) ]
+            if spouses[0].gender == 'm':
+                contacts  = PersonalContacts(spouses[0])
+                contacts += PersonalContacts(spouses[1]) 
+            else:
+                contacts  = PersonalContacts(spouses[1])
+                contacts += PersonalContacts(spouses[0]) 
 
+        children = family.children.all(). \
+            exclude(approved__exact=False). \
+            exclude(Q(private__exact=True) & ~Q(owner__exact=ZS['AuthorizedOwner'])). \
+            exclude(removed__exact=True)
+
+        for child in children:
+            contacts += PersonalContacts(child)
+
+        if family.picture_uploaded:
+            directory_entry = [ 'pics/families/' + str(family.id) + '.jpg', [ FamilyName(spouses[0]), Kids(spouses[0], '  ') ] + FamilyAddress(spouses[0], '    ') + [u''] + contacts ]
+        else:
+            directory_entry = [ 'pics/defaults/nicubunu_Abstract_people.png', [ FamilyName(spouses[0]), Kids(spouses[0], '  ') ] + FamilyAddress(spouses[0], '    ') + [u''] + contacts ]
+        if attends_church:
+            listC += [ directory_entry ]
+        else:
+            listF += [ directory_entry ]
+
+    # Retrieve information for individual entries.
     names = Name.objects.all(). \
-        filter(wedding__exact=None). \
+        exclude(approved__exact=False). \
         exclude(Q(private__exact=True) & ~Q(owner__exact=ZS['AuthorizedOwner'])). \
-        exclude(removed__exact=True). \
-        exclude(approved__exact=False)
+        exclude(removed__exact=True)
 
     for name in names:
-        list += [ FormatName(ZS, name, None) + FormatAddress(name.address) ]
+        if name.birthday:
+            birthday = SortableMonth(name.birthday) + ['b', name.first + ' ' + name.last]
+            if name.out_of_town == True:
+                listFA += [ birthday ]
+            else:
+                listCA += [ birthday ]
 
-#   for item in sorted(list):
-#       print str(item)
+        if name.family:
+            continue
 
+#       #member
+#       if name.member:
+#           directory_entry = [name.last + ', ' + name.first, str(name.member.year()) ]
+#           if name.out_of_town == True:
+#               listFM += [ directory_entry ]
+#           else:
+#               listCM += [ directory_entry ]
+
+        if name.parents and Age(name.birthday) < 18:
+            continue
+
+        if name.picture_uploaded:
+            directory_entry = [ 'pics/names/' + str(name.id) + '.jpg', [ FamilyName(name), '' ] + FamilyAddress(name, '    ') + [u''] + PersonalContacts(name) ]
+        else:
+            directory_entry = [ 'pics/defaults/nicubunu_Abstract_people.png', [ FamilyName(name), '' ] + FamilyAddress(name, '    ') + [u''] + PersonalContacts(name) ]
+
+        if name.out_of_town == True:
+            listF += [ directory_entry ]
+        else:
+            listC += [ directory_entry ]
+
+    # Sorting and pagination.
+    pages = []
+    pages += Pagination('C', sorted(listC, key=lambda last_name: last_name[1]), 5)
+    listC = None
+
+    pages += Pagination('CA', sorted(listCA, key=lambda date: date[0]), 52)
+    listCA = None
+
+    pages += Pagination('F', sorted(listF, key=lambda last_name: last_name[1]), 5)
+    listF = None
+
+    pages += Pagination('FA', sorted(listFA, key=lambda date: date[0]), 52)
+    listFA = None
+
+    # Print report.
     response = HttpResponse(mimetype='application/pdf')
     response['Content-Disposition'] = 'attachment; filename=WhoZwho.pdf'
 
-    p = canvas.Canvas(response, pagesize=letter)
-    width, height = letter
-    p.setFont("Helvetica", 24)
+    Canvas = canvas.Canvas(response, pagesize=landscape(letter))
+    page_number, page_count = 0, len(pages)
 
+    if option == "list":
+        for page in pages:
+            page_number += 1
+            PrintPage(ZS, Canvas, page, page_number)
 
-    p.drawString(60, 500, ZS['Banner'])
-
-    row = 0
-    page = 0
-    pages = str((len(list) + 4) / 5)
-    for item in sorted(list):
-        if row < 50:
-            p.showPage()
-            page += 1
-            row = 610
-
-            p.setFont("Helvetica", 10)
-            p.drawString(300, 10, str(page) + '/' + pages)
-
-        p.drawImage(item[1], 60, row, width=100,height=125,mask=None)
-
-        if item[2] != '':
-            p.drawImage(item[2], 185, row, width=100,height=125,mask=None)
-
-        p.setFont("Helvetica", 16)
-        p.drawString(310, row + 115, item[0])
-
-        p.setFont("Helvetica", 12)
-        p.drawString(310, row + 100, item[6])
-        p.drawString(310, row +  85, item[7])
-        p.drawString(310, row +  70, item[8])
+    else:
+        padded_page_count = (page_count + 3) / 4 * 4
+        for i in range(1, (padded_page_count / 2) + 1):
+            j = 1 + padded_page_count - i
+            try:
+                PrintPage(ZS, Canvas, pages[j-1], j, padded_page_count)
+            except:
+                PrintPage(ZS, Canvas, [None], j, padded_page_count)
+            PrintPage(ZS, Canvas, pages[i-1], i, padded_page_count)
         
-        p.drawString(310, row +  50, item[9])
-
-        p.drawString(310, row +  30, item[3])
-        p.drawString(310, row +  15, item[4])
-        p.drawString(310, row +  00, item[5])
-
-        row -= 140
-
-    p.showPage()
-    p.save()
-
+    Canvas.save()
     return response
 
-def FormatAddress(addr):
-    if addr:
-        formatted_address = [addr.street, addr.city, addr.province + ', ' + addr.postcode, addr.phone]
+def FormatPage(ZS, canvas, page, page_number, Q):
+    # Set page format as two pages, side by side on a landscape sheet.
+    sheet_height, sheet_width, margin = 612, 792, 36
+    page_height, page_width = sheet_height - (margin * 2), (sheet_width / 2) - (margin * 2)
+    page_centre, page_title_offset, page_number_offset = page_width / 2, 590, 18
+    if Q[1] == 'L':
+        left_side = margin
     else:
-        formatted_address = ['', '', '', '']
+        left_side = (sheet_width / 2) + margin
 
-    return formatted_address
+    # Draw page frame.
+    canvas.setLineWidth(.3)
+    canvas.rect(X(left_side-5,Q), Y(31,Q), 334, 550, stroke=1, fill=0) 
+    canvas.setFont("Helvetica", 6)
+    canvas.drawCentredString(X(left_side+162,Q), Y(page_number_offset,Q), '- ' + str(page_number) + ' -')
 
-def FormatName(ZS, n1, n2):
-    m = []
+    if page[0] == None:
+        return
 
-    if n2:
-        if n2.last == n1.last:
-            n = n1.last + ', ' + n1.first + ' & ' + n2.first
+    # Format a directory page:
+    #
+    #         Leavett-Brown, Colin & Glenda
+    #           Holly
+    #             2921 Merle Drive
+    #             Victoria, BC, V9B 2H9
+    #             crlb@telus.net, 250-478-7879
+    #
+    #         Colin: crlb@telus.net, 250-818-4560, work: crlb@uvic.ca, 250-472-4085
+    #         Glenda: email, cell, work_email, work_phone
+    #         Holly: email, cell, work_email, work_phone
+    #
+    if page[0] == 'C' or page[0] == 'F':
+        cell_origin, cell_height = 470, 107
+        canvas.setFont("Helvetica-Oblique", 14)
+        if page[0] == 'C':
+            canvas.drawCentredString(X(left_side+page_centre,Q), Y(page_title_offset,Q), ZS['Banner'])
         else:
-            n = n1.last + ', ' + n1.first + ' & ' + n2.first + " " + n2.last
+            canvas.drawCentredString(X(left_side+page_centre,Q), Y(page_title_offset,Q), 'Family & Friends')
 
-        if os.path.exists(ZS['StaticPath'] + 'pics/names/' + str(n2.id) + '.jpg'):
-            p2 = ZS['StaticPath'] + 'pics/names/' + str(n2.id) + '.jpg'
+        canvas.line(X(left_side+90,Q), Y(31,Q), X(left_side+90,Q), Y(581,Q))
+        canvas.line(X(left_side-5,Q), Y(467,Q), X(left_side+329,Q), Y(467,Q))
+        canvas.line(X(left_side-5,Q), Y(360,Q), X(left_side+329,Q), Y(360,Q))
+        canvas.line(X(left_side-5,Q), Y(253,Q), X(left_side+329,Q), Y(253,Q))
+        canvas.line(X(left_side-5,Q), Y(146,Q), X(left_side+329,Q), Y(146,Q))
+
+        for entry in page[1]:
+            cell_offset = 90
+            canvas.drawImage(ZS['StaticPath'] + entry[0], X(left_side,Q), Y(cell_origin,Q), width=80,height=100,mask=None)
+            canvas.setFont("Helvetica", 10)
+            for line in entry[1]:
+                canvas.drawString(X(left_side+100,Q), Y(cell_origin+cell_offset,Q), line)
+                cell_offset -= 10
+            cell_origin -= cell_height
+
+    # Format an anniversary page.
+    #
+    #                              April
+    #
+    #  7 Laurie & Katie Leavett-Brown  24 Lindsey Leavett-brown
+    # 16 Holly Leavett-Brown
+    #
+    if page[0] == 'CA' or page[0] == 'FA':
+        # Scan page content and divide into monthly sections.
+        sections, start, end, month = [], 0, 0, ''
+        for entry in page[1]:
+            end += 1
+            if month != entry[1]:
+                if month != '':
+                    sections += [ page[1][start:end-1] ]
+                    start = end - 1
+
+                month = entry[1]
+
+        if end > start:
+            sections += [ page[1][start:end] ]
+
+        # Determine spacing.
+        line_height, right_side = 9, page_width / 2
+        page_offset = margin + page_height - line_height
+        section_title_space = line_height * 2 * len(sections)
+        section_data_space = line_height * ((len(page[1]) / 2) + ((len(sections) + 1) / 2))
+        month_title_height, month_title_offset = line_height + 3, line_height / 2
+
+        white_space = ((page_height - section_title_space - section_data_space) / line_height) - line_height
+        if white_space < 0:
+            white_space = 0
+        elif white_space > line_height * 4:
+            white_space = line_height * 4
+
+        # Print title.
+        canvas.setFont("Helvetica-Oblique", 14)
+        if page[0] == 'CA':
+            canvas.drawCentredString(X(left_side+page_centre,Q), Y(page_title_offset,Q), 'Church: Birthdays & Anniversaries*')
         else:
-            if n2.private == False:
-                p2 = ZS['StaticPath'] + 'pics/defaults/greenman.gif'
+            canvas.drawCentredString(X(left_side+page_centre,Q), Y(page_title_offset,Q), 'Friends: Birthdays & Anniversaries*')
+
+        # Print monthly sections.
+        section = 0
+        for month in sections:
+            section += 1
+
+            page_offset -= line_height
+            canvas.setFont("Helvetica-Bold", month_title_height)
+            canvas.drawCentredString(X(left_side+page_centre,Q), Y(page_offset+month_title_offset,Q), month[0][1])
+            page_offset -= line_height
+
+            entries = len(month)
+            entry_offset = (entries + 1) / 2
+            for entry in range(entry_offset):
+                if month[entry][3] == 'b':
+                    canvas.setFont("Helvetica", line_height)
+                    pfx=''
+                else:
+                    canvas.setFont("Helvetica", line_height)
+                    pfx='*'
+
+                canvas.drawRightString(X(left_side+10,Q), Y(page_offset,Q), str(month[entry][2]))
+                canvas.drawString(X(left_side+12,Q), Y(page_offset,Q), month[entry][4] + pfx)
+
+                if entry+1 < entry_offset:
+                    if month[entry+entry_offset][3] == 'b':
+                        canvas.setFont("Helvetica", line_height)
+                        pfx=''
+                    else:
+                        canvas.setFont("Helvetica", line_height)
+                        pfx='*'
+
+                    canvas.drawRightString(X(left_side+right_side+10,Q), Y(page_offset,Q), str(month[entry+entry_offset][2]))
+                    canvas.drawString(X(left_side+right_side+12,Q), Y(page_offset,Q), month[entry+entry_offset][4] + pfx)
+
+                page_offset -= line_height
+
+            if section < len(sections):
+                page_offset -= white_space
+                canvas.line(X(left_side-5,Q), Y(page_offset,Q), X(left_side+329,Q), Y(page_offset,Q))
+                page_offset -= line_height
+
+def Pagination(tag, list, items_per_page):
+    pages = []
+    for i in range(0,len(list),items_per_page):
+        pages += [ [tag, list[i:i+items_per_page]] ]
+
+    return pages
+
+def PersonalContacts(name):
+    contacts = NameContacts(name)
+    if contacts != '':
+        return [ contacts ]
+    else:
+        return []
+
+def PrintPage(ZS, canvas, page, page_number, page_count=0):
+    if page_count > 0:
+        if page_number <= (page_count / 2):
+            if page_number % 2 == 1:
+                FormatPage(ZS, canvas, page, page_number, 'TR')
+                canvas.showPage()
             else:
-                p2 = ZS['StaticPath'] + 'pics/defaults/greyman.gif'
-
-        if n1.wedding.email:
-            m += [ n1.wedding.email + "  (both)" ]
-
-        if n1.email:
-            m += [ n1.email + "  (" + n1.first + ")" ]
-
-        if n2.email:
-            m += [ n2.email + "  (" + n2.first + ")" ]
-
-    else:
-        p2 = ''
-        n = n1.last + ', ' + n1.first
-        if n1.email:
-            m += [ n1.email ]
-
-    if os.path.exists(ZS['StaticPath'] + 'pics/names/' + str(n1.id) + '.jpg'):
-        p1 = ZS['StaticPath'] + 'pics/names/' + str(n1.id) + '.jpg'
-    else:
-        if n1.private == False:
-            p1 = ZS['StaticPath'] + 'pics/defaults/greenman.gif'
+                FormatPage(ZS, canvas, page, page_number, 'BL')
+                canvas.showPage()
         else:
-            p1 = ZS['StaticPath'] + 'pics/defaults/greyman.gif'
+            if page_number % 2 == 0:
+                FormatPage(ZS, canvas, page, page_number, 'TL')
+            else:
+                canvas.rotate(180)
+                FormatPage(ZS, canvas, page, page_number, 'BR')
+    else:
+        if page_number % 2 == 1:
+            FormatPage(ZS, canvas, page, page_number, 'TL')
+        else:
+            FormatPage(ZS, canvas, page, page_number, 'TR')
+            canvas.showPage()
 
-    while len(m) < 3:
-        m += [ '' ]
+def SortableMonth(date):
+    dd = date.day
+    mm = date.month
+    return ["%02d" % mm + "%02d" % dd, Z.Months[mm-1], str(dd)]
 
-    return [ n, p1, p2, m[0], m[1], m[2]]
+def X(coordinate, quadrant):
+    if quadrant[0] == 'T':
+        return coordinate
+    else:
+        return (792 - coordinate) * -1
 
+def Y(coordinate, quadrant):
+    if quadrant[0] == 'T':
+        return coordinate
+    else:
+        return (618 - coordinate) * -1
