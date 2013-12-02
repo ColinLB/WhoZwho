@@ -1,0 +1,75 @@
+<!--
+Copyright (C) 2012 C. R. Leavett-Brown
+You may distribute under the terms of either the GNU General Public
+License or the Apache v2 License, as specified in the README file.
+-->
+
+{% extends "SessionAuthenticated.html" %}
+
+{% block body %}
+    <script type="text/javascript">
+        function ToggleOptions(opt) {
+            options = document.getElementById(opt);
+            if (options.style.display == '' || options.style.display == 'block') {
+                options.style.display = 'none';
+                }
+            else {
+                options.style.display = 'block';
+                }
+            }
+    </script>
+
+    <form id="DirectoryEditPCForm" enctype="multipart/form-data" action="/WhoZwho/addpc/{{ browser_tab }}" method="post">
+        {% csrf_token %}
+
+        <table>
+          <tr>
+            <td class="left_margin"></td>
+            <td id=page_title>Add a Personal Contact</td>
+          </tr><tr>
+            <td class="left_margin"></td>
+            <td>
+              <ul>
+                <li>All fields marked are required.</li>
+                <li>Personal contacts are listed under "Friends" and are only visible to the family that created them.</li>
+              </ul>
+            </td>
+          </tr><tr>
+            <td class="left_margin"></td>
+            <td id="error_message" class="error_message">{{ ZS.ErrorMessage }}</td>
+          </tr>
+        </table>
+
+        <table>
+          <tr>
+            <td class="left_margin"></td>
+            <td rowspan="0" valign="top">
+              <img class="show_image" src="{{ ZS.httpURL }}static/pics/defaults/nicubunu_Abstract_person.svg">
+            </td>
+            <td class="left_margin"></td>
+            <td valign="top">
+              <table>
+                {% for field in form %}
+                  <tr>
+                    <td>
+                      <th><label for="{{ field.label }}">{{ field.label_tag }}:
+                      {% if field.field.required %}*{% endif %}
+                    </td><td>
+                      {{ field }}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </table>
+            </td>
+          </tr><tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><input type="submit" value="Create" /></td>
+          </tr>
+        </table>
+    </form>
+{% endblock %}
