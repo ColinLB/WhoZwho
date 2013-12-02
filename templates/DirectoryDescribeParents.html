@@ -1,0 +1,81 @@
+<!--
+Copyright (C) 2012 C. R. Leavett-Brown
+You may distribute under the terms of either the GNU General Public
+License or the Apache v2 License, as specified in the README file.
+-->
+
+{% extends "SessionAuthenticated.html" %}
+
+{% block body %}
+    <form id="DescribeParentsForm" enctype="multipart/form-data" action="/WhoZwho/parents/{{ name.id }}/{{ browser_tab }}" method="post">
+        {% csrf_token %}
+
+        <!-- Title, notes, and error message. -->
+        <table>
+          <tr>
+            <td class="table_column_25px"></td>
+            <td id=page_title>Describe Parents of: {{ name.first }} {{ name.last }}</td>
+          </tr><tr>
+            <td class="table_column_25px"></td>
+            <td>
+              <ul>
+                <li>Fields marked with an asterisk (*) are required.</li>
+              </ul>
+            </td>
+          </tr><tr>
+            <td class="table_column_25px"></td>
+            <td id="error_message" class="error_message">{{ ZS.ErrorMessage }}</td>
+          </tr>
+        </table>
+
+        <!-- Describe Family (Parents) form. -->
+        <table>
+          <tr>
+            <td class="table_column_25px"></td>
+            <td class="table_column_225px" rowspan="0" valign="top">
+              {% if name.picture_uploaded %}
+                <img class="table_image" src="{{ ZS.httpURL }}static/pics/names/{{ name.id }}.jpg">
+              {% else %}
+                <img class="table_image" src="{{ ZS.httpURL }}static/pics/defaults/nicubunu_Abstract_person.svg">
+              {% endif %}
+            </td>
+            <td class="table_column_500px" valign="top">
+              <a class="subtabs_deselected" href="{{ ZS.httpURL }}married/{{ name.id }}/{{ browser_tab }}"">&nbspMarried&nbsp</a>
+              <a class="subtabs_deselected" href="{{ ZS.httpURL }}single/{{ name.id }}/{{ browser_tab }}"">&nbspSingle&nbsp</a>
+              <a class="subtabs_selected" href="{{ ZS.httpURL }}parents/{{ name.id }}/{{ browser_tab }}"">&nbspParents&nbsp</a>
+              <table>
+                {% for field in form %}
+                  <tr>
+                    <td>
+                      <label for="{{ field.label }}">{{ field.label_tag }}:
+                      {% if field.field.required %}*{% endif %}
+                    </td><td class="table_column_25px"></td><td>
+                      {{ field }}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </table>
+            </td>
+          </tr><tr rowspan="0" valign="bottom">
+            <td class="table_column_25px"></td>
+            <td class="table_column_200px"></td>
+            <td><input type="submit" value="Save" /></td>
+          </tr>
+        </table>
+
+        <table>
+          <tr>
+            <td class="table_column_25px"></td>
+            <td class="table_column_225px" rowspan="0" valign="top">
+              {% if name.parents %}
+                {% if name.parents and name.parents.picture_uploaded %}
+                  <img class="table_image" src="{{ ZS.httpURL }}static/pics/families/{{ name.parents.id }}.jpg">
+                {% else %}
+                  <img class="table_image" src="{{ ZS.httpURL }}static/pics/defaults/nicubunu_Abstract_people.svg">
+                {% endif %}
+              {% endif %}
+            </td>
+          </tr>
+        </table>
+    </form>
+{% endblock %}
