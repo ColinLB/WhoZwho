@@ -23,12 +23,13 @@ from django.shortcuts import render_to_response
 from django.template import Context, loader
 from django.contrib.auth.models import User
 
-from models import Address, Name, Wedding
-from SessionFunctions import SaveFileUpload
+from models import Address, Name
+from SessionFunctions import Kids, FamilyName, Parents, ProcessNewPicture 
 
 class DirectoryEditNameForm(forms.Form):
     first = forms.CharField(max_length=32)
     last = forms.CharField(max_length=32)
+    gender = forms.ChoiceField(widget=RadioSelect, choices=Z.Genders)
     Login_ID = forms.CharField(max_length=32)
     Account_Email = forms.EmailField(max_length=32)
     cell = forms.CharField(max_length=32, required=False)
@@ -38,7 +39,6 @@ class DirectoryEditNameForm(forms.Form):
     picture = forms.ImageField(required=False)
     birthday = DateField(widget=SelectDateWidget(years=range(date.today().year, date.today().year - 100, -1)), required=False)
     title = forms.ChoiceField(widget=Select, choices=Z.Titles, required=False)
-    gender = forms.ChoiceField(widget=RadioSelect, choices=Z.Genders)
     out_of_town = forms.BooleanField(required=False)
 
 def do(request, nid, browser_tab):
@@ -71,18 +71,20 @@ def do(request, nid, browser_tab):
                 name.birthday = form.cleaned_data['birthday']
                 name.title = form.cleaned_data['title']
                 name.gender = form.cleaned_data['gender']
-                name.out_of_town = form.cleaned_data['out_of_town']
+                if name.private == False:
+                    name.out_of_town = form.cleaned_data['out_of_town']
                 name.save()
 
                 if name.user.username != form.cleaned_data['Login_ID'] or name.user.email != form.cleaned_data['Account_Email']:
-                    name.user.username = form.cleaned_data['Login_ID']
+                    if name.private == False:
+                        name.user.username = form.cleaned_data['Login_ID']
                     name.user.email = form.cleaned_data['Account_Email']
                     name.user.save()
 
                 logger.info(ZS['User'] + ' EN ' + str(request.POST))
 
                 if request.FILES.has_key('picture'):
-                    ZS['ErrorMessage'] = ProcessNewPicture(request, ZS, nid)
+                    ZS['ErrorMessage'] = ProcessNewPicture(request, ZS, 'names', nid)
 
                 # Check if the name has a picture and set indicator appropriately.
                 if os.path.exists(ZS['StaticPath'] + 'pics/names/' + str(name.id) + '.jpg'):
@@ -130,122 +132,17 @@ def do(request, nid, browser_tab):
         filter(owner__exact=ZS['AuthorizedOwner']). \
         order_by('street')
 
-    if name.wedding:
-        spouse = name.wedding.name_set.all(). \
-            exclude(id__exact=name.id)
-        schoices = []
-    else:
-        spouse = []
-        schoices = Name.objects.all(). \
-            filter(owner__exact=ZS['AuthorizedOwner']). \
-            filter(wedding__exact=None). \
-            exclude(gender__exact=name.gender). \
-            exclude(id__exact=name.id). \
-            order_by('first')
-
     context = {
         'addresses': addresses,
         'Admin': Z.Admin,
         'browser_tab': ZS['Tabs'][ZS['ActiveTab']][2],
+        'FamilyName': FamilyName(name),
         'form': form,
+        'Kids': Kids(name),
         'name': name,
-        'nid': nid,
-        'picture': picture,
-        'spouse': spouse,
-        'schoices': schoices,
+        'Parents': Parents(name),
         'ZS': ZS
         }
 
     context.update(csrf(request))
     return render_to_response('DirectoryEditName.html', context )
-
-def ProcessNewPicture(request, ZS, nid):
-    std_jpg_size = Z.jpg_width * Z.jpg_height
-    std_jpg_width_height_ratio = Z.jpg_width * 1.0 / Z.jpg_height
-
-    os.environ['PATH'] = ZS['PythonPath']
-
-    SaveFileUpload(request.FILES['picture'], ZS['StaticPath'] + 'pics/new_names/' + nid +'.jpg')
-
-    # Retrieve image information and check image type.
-    p = Popen(['identify', ZS['StaticPath'] + 'pics/new_names/' + nid +'.jpg'], stdout=PIPE, stderr=PIPE)
-    stdout, stderr = p.communicate()
-    if stderr != '':
-        return  "[EN04]: /usr/bin/identify error - " + stderr
-
-    file_info = stdout.split()
-    if file_info[1] != 'JPEG':
-        p = Popen(['rm', '-f',  ZS['StaticPath'] + 'pics/new_names/' + nid +'.jpg'], stdout=PIPE, stderr=PIPE)
-        stdout, stderr = p.communicate()
-        if stderr != '':
-            return  "[EN05]: /bin/rm error - " + stderr
-
-        return  "[EN06]: Picture rejected; only JPEGs allowed."
-
-    file_dimensions = file_info[2].split('x')
-    raw_width = int(file_dimensions[0])
-    raw_height = int(file_dimensions[1])
-
-    # Scale the image if necessary.
-    if raw_width * raw_height > std_jpg_size:
-        normalized_height = 0
-        if int(raw_width / std_jpg_width_height_ratio) > raw_height:
-            if raw_height > Z.jpg_height:
-                normalized_height = Z.jpg_height
-                normalized_width = int(raw_width * Z.jpg_height / raw_height)
-        else:
-            if raw_width > Z.jpg_width:
-                normalized_height = int(raw_height * Z.jpg_width / raw_width)
-                normalized_width = Z.jpg_width
-
-        if normalized_height > 0:
-            p = Popen(['mogrify', '-scale',
-                str(normalized_width) + 'x' + str(normalized_height),
-                ZS['StaticPath'] + 'pics/new_names/' + nid +'.jpg'],
-                stdout=PIPE, stderr=PIPE)
-
-            stdout, stderr = p.communicate()
-            if stderr != '':
-                return  "[EN07]: /usr/bin/mogrify(scale) error - " + stderr
-
-            raw_width = normalized_width
-            raw_height = normalized_height
-
-    # Crop the image if necessary.
-    normalized_height = 0
-    raw_ratio = raw_width * 1.0 / raw_height
-    if raw_ratio > Z.jpg_crop_width_threshold:
-        normalized_height = raw_height
-        normalized_height_offset = 0
-        normalized_width = int(raw_height * std_jpg_width_height_ratio)
-        normalized_width_offset = int((raw_width - normalized_width) / 2)
-
-    elif raw_ratio < Z.jpg_crop_height_threshold:
-        normalized_height = int(raw_width / std_jpg_width_height_ratio)
-        normalized_height_offset = int((raw_height - normalized_height) / 2)
-        normalized_width = raw_width
-        normalized_width_offset = 0
-
-    if normalized_height > 0:
-        p = Popen(['mogrify', '-crop',
-            str(normalized_width) + 'x' + str(normalized_height) + '+' + str(normalized_width_offset) + '+' + str(normalized_height_offset),
-            ZS['StaticPath'] + 'pics/new_names/' + nid +'.jpg'],
-            stdout=PIPE, stderr=PIPE)
-
-        stdout, stderr = p.communicate()
-        if stderr != '':
-            return  "[EN08]: /usr/bin/mogrify(crop) error - " + stderr
-
-    # Still alive? Move the image into production.
-    p = Popen(['mv',
-        ZS['StaticPath'] + 'pics/new_names/' + nid +'.jpg',
-        ZS['StaticPath'] + 'pics/names/' + nid +'.jpg'],
-        stdout=PIPE, stderr=PIPE)
-
-    stdout, stderr = p.communicate()
-    if stderr != '':
-        return  "[EN09]: /bin/mv error - " + stderr
-
-    logger.info(ZS['User'] + ' EN ' + str(request.FILES))
-
-    return ''

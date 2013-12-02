@@ -19,13 +19,17 @@ License or the Apache v2 License, as specified in the README file.
             }
     </script>
 
-    <form id="DirectoryEditNameForm" enctype="multipart/form-data" action="/WhoZwho/ename/{{ nid }}/{{ browser_tab }}" method="post">
+    <form id="DirectoryEditNameForm" enctype="multipart/form-data" action="/WhoZwho/ename/{{ name.id }}/{{ browser_tab }}" method="post">
         {% csrf_token %}
 
         <table>
           <tr>
             <td class="left_margin"></td>
-            <td id=page_title>Edit: {{ name.first }} {{ name.last }}</td>
+            {% if name.private %}
+              <td id=page_title>Edit Personal Contact: {{ name.first }} {{ name.last }}</td>
+            {% else %}
+              <td id=page_title>Edit: {{ name.first }} {{ name.last }}</td>
+            {% endif %}
           </tr><tr>
             <td></td>
             <td>
@@ -49,15 +53,19 @@ License or the Apache v2 License, as specified in the README file.
           <tr>
             <td class="left_margin"></td>
             <td rowspan="0" valign="top">
-              <img class="show_image" src="{{ picture }}"><br>
-              {% if "default" not in picture %}
+              {% if name.picture_uploaded %}
+                  <img class="show_image" src="{{ ZS.httpURL }}static/pics/names/{{ name.id }}.jpg"><br>
                   <a class="more_info" href="{{ ZS.httpURL }}rmpic/{{ name.id }}/{{ browser_tab }}">(delete picture)</a>
+              {% else %}
+                  <img class="show_image" src="{{ ZS.httpURL }}static/pics/defaults/nicubunu_Abstract_person.svg"><br>
               {% endif %}
 
               {% if ZS.Authority >= Admin %}
                 <br><br>
+                <a class="more_info" href="{{ ZS.httpURL }}rmnam/{{ name.id }}">(delete name)</a>
+              {% elif name.private %}
                 <br><br>
-                <a class="more_info" href="{{ ZS.httpURL }}rmnam/{{ nid }}">(delete name)</a>
+                <a class="more_info" href="{{ ZS.httpURL }}purge/{{ name.id }}/{{ browser_tab }}">(delete personal contact)</a>
               {% endif %}
             </td>
             <td class="left_margin"></td>
@@ -115,32 +123,38 @@ License or the Apache v2 License, as specified in the README file.
                <br>
 
                {% if ZS.Authority >= Admin %}
-                 <a href="{{ ZS.httpURL }}nname/{{ nid }}/{{ browser_tab }}">(add family member)</a>
+                 <a href="{{ ZS.httpURL }}nname/{{ name.id }}/{{ browser_tab }}">(add family member)</a>
 
                  <br><br>
                {% endif %}
 
-               {% if name.wedding %}
-                 Spouse: {{ spouse.0.first }} {{ spouse.0.last }}<br>
-                 &nbsp &nbsp
-                 {{ name.wedding.anniversary }}<br>
-                 {% if name.wedding.email %}
-                   &nbsp &nbsp
-                   {{ name.wedding.email }}<br>
-                  
+               {% if name.family %}
+                 {% if name.family.spouses.all|length < 2 %}
+                   <a class="more_info" href="{{ ZS.httpURL }}single/{{ name.id }}/{{ browser_tab }}">(describe family)</a>
+                 {% else %}
+                   <a class="more_info" href="{{ ZS.httpURL }}married/{{ name.id }}/{{ browser_tab }}">(describe family)</a>
                  {% endif %}
-
-                 &nbsp &nbsp
-                 <a href="{{ ZS.httpURL }}ewedd/{{ name.id }}/{{ browser_tab }}">(edit,</a>
-                 <a class="more_info" onclick="ToggleOptions('WeddingOptions');">&nbsp or)</a><br>
-                 <div id="WeddingOptions" style="display:none">
-                   &nbsp &nbsp 
-                   <a class="more_info" href="{{ ZS.httpURL }}dwedd/{{ name.id }}/{{ browser_tab }}">(delete wedding)</a><br>
-                 </div>
                {% else %}
-                 {% if schoices|length > 0 %}
-                   <a class="more_info" href="{{ ZS.httpURL }}ewedd/{{ name.id }}/{{ browser_tab }}">(add wedding)</a><br>
-                 {% endif %}
+                 <a class="more_info" href="{{ ZS.httpURL }}parents/{{ name.id }}/{{ browser_tab }}">(describe family)</a>
+               {% endif %}
+
+               <br>{{ FamilyName }}
+               {% if Kids %}
+                 <br>&nbsp&nbsp&nbsp{{ Kids }}
+               {% endif %}
+               
+
+               {% if name.family.anniversary %}
+                 <br>&nbsp&nbsp&nbsp{{ name.family.anniversary }}
+               {% endif %}
+
+               {% if name.family.email %}
+                 <br>&nbsp&nbsp&nbsp{{ name.family.email }}
+               {% endif %}
+               
+
+               {% if name.parents %}
+                 <br>&nbsp&nbsp&nbsp({{ Parents }})
                {% endif %}
             </td>
           </tr><tr>
