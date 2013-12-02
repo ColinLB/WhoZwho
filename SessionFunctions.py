@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger('WhoZwho.update')
 
 from django.db.models import Q
-from models import Name
+from models import Family, Name
 from subprocess import PIPE, Popen, STDOUT
 import SessionSettings as Z
 import os
@@ -16,11 +16,72 @@ import datetime
 
 def Age(bday=None, d=None):
     if bday is None:
-        return 100
+        return 1000
     if d is None:
         d = datetime.date.today()
 
     return (d.year - bday.year) - int((d.month, d.day) < (bday.month, bday.day))
+
+def FamilyAddress(name, prefix=''):
+    contact_array = []
+
+    if name.family:
+        if name.family.email:
+            contact_array += [ name.family.email ]
+
+        if name.family.spouses.count() == 2:
+            spouses = name.family.spouses.all()
+            if spouses[0].address and spouses[1].address:
+                if spouses[0].gender == 'm':
+                    address = spouses[0].address
+                else:
+                    address = spouses[1].address
+            elif spouses[0].address:
+                address = spouses[0].address
+            elif spouses[1].address:
+                address = spouses[1].address
+            else:
+                address = None
+    else:
+        address = name.address
+
+    if address:
+        if address.phone:
+            contact_array += [ address.phone ]
+
+        address_array = [ prefix + address.street, prefix + address.city + ', ' + address.province + ', ' + address.postcode ]
+
+        if len(contact_array) > 0:
+            address_array += [ prefix + ', '.join(contact_array) ]
+    else:
+        address_array = []
+
+    return address_array
+
+def FamilyName(name,opt='lastfirst', prefix=''):
+    if name.family:
+        spouses = name.family.spouses.all()
+        if len(spouses) < 2:
+            if opt == 'lastfirst':
+                return prefix +  name.last + ", " + name.first
+            else:
+                return prefix +  name.first + " " + name.last
+        else:
+            if spouses[0].gender == 'm':
+                if opt == 'lastfirst':
+                    return prefix +  spouses[0].last + ", " + spouses[0].first + " & " + spouses[1].first
+                else:
+                    return prefix +  spouses[0].first + " & " + spouses[1].first + ' ' + spouses[0].last
+            else:
+                if opt == 'lastfirst':
+                    return prefix +  spouses[1].last + ", " + spouses[1].first + " & " + spouses[0].first
+                else:
+                    return prefix +  spouses[1].first + " & " + spouses[0].first + ' ' + spouses[1].last
+
+    if opt == 'lastfirst':
+        return prefix +  name.last + ", " + name.first
+    else:
+        return prefix +  name.first + " " + name.last
 
 def GenerateTemporaryPassword(size=7, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for x in range(size))
@@ -43,6 +104,48 @@ def GetDirectoryLists(ZS):
             church_list += [name]
 
     return [ church_list, friend_list ]
+
+def Kids(name, prefix=''):
+    kids = []
+    if name.family:
+        children = name.family.children.all().order_by('birthday')
+        for child in children:
+            if Age(child.birthday) < 18:
+                kids += [child.first]
+
+    if len(kids) > 0:
+        return prefix + ', '.join(kids)
+
+    return u''
+
+def NameContacts(name, prefix=''):
+    contacts = []
+    if name.email:
+        contacts += [ name.email ]
+    if name.cell:
+        contacts += [ name.cell ]
+    if name.work_email:
+        contacts += [ name.work_email ]
+    if name.work_phone:
+        contacts += [ name.work_phone ]
+
+    if len(contacts) > 0:
+        return prefix +  name.first + ': ' + ', '.join(contacts)
+    else:
+        return  ''
+
+def Parents(name):
+    if name.parents:
+        spouses = name.parents.spouses.all()
+        if len(spouses) < 2:
+            return spouses[0].last + ", " + spouses[0].first
+        else:
+            if spouses[0].gender == 'm':
+                return spouses[0].last + ", " + spouses[0].first + " & " + spouses[1].first
+            else:
+                return spouses[1].last + ", " + spouses[1].first + " & " + spouses[0].first
+
+    return None
 
 def ProcessNewPicture(request, ZS, pic_dir, nid):
     std_jpg_size = Z.jpg_width * Z.jpg_height
