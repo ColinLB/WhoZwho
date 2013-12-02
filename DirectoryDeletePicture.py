@@ -20,7 +20,7 @@ from django.shortcuts import render_to_response
 from django.template import Context, loader
 from django.contrib.auth.models import User
 
-from models import Address, Name, Wedding
+from models import Name
 from SessionFunctions import SaveFileUpload
 
 def do(request, nid, browser_tab):
