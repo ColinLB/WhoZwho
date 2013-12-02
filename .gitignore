@@ -1,5 +1,8 @@
 *.pyc
 fixtures/*
+migrations/old/*
+static/pics/families/*
 static/pics/names/*
 static/pics/new_names/*
 static/pics/print_directory/*
+static/pics/staging/*
