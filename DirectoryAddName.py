@@ -19,6 +19,7 @@ from django.core.mail import send_mail
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import Context, loader
+from django.forms.widgets import Select, RadioSelect
 
 from models import Name
 from SessionFunctions import GenerateTemporaryPassword
@@ -26,6 +27,7 @@ from SessionFunctions import GenerateTemporaryPassword
 class DirectoryAddNameForm(forms.Form):
     first_name = forms.CharField(max_length=32)
     last_name = forms.CharField(max_length=32)
+    gender = forms.ChoiceField(widget=RadioSelect, choices=Z.Genders)
     email = forms.EmailField(max_length=32)
     login_id = forms.CharField(max_length=16)
     privileges = forms.ChoiceField(widget=Select, choices=Z.Privileges)
@@ -63,6 +65,7 @@ def do(request, nid, browser_tab):
                 new_name.user = new_user
                 new_name.first = form.cleaned_data['first_name']
                 new_name.last = form.cleaned_data['last_name']
+                new_name.gender = form.cleaned_data['gender']
 
                 if form.cleaned_data['privileges'] == '1':
                     new_name.authority = Z.NewRO
