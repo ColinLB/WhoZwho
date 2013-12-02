@@ -56,21 +56,19 @@ License or the Apache v2 License, as specified in the README file.
                     {% for name in church_list %}
 
                         <div class="tile" id="{{ name.last }},{{ name.first}}"> 
-                            {% if name.private %}
-                                <a class="more_info" href="{{ ZS.httpURL }}editpc/{{ name.id }}/{{ browser_tab }}">
-                            {% else %}
-                                <a class="more_info" href="{{ ZS.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">
-                            {% endif %}
-
-                                {% if name.private %}
-                                    <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/greyman.jpg">
-                                {% elif name.picture_uploaded %}
+                            <a class="more_info" href="{{ ZS.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">
+                                {% if name.picture_uploaded %}
                                     <img class="tile_image" src="{{ ZS.httpURL }}static/pics/names/{{ name.id }}.jpg">
+                                {% elif name.private %}
+                                    <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/greyman.jpg">
                                 {% else %}
-                                    <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/greenman.jpg">
+                                    <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/nicubunu_Abstract_person.svg">
                                 {% endif %}
 
                                 <br>{{ name.last }}, {{ name.first }}
+                                {% if name.private %}
+                                    *
+                                {% endif %}
                             </a>
                         </div class="tile" id="{{ name.last }},{{ name.first}}"> 
                     {% endfor %}
@@ -86,21 +84,19 @@ License or the Apache v2 License, as specified in the README file.
                     {% for name in friend_list %}
 
                         <div class="tile" id="{{ name.last }},{{ name.first}}"> 
-                            {% if name.private %}
-                                <a class="more_info" href="{{ ZS.httpURL }}editpc/{{ name.id }}/{{ browser_tab }}">
-                            {% else %}
-                                <a class="more_info" href="{{ ZS.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">
-                            {% endif %}
-
-                                {% if name.private %}
-                                    <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/greyman.jpg">
-                                {% elif name.picture_uploaded %}
+                            <a class="more_info" href="{{ ZS.httpURL }}ename/{{ name.id }}/{{ browser_tab }}">
+                                {% if name.picture_uploaded %}
                                     <img class="tile_image" src="{{ ZS.httpURL }}static/pics/names/{{ name.id }}.jpg">
+                                {% elif name.private %}
+                                    <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/greyman.jpg">
                                 {% else %}
-                                    <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/greenman.jpg">
+                                    <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/nicubunu_Abstract_person.svg">
                                 {% endif %}
 
                                 <br>{{ name.last }}, {{ name.first }}
+                                {% if name.private %}
+                                    *
+                                {% endif %}
                             </a>
                         </div class="tile" id="{{ name.last }},{{ name.first}}"> 
                     {% endfor %}

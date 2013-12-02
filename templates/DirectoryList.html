@@ -40,7 +40,15 @@ License or the Apache v2 License, as specified in the README file.
                     <a id="subtabsT" class="subtabs_deselected" onclick="DirectoryListSwitchTab('T');">&nbspTips&nbsp</a>
                 {% endif %}
 
-                <a class="more_info" href="{{ ZS.httpURL }}print/{{ browser_tab }}">&nbsp;Print&nbsp;</a>
+                {% if select_tab = 'P' %}
+                    <a id="subtabsP" class="subtabs_selected" onclick="DirectoryListSwitchTab('P');">&nbspPrint&nbsp</a>
+                {% else %}
+                    <a id="subtabsP" class="subtabs_deselected" onclick="DirectoryListSwitchTab('P');">&nbspPrint&nbsp</a>
+                {% endif %}
+
+<!--
+                <a class="more_info" href="{{ ZS.httpURL }}print/list/{{ browser_tab }}">&nbsp;Print&nbsp;</a>
+-->
             </div id="subtabs">
 
             <input id="selector" value="{{ select_re }}" placeholder="Select" maxlength="16" onkeyup="DirectoryListSwitchRe();" />
@@ -57,15 +65,18 @@ License or the Apache v2 License, as specified in the README file.
 
                         <div class="tile" id="{{ name.last }},{{ name.first}}"> 
                             <a class="more_info" href="{{ ZS.httpURL }}sname/{{ name.id }}/{{ browser_tab }}">
-                                {% if name.private %}
-                                    <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/greyman.jpg">
-                                {% elif name.picture_uploaded %}
+                                {% if name.picture_uploaded %}
                                     <img class="tile_image" src="{{ ZS.httpURL }}static/pics/names/{{ name.id }}.jpg">
+                                {% elif name.private %}
+                                    <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/greyman.jpg">
                                 {% else %}
-                                    <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/greenman.jpg">
+                                    <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/nicubunu_Abstract_person.svg">
                                 {% endif %}
 
                                 <br>{{ name.last }}, {{ name.first }}
+                                {% if name.private %}
+                                    *
+                                {% endif %}
                             </a>
                         </div class="tile" id="{{ name.last }},{{ name.first}}"> 
                     {% endfor %}
@@ -82,15 +93,18 @@ License or the Apache v2 License, as specified in the README file.
 
                         <div class="tile" id="{{ name.last }},{{ name.first}}"> 
                             <a class="more_info" href="{{ ZS.httpURL }}sname/{{ name.id }}/{{ browser_tab }}">
-                                {% if name.private %}
-                                    <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/greyman.jpg">
-                                {% elif name.picture_uploaded %}
+                                {% if name.picture_uploaded %}
                                     <img class="tile_image" src="{{ ZS.httpURL }}static/pics/names/{{ name.id }}.jpg">
+                                {% elif name.private %}
+                                    <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/greyman.jpg">
                                 {% else %}
-                                    <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/greenman.jpg">
+                                    <img class="tile_image" src="{{ ZS.httpURL }}static/pics/defaults/nicubunu_Abstract_person.svg">
                                 {% endif %}
 
                                 <br>{{ name.last }}, {{ name.first }}
+                                {% if name.private %}
+                                    *
+                                {% endif %}
                             </a>
                         </div class="tile" id="{{ name.last }},{{ name.first}}"> 
                     {% endfor %}
@@ -102,12 +116,31 @@ License or the Apache v2 License, as specified in the README file.
                     <div id="ListT" style="display:none">
                 {% endif %}
                     <br><br>
-                    Use the select entry field to filter the names displayed as follows:
+                    Use the select entry field to match "lastname, firstname" and filter the entries displayed as follows:
 
                     <ul>
                         <li> For names containing "ry" type "ry".
                         <li> For lastnames beginning with "G" type "^g".
                         <li> For firstnames beginning with "B" type ",b".
+                    </ul>
+
+                    <p>Note: The strings searched and entered are not case sensitive.
+                </div id="ListT">
+
+                {% if select_tab = 'P' %}
+                    <div id="ListP" style="display:block">
+                {% else %}
+                    <div id="ListP" style="display:none">
+                {% endif %}
+                    <br><br>
+
+                    <ul>
+                        <li><a class="more_info" href="{{ ZS.httpURL }}print/book/{{ browser_tab }}">&nbsp;Print Book&nbsp;</a>
+                            <p>This option produces a two sided copy of the directory which can be folded in half and
+                               stapled to produce an 5 1/2 by 8 1/2 inch book.
+                        <li><a class="more_info" href="{{ ZS.httpURL }}print/list/{{ browser_tab }}">&nbsp;Print List&nbsp;</a>
+                            <p>This option produces a single sided, 8 1/2 by 11 inch copy of the directory suitable for
+                               stapling in the top left hand corner.
                     </ul>
                 </div id="ListT">
 
