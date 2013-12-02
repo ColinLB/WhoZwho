@@ -42,6 +42,8 @@ def FamilyAddress(name, prefix=''):
                 address = spouses[1].address
             else:
                 address = None
+        else:
+            address = name.address
     else:
         address = name.address
 
