@@ -9,7 +9,7 @@ import os.path
 from django.http import HttpResponse
 from django.template import Context, loader
 from django.db.models import Q
-from models import Address, Name, Wedding
+from models import Address, Family, Name
 
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
@@ -21,32 +21,31 @@ def do(request):
         return GoLogout(request, ZS, '')
 
     list = []
-    weddings = Wedding.objects.all()
-    for wedding in weddings:
-        names = wedding.name_set.all(). \
-            exclude(private__exact=True)
-        if len(names) != 2:
+    families = Family.objects.all()
+    for family in families:
+        spouses = family.spouses.all(). \
+            exclude(approved__exact=False). \
+            exclude(out_of_town__exact=True). \
+            exclude(private__exact=True). \
+            exclude(removed__exact=True)
+
+        if len(spouses) != 2:
             continue
 
-        if names[0].removed == True or names[0].approved == False:
-            continue
-
-        if names[1].removed == True or names[1].approved == False:
-            continue
-
-        if wedding.anniversary:
-            if names[0].gender == 'm':
-                list += [ FormatAnniversary(wedding.anniversary, names[0], names[1]) ]
+        if family.anniversary:
+            if spouses[0].gender == 'm':
+                list += [ FormatAnniversary(family.anniversary, spouses[0], spouses[1]) ]
             else:
-                list += [ FormatAnniversary(wedding.anniversary, names[1], names[0]) ]
+                list += [ FormatAnniversary(family.anniversary, spouses[1], spouses[0]) ]
 
     [ anniversaries, anniversary_months] = MakeDictionary(list)
 
     list = []
     names = Name.objects.all(). \
+        exclude(approved__exact=False). \
+        exclude(out_of_town__exact=True). \
         exclude(private__exact=True). \
-        exclude(removed__exact=True). \
-        exclude(approved__exact=False)
+        exclude(removed__exact=True)
 
     for name in names:
         if name.birthday:
