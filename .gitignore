@@ -1,6 +1,7 @@
 *.pyc
 fixtures/*
 migrations/old/*
+static/pics/backups/*
 static/pics/families/*
 static/pics/names/*
 static/pics/new_names/*
