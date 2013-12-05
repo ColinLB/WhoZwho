@@ -54,7 +54,7 @@ class DescribeMarriedForm(forms.ModelForm):
     picture = forms.ImageField(required=False)
 
 # The Single Parent Family Request Form:
-class DescribeSingleForm(forms.Form):
+class DescribeSingleParentForm(forms.Form):
     Joint_Email = forms.EmailField(max_length=32, required=False)
     picture = forms.ImageField(required=False)
 
@@ -236,7 +236,7 @@ def parents(request, nid, browser_tab):
     context.update(csrf(request))
     return render_to_response('DirectoryDescribeParents.html', context )
 
-def single(request, nid, browser_tab):
+def singleparent(request, nid, browser_tab):
     ZS = Z.SetSession(request, browser_tab)
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS)
@@ -250,7 +250,7 @@ def single(request, nid, browser_tab):
             return GoLogout(request, ZS, "[DF02]: URL containd an invalid name ID.")
 
     if request.method == 'POST': # If the form has been submitted...
-        form = DescribeSingleForm(request.POST)
+        form = DescribeSingleParentForm(request.POST)
         if form.is_valid():
                 if name.family:
                     family = name.family
@@ -290,11 +290,11 @@ def single(request, nid, browser_tab):
             ZS['ErrorMessage'] = str(form.errors)
     else:
         if name.family:
-            form = DescribeSingleForm(initial={
+            form = DescribeSingleParentForm(initial={
                 'Joint_Email': name.family.email,
                 }) 
         else:
-            form = DescribeSingleForm()
+            form = DescribeSingleParentForm()
 
     context = {
         'browser_tab': ZS['Tabs'][ZS['ActiveTab']][2],
@@ -304,4 +304,4 @@ def single(request, nid, browser_tab):
         }
 
     context.update(csrf(request))
-    return render_to_response('DirectoryDescribeSingle.html', context )
+    return render_to_response('DirectoryDescribeSingleParent.html', context )
