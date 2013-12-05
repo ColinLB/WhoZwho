@@ -55,8 +55,8 @@ class Address(models.Model):
 class Family(models.Model):
     anniversary = models.DateField(null=True)
     email = models.CharField(max_length=32, null=True)
-    one_tax_receipt = models.BooleanField()
-    picture_uploaded = models.BooleanField()
+    one_tax_receipt = models.BooleanField(default=False)
+    picture_uploaded = models.BooleanField(default=False)
     owner = models.IntegerField(null=True)
 
 class Name(models.Model):
@@ -75,12 +75,12 @@ class Name(models.Model):
     work_email = models.CharField(max_length=32, null=True)
     work_phone = models.CharField(max_length=32, null=True)
 
-    approved = models.BooleanField()
-    authority = models.IntegerField()
-    out_of_town = models.BooleanField()
-    picture_uploaded = models.BooleanField()
-    private = models.BooleanField()
-    removed = models.BooleanField()
+    approved = models.BooleanField(default=False)
+    authority = models.IntegerField(default=False)
+    out_of_town = models.BooleanField(default=False)
+    picture_uploaded = models.BooleanField(default=False)
+    private = models.BooleanField(default=False)
+    removed = models.BooleanField(default=False)
 
     bad_password_attempts = models.IntegerField(null=True)
     bad_password_timeout = models.IntegerField(null=True)
@@ -97,5 +97,5 @@ class Name(models.Model):
 class Wedding(models.Model):
     anniversary = models.DateField(null=True)
     email = models.CharField(max_length=32)
-    one_tax_receipt = models.BooleanField()
+    one_tax_receipt = models.BooleanField(default=False)
     owner = models.IntegerField(null=True)
