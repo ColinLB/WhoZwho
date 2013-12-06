@@ -27,7 +27,7 @@ from models import Family, Name
 
 # The Describe Family function has three subfunctions:
 #
-#   1. Describe Parents - links a Name object with a Family object.
+#   1. Describe Individual - links a Name object with a Family object.
 #   2. Describe a Married Couple Family - object contains two spouses, anniversary, joint email/receipt, and photo,
 #      and is a "Parent" target (see #1, above).
 #   3. Describe a Single Parent Family - object contains joint email and photo, and is a "Parent" target (see #1, above).
@@ -36,15 +36,15 @@ from models import Family, Name
 #
 # The Parent Request Form:
 class ChooseParents(models.Model):
-    Select_Parents = models.ForeignKey(Family, blank=True, null=True)
+    Select_Parents = models.ForeignKey(Family, blank=True, null=True, on_delete=models.DO_NOTHING)
 
-class DescribeParentsForm(forms.ModelForm):
+class DescribeIndividualForm(forms.ModelForm):
     class Meta:
         model = ChooseParents
 
 # The Married Couple Request Form:
 class ChooseSpouse(models.Model):
-    Select_Spouse = models.ForeignKey(Name)
+    Select_Spouse = models.ForeignKey(Name, blank=True, null=True, on_delete=models.DO_NOTHING)
 
 class DescribeMarriedForm(forms.ModelForm):
     class Meta:
@@ -169,7 +169,7 @@ def married(request, nid, browser_tab):
     context.update(csrf(request))
     return render_to_response('DirectoryDescribeMarried.html', context )
 
-def parents(request, nid, browser_tab):
+def Individual(request, nid, browser_tab):
     ZS = Z.SetSession(request, browser_tab)
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS)
@@ -183,7 +183,7 @@ def parents(request, nid, browser_tab):
             return GoLogout(request, ZS, "[DF02]: URL containd an invalid name ID.")
 
     if request.method == 'POST': # If the form has been submitted...
-        form = DescribeParentsForm(request.POST)
+        form = DescribeIndividualForm(request.POST)
         if form.is_valid():
                 if name.parents:
                     parents = name.parents
@@ -203,11 +203,11 @@ def parents(request, nid, browser_tab):
             ZS['ErrorMessage'] = str(form.errors)
     else:
         if name.parents:
-            form = DescribeParentsForm(initial={
+            form = DescribeIndividualForm(initial={
                 'Select_Parents': name.parents,
                 }) 
         else:
-            form = DescribeParentsForm(initial={
+            form = DescribeIndividualForm(initial={
                 'Select_Parents': None,
                 }) 
 
@@ -234,7 +234,7 @@ def parents(request, nid, browser_tab):
         }
 
     context.update(csrf(request))
-    return render_to_response('DirectoryDescribeParents.html', context )
+    return render_to_response('DirectoryDescribeIndividual.html', context )
 
 def singleparent(request, nid, browser_tab):
     ZS = Z.SetSession(request, browser_tab)

@@ -21,7 +21,7 @@ from django.template import Context, loader
 from models import Address, Name
 
 class DirectoryChooseAddressModel(models.Model):
-    Choose_Address = models.ForeignKey(Address)
+    Choose_Address = models.ForeignKey(Address, blank=True, null=True, on_delete=models.DO_NOTHING)
 
 class DirectoryChooseAddressForm(forms.ModelForm):
     class Meta:
