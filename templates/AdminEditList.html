@@ -40,7 +40,11 @@ License or the Apache v2 License, as specified in the README file.
                     <a id="subtabsT" class="subtabs_deselected" onclick="DirectoryListSwitchTab('T');">&nbspTips&nbsp</a>
                 {% endif %}
 
-                <a class="more_info" href="{{ ZS.httpURL }}print/{{ browser_tab }}">&nbsp;Print&nbsp;</a>
+                {% if select_tab = 'P' %}
+                    <a id="subtabsP" class="subtabs_selected" onclick="DirectoryListSwitchTab('P');">&nbspPrint&nbsp</a>
+                {% else %}
+                    <a id="subtabsP" class="subtabs_deselected" onclick="DirectoryListSwitchTab('P');">&nbspPrint&nbsp</a>
+                {% endif %}
             </div id="subtabs">
 
             <input id="selector" value="{{ select_re }}" placeholder="Select" maxlength="16" onkeyup="DirectoryListSwitchRe();" />
@@ -114,6 +118,23 @@ License or the Apache v2 License, as specified in the README file.
                         <li> For names containing "ry" type "ry".
                         <li> For lastnames beginning with "G" type "^g".
                         <li> For firstnames beginning with "B" type ",b".
+                    </ul>
+                </div id="ListT">
+
+                {% if select_tab = 'P' %}
+                    <div id="ListP" style="display:block">
+                {% else %}
+                    <div id="ListP" style="display:none">
+                {% endif %}
+                    <br><br>
+
+                    <ul>
+                        <li><a class="more_info" href="{{ ZS.httpURL }}print/book/{{ browser_tab }}">&nbsp;Print Book&nbsp;</a>
+                            <p>This option produces a two sided copy of the directory which can be folded in half and
+                               stapled to produce an 5 1/2 by 8 1/2 inch book.
+                        <li><a class="more_info" href="{{ ZS.httpURL }}print/list/{{ browser_tab }}">&nbsp;Print List&nbsp;</a>
+                            <p>This option produces a single sided, 8 1/2 by 11 inch copy of the directory suitable for
+                               stapling in the top left hand corner.
                     </ul>
                 </div id="ListT">
 
