@@ -86,10 +86,10 @@ class Name(models.Model):
     bad_password_timeout = models.IntegerField(null=True)
     password_timeout = models.IntegerField(null=True)
 
-    address = models.ForeignKey('Address', null=True)
-    family = models.ForeignKey('Family', related_name='spouses', null=True)
-    parents = models.ForeignKey('Family', related_name='children', null=True)
-    wedding = models.ForeignKey('Wedding', null=True)
+    address = models.ForeignKey('Address', blank=True, null=True, on_delete=models.SET_NULL)
+    family = models.ForeignKey('Family', related_name='spouses', blank=True, null=True, on_delete=models.SET_NULL)
+    parents = models.ForeignKey('Family', related_name='children', blank=True, null=True, on_delete=models.SET_NULL)
+    wedding = models.ForeignKey('Wedding', blank=True, null=True, on_delete=models.SET_NULL)
 
     owner = models.IntegerField(null=True)
     user = models.OneToOneField(User, null=True)
