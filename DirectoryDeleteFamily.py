@@ -25,20 +25,8 @@ def nofamily(request, nid, browser_tab):
             return GoLogout(request, ZS, "[DF05]: URL containd an invalid name ID.")
 
     if name.family:
-        family = name.family
+        name.family.delete()
 
-#        spouses = family.spouses.all()
-#        for spouse in spouses:
-#            spouse.family = None
-#            spouse.save()
-
-#        children = family.children.all()
-#        for child in children:
-#            child.parents = None
-#            child.save()
-
-    name.family.delete()
-
-    logger.info(ZS['User'] + ' DF ' + str(request.POST))
+        logger.info(ZS['User'] + ' DF ' + str(request.POST))
 
     return HttpResponseRedirect('/WhoZwho/ename/' + nid + '/' + browser_tab)
