@@ -49,12 +49,13 @@ class Address(models.Model):
     province = models.CharField(max_length=32)
     country = models.CharField(max_length=32)
     postcode = models.CharField(max_length=32)
+    email = models.CharField(max_length=32, null=True)
     phone = models.CharField(max_length=32, null=True)
     owner = models.IntegerField(null=True)
 
 class Family(models.Model):
     anniversary = models.DateField(null=True)
-    email = models.CharField(max_length=32, null=True)
+    address = models.ForeignKey('Address', related_name='family_address', blank=True, null=True, on_delete=models.SET_NULL)
     one_tax_receipt = models.BooleanField(default=False)
     picture_uploaded = models.BooleanField(default=False)
     owner = models.IntegerField(null=True)
