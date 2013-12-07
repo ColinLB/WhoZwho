@@ -50,7 +50,7 @@ def do(request, nid, browser_tab):
         # Purge ALL unused addresses.
         addresses = Address.objects.all()
         for address in addresses:
-            if address.name_set.count() < 1:
+            if address.family_set.count() < 1 and address.name_set.count() < 1:
                 logger.info(ZS['User'] + ' BN Unused address deleted: id=' + str(address.id) + ', ' + \
                     address.street + ', ' + address.city + ', ' + address.province + ', ' + address.postcode)
                 address.delete()

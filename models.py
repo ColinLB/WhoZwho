@@ -55,7 +55,7 @@ class Address(models.Model):
 
 class Family(models.Model):
     anniversary = models.DateField(null=True)
-    address = models.ForeignKey('Address', related_name='family_address', blank=True, null=True, on_delete=models.SET_NULL)
+    address = models.ForeignKey('Address', blank=True, null=True, on_delete=models.SET_NULL)
     one_tax_receipt = models.BooleanField(default=False)
     picture_uploaded = models.BooleanField(default=False)
     owner = models.IntegerField(null=True)
