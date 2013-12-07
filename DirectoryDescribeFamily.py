@@ -22,40 +22,106 @@ from django.shortcuts import render_to_response
 from django.template import Context, loader
 
 from SessionFunctions import ProcessNewPicture
-from models import Family, Name
+from models import Address, Family, Name
 
 
-# The Describe Family function has three subfunctions:
+# The Describe Family function has the following subfunctions:
 #
 #   1. Describe Individual - links a Name object with a Family object.
 #   2. Describe a Married Couple Family - object contains two spouses, anniversary, joint email/receipt, and photo,
 #      and is a "Parent" target (see #1, above).
 #   3. Describe a Single Parent Family - object contains joint email and photo, and is a "Parent" target (see #1, above).
 #
-# Each subfunction has its own form and method.
+# Each subfunction has its own form and method:
 #
-# The Parent Request Form:
-class ChooseParents(models.Model):
+#
+#
+# The Individual Request Form & Method:
+#
+class IndividualChoices(models.Model):
+    Select_Address = models.ForeignKey(Address, blank=True, null=True, on_delete=models.DO_NOTHING)
     Select_Parents = models.ForeignKey(Family, blank=True, null=True, on_delete=models.DO_NOTHING)
 
 class DescribeIndividualForm(forms.ModelForm):
     class Meta:
-        model = ChooseParents
+        model = IndividualChoices
 
-# The Married Couple Request Form:
-class ChooseSpouse(models.Model):
+def individual(request, nid, browser_tab):
+    ZS = Z.SetSession(request, browser_tab)
+    if ZS['ErrorMessage']:
+        return GoLogout(request, ZS)
+
+    try:
+        name = Name.objects.get(pk=int(nid))
+    except:
+        return GoLogout(request, ZS, "[DF01]: URL containd an invalid name ID.")
+
+        if ZS['Authority'] < Z.Admin and name.owner != ZS['AuthorizedOwner']:
+            return GoLogout(request, ZS, "[DF02]: URL containd an invalid name ID.")
+
+    if request.method == 'POST': # If the form has been submitted...
+        form = DescribeIndividualForm(request.POST)
+        if form.is_valid():
+                name.address = form.cleaned_data['Select_Address']
+                name.parents = form.cleaned_data['Select_Parents']
+                name.save()
+
+                logger.info(ZS['User'] + ' DF ' + str(request.POST))
+
+                return HttpResponseRedirect('/WhoZwho/ename/' + nid + '/' + browser_tab)
+        else:
+            ZS['ErrorMessage'] = str(form.errors)
+    else:
+        selected_address, selected_parents = None, None
+        if name.address:
+            selected_address = name.address
+
+        if name.parents:
+            selected_parents = name.parents
+
+        form = DescribeIndividualForm(initial={
+            'Select_Address': selected_address,
+            'Select_Parents': selected_parents,
+            }) 
+
+    families = Family.objects.all()
+
+    form.fields['Select_Address'].choices = Achoices(name)
+
+    pchoices = [ ['', ''] ]
+    for family in families:
+        spouses = family.spouses.all()
+        if spouses.count() < 2:
+            pchoices += [ [family.id, spouses[0].last + ", " + spouses[0].first] ]
+        elif spouses[0].gender == 'm':
+            pchoices += [ [family.id, spouses[0].last + ", " + spouses[0].first + " & " + spouses[1].first] ]
+        else:
+            pchoices += [ [family.id, spouses[1].last + ", " + spouses[1].first + " & " + spouses[0].first] ]
+
+    spchoices = sorted(pchoices, key=lambda family_name: family_name[1]) 
+    form.fields['Select_Parents'].choices = spchoices
+
+    context = {
+        'browser_tab': ZS['Tabs'][ZS['ActiveTab']][2],
+        'form': form,
+        'name': name,
+        'ZS': ZS
+        }
+
+    context.update(csrf(request))
+    return render_to_response('DirectoryDescribeIndividual.html', context )
+
+#
+# The Married Couple Request Form & Method:
+#
+class MarriedChoices(models.Model):
+    Select_Address = models.ForeignKey(Address, blank=True, null=True, on_delete=models.DO_NOTHING)
     Select_Spouse = models.ForeignKey(Name, blank=True, null=True, on_delete=models.DO_NOTHING)
 
 class DescribeMarriedForm(forms.ModelForm):
     class Meta:
-        model = ChooseSpouse
+        model = MarriedChoices
     anniversary = DateField(widget=SelectDateWidget(years=range(date.today().year, date.today().year - 100, -1)), required=False)
-    Joint_Email = forms.EmailField(max_length=32, required=False)
-    picture = forms.ImageField(required=False)
-
-# The Single Parent Family Request Form:
-class DescribeSingleParentForm(forms.Form):
-    Joint_Email = forms.EmailField(max_length=32, required=False)
     picture = forms.ImageField(required=False)
 
 def married(request, nid, browser_tab):
@@ -91,8 +157,8 @@ def married(request, nid, browser_tab):
                     family = Family()
                     family.owner = name.owner
 
+                family.address = form.cleaned_data['Select_Address']
                 family.anniversary = form.cleaned_data['anniversary']
-                family.email = form.cleaned_data['Joint_Email']
                 family.save()
 
                 if request.FILES.has_key('picture'):
@@ -121,21 +187,25 @@ def married(request, nid, browser_tab):
             ZS['ErrorMessage'] = str(form.errors)
     else:
         if name.family:
+            selected_address, selected_spouse = None, None
+            if name.family.address:
+                selected_address = name.family.address
+
             spouses = name.family.spouses.all(). \
                 exclude(id__exact=name.id)
 
             if spouses:
-                spouse = spouses[0]
-            else:
-                spouse = None
+                selected_spouse = spouses[0]
 
             form = DescribeMarriedForm(initial={
-                'Select_Spouse': spouse,
+                'Select_Address': selected_address,
+                'Select_Spouse': selected_spouse,
                 'anniversary': name.family.anniversary,
-                'Joint_Email': name.family.email,
                 }) 
         else:
             form = DescribeMarriedForm()
+
+    form.fields['Select_Address'].choices = Achoices(name)
 
     temp_schoices = Name.objects.all(). \
         filter(owner__exact=name.owner). \
@@ -169,72 +239,16 @@ def married(request, nid, browser_tab):
     context.update(csrf(request))
     return render_to_response('DirectoryDescribeMarried.html', context )
 
-def individual(request, nid, browser_tab):
-    ZS = Z.SetSession(request, browser_tab)
-    if ZS['ErrorMessage']:
-        return GoLogout(request, ZS)
+#
+# The Single Parent Family Request Form & Method:
+#
+class SingleParentChoices(models.Model):
+    Select_Address = models.ForeignKey(Address, blank=True, null=True, on_delete=models.DO_NOTHING)
 
-    try:
-        name = Name.objects.get(pk=int(nid))
-    except:
-        return GoLogout(request, ZS, "[DF01]: URL containd an invalid name ID.")
-
-        if ZS['Authority'] < Z.Admin and name.owner != ZS['AuthorizedOwner']:
-            return GoLogout(request, ZS, "[DF02]: URL containd an invalid name ID.")
-
-    if request.method == 'POST': # If the form has been submitted...
-        form = DescribeIndividualForm(request.POST)
-        if form.is_valid():
-                if name.parents:
-                    parents = name.parents
-                    children = parents.children.all()
-                    for remove_child in children:
-                        if remove_child.id == name.id:
-                            remove_child.parents = None
-                            remove_child.save()
-
-                name.parents = form.cleaned_data['Select_Parents']
-                name.save()
-
-                logger.info(ZS['User'] + ' DF ' + str(request.POST))
-
-                return HttpResponseRedirect('/WhoZwho/ename/' + nid + '/' + browser_tab)
-        else:
-            ZS['ErrorMessage'] = str(form.errors)
-    else:
-        if name.parents:
-            form = DescribeIndividualForm(initial={
-                'Select_Parents': name.parents,
-                }) 
-        else:
-            form = DescribeIndividualForm(initial={
-                'Select_Parents': None,
-                }) 
-
-    families = Family.objects.all()
-
-    pchoices = [ ['', ''] ]
-    for family in families:
-        spouses = family.spouses.all()
-        if spouses.count() < 2:
-            pchoices += [ [family.id, spouses[0].last + ", " + spouses[0].first] ]
-        elif spouses[0].gender == 'm':
-            pchoices += [ [family.id, spouses[0].last + ", " + spouses[0].first + " & " + spouses[1].first] ]
-        else:
-            pchoices += [ [family.id, spouses[1].last + ", " + spouses[1].first + " & " + spouses[0].first] ]
-
-    spchoices = sorted(pchoices, key=lambda family_name: family_name[1]) 
-    form.fields['Select_Parents'].choices = spchoices
-
-    context = {
-        'browser_tab': ZS['Tabs'][ZS['ActiveTab']][2],
-        'form': form,
-        'name': name,
-        'ZS': ZS
-        }
-
-    context.update(csrf(request))
-    return render_to_response('DirectoryDescribeIndividual.html', context )
+class DescribeSingleParentForm(forms.ModelForm):
+    class Meta:
+        model = SingleParentChoices
+    picture = forms.ImageField(required=False)
 
 def singleparent(request, nid, browser_tab):
     ZS = Z.SetSession(request, browser_tab)
@@ -263,8 +277,8 @@ def singleparent(request, nid, browser_tab):
                     family = Family()
                     family.owner = name.owner
 
+                family.address = form.cleaned_data['Select_Address']
                 family.anniversary = None
-                family.email = form.cleaned_data['Joint_Email']
                 family.save()
 
                 if request.FILES.has_key('picture'):
@@ -290,11 +304,17 @@ def singleparent(request, nid, browser_tab):
             ZS['ErrorMessage'] = str(form.errors)
     else:
         if name.family:
+            selected_address = None
+            if name.family.address:
+                selected_address = name.family.address
+
             form = DescribeSingleParentForm(initial={
-                'Joint_Email': name.family.email,
+                'Select_Address': selected_address,
                 }) 
         else:
             form = DescribeSingleParentForm()
+
+    form.fields['Select_Address'].choices = Achoices(name)
 
     context = {
         'browser_tab': ZS['Tabs'][ZS['ActiveTab']][2],
@@ -305,3 +325,23 @@ def singleparent(request, nid, browser_tab):
 
     context.update(csrf(request))
     return render_to_response('DirectoryDescribeSingleParent.html', context )
+#
+# Achoices: Return a dictionary of address choices.
+#
+def Achoices(name):
+    temp_addresses = Address.objects.all(). \
+        filter(owner__exact=name.owner)
+
+    choices = [ ['', ''] ]
+    for address in temp_addresses:
+#       choice = [ address.street + ', ' + address.city + ', ' + address.province + ', ' + address.postcode ]
+        choice = [ address.street ]
+        if address.email:
+            choice += [ address.email ]
+
+        if address.phone:
+            choice += [ address.phone ]
+
+        choices += [ [address.id, ', '.join(choice)] ]
+
+    return sorted(choices, key=lambda address: address[1])
