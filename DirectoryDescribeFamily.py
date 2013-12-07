@@ -169,7 +169,7 @@ def married(request, nid, browser_tab):
     context.update(csrf(request))
     return render_to_response('DirectoryDescribeMarried.html', context )
 
-def Individual(request, nid, browser_tab):
+def individual(request, nid, browser_tab):
     ZS = Z.SetSession(request, browser_tab)
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS)

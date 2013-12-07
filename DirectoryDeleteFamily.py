@@ -27,17 +27,17 @@ def nofamily(request, nid, browser_tab):
     if name.family:
         family = name.family
 
-        spouses = family.spouses.all()
-        for spouse in spouses:
-            spouse.family = None
-            spouse.save()
+#        spouses = family.spouses.all()
+#        for spouse in spouses:
+#            spouse.family = None
+#            spouse.save()
 
-        children = family.children.all()
-        for child in children:
-            child.parents = None
-            child.save()
+#        children = family.children.all()
+#        for child in children:
+#            child.parents = None
+#            child.save()
 
-        family.delete()
+    name.family.delete()
 
     logger.info(ZS['User'] + ' DF ' + str(request.POST))
 
