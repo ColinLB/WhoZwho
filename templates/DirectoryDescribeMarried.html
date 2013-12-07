@@ -46,7 +46,6 @@ License or the Apache v2 License, as specified in the README file.
               {% else %}
                 <img class="table_image" src="{{ ZS.httpURL }}static/pics/defaults/nicubunu_Abstract_people.svg">
               {% endif %}
-              <br><a class="more_info" href="{{ ZS.httpURL }}nofamily/{{ name.id }}/{{ browser_tab }}"">(delete family)</a>
             </td>
             <td class="table_column_500px" valign="top">
               <a class="subtabs_selected" href="{{ ZS.httpURL }}married/{{ name.id }}/{{ browser_tab }}"">&nbspMarried&nbsp</a>
@@ -64,6 +63,10 @@ License or the Apache v2 License, as specified in the README file.
                   </tr>
                 {% endfor %}
               </table>
+
+              {% if name.family %}
+                <br><a class="more_info" href="{{ ZS.httpURL }}nofamily/{{ name.id }}/{{ browser_tab }}"">(delete family)</a>
+              {% endif %}
             </td>
           </tr><tr rowspan="0" valign="bottom">
             <td class="table_column_25px"></td>
