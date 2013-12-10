@@ -5,6 +5,7 @@ License or the Apache v2 License, as specified in the README file.
 -->
 
 {% extends "SessionAuthenticated.html" %}
+{% load TemplateTags %}
 
 {% block body %}
     <script type="text/javascript">
@@ -26,9 +27,9 @@ License or the Apache v2 License, as specified in the README file.
           <tr>
             <td class="left_margin"></td>
             {% if name.private %}
-              <td id=page_title>Edit Personal Contact: {{ name.first }} {{ name.last }}</td>
+              <td id=page_title>Edit Personal Contact: {{ name|IndividualName }}</td>
             {% else %}
-              <td id=page_title>Edit: {{ name.first }} {{ name.last }}</td>
+              <td id=page_title>Edit: {{ name|IndividualName }}</td>
             {% endif %}
           </tr><tr>
             <td></td>
@@ -85,43 +86,6 @@ License or the Apache v2 License, as specified in the README file.
             </td>
             <td class="left_margin"></td>
             <td valign="top">
-               {% if not name.address_id %}
-                 {% if addresses|length > 0 %}
-
-                   <a href="{{ ZS.httpURL }}caddr/{{ name.id }}/{{ browser_tab }}">(choose address,</a>
-                   <a class="more_info" onclick="ToggleOptions('AddressOptions');">&nbsp or)</a><br>
-                   <div id="AddressOptions" style="display:none">
-                     <a class="more_info" href="{{ ZS.httpURL }}eaddr/{{ name.id }}/0/{{ browser_tab }}">(add address)</a><br>
-                   </div>
-                 {% else %}
-                   <a href="{{ ZS.httpURL }}eaddr/{{ name.id }}/0/{{ browser_tab }}">(add address)</a><br>
-                 {% endif %}
-               {% else %}
-                 {{ name.address.street }}<br>
-                 {% if name.address.address_line2 %}
-                   {{ name.address.address_line2 }}<br>
-                   {% if name.address.address_line3 %}
-                     {{ name.address.address_line3 }}<br>
-                   {% endif %}
-                 {% endif %}
-                 {{ name.address.city }}, {{ name.address.province }}<br>
-                 {{ name.address.postcode }}
-                 {% if name.address.phone %}
-                   <br>{{ name.address.phone }}
-                 {% endif %}
-                 &nbsp&nbsp
-                 <a href="{{ ZS.httpURL }}eaddr/{{ name.id }}/{{ name.address.id }}/{{ browser_tab }}">(edit,</a>
-                 <a class="more_info" onclick="ToggleOptions('AddressOptions');">&nbsp or)</a><br>
-                 <div id="AddressOptions" style="display:none">
-                   &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
-                   <a class="more_info" href="{{ ZS.httpURL }}caddr/{{ name.id }}/{{ browser_tab }}">(choose address)</a><br>
-                   &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
-                   <a class="more_info" href="{{ ZS.httpURL }}eaddr/{{ name.id }}/0/{{ browser_tab }}">(add address)</a><br>
-                 </div>
-               {% endif %}
-
-               <br>
-
                {% if ZS.Authority >= Admin %}
                  <a href="{{ ZS.httpURL }}nname/{{ name.id }}/{{ browser_tab }}">(add family member)</a>
 
@@ -130,31 +94,50 @@ License or the Apache v2 License, as specified in the README file.
 
                {% if name.family %}
                  {% if name.family.spouses.all|length < 2 %}
-                   <a class="more_info" href="{{ ZS.httpURL }}singleparent/{{ name.id }}/{{ browser_tab }}">(describe family)</a>
+                   <a href="{{ ZS.httpURL }}singleparent/{{ name.id }}/{{ browser_tab }}">Describe family:</a>
                  {% else %}
-                   <a class="more_info" href="{{ ZS.httpURL }}married/{{ name.id }}/{{ browser_tab }}">(describe family)</a>
+                   <a href="{{ ZS.httpURL }}married/{{ name.id }}/{{ browser_tab }}">Describe family:</a>
                  {% endif %}
                {% else %}
-                 <a class="more_info" href="{{ ZS.httpURL }}individual/{{ name.id }}/{{ browser_tab }}">(describe family)</a>
+                 <a href="{{ ZS.httpURL }}individual/{{ name.id }}/{{ browser_tab }}">Describe family:</a>
                {% endif %}
 
-               <br>{{ FamilyName }}
-               {% if Kids %}
-                 <br>&nbsp&nbsp&nbsp{{ Kids }}
-               {% endif %}
-               
+               <br>&nbsp&nbsp{{ name|FamilyName }}
 
                {% if name.family.anniversary %}
-                 <br>&nbsp&nbsp&nbsp{{ name.family.anniversary }}
+                 &nbsp({{ name.family.anniversary }}) 
                {% endif %}
 
-               {% if name.family.email %}
-                 <br>&nbsp&nbsp&nbsp{{ name.family.email }}
+               {% for kids in name|Kids %}
+                 <br>&nbsp&nbsp&nbsp&nbsp{{ kids }}
+               {% endfor %}
+               
+               {% if name.address %}
+                 <br><br>&nbsp&nbsp;Individual address:
+                   {% for entry in name.address|FormatAddress %}
+                     <br>&nbsp&nbsp&nbsp&nbsp{{ entry }}
+                   {% endfor %}
                {% endif %}
                
+               {% if name.family and name.family.address %}
+                 <br><br>&nbsp&nbsp;Family address:
+                   {% for entry in name.family.address|FormatAddress %}
+                     <br>&nbsp&nbsp&nbsp&nbsp{{ entry }}
+                   {% endfor %}
+               {% endif %}
 
                {% if name.parents %}
-                 <br>&nbsp&nbsp&nbsp({{ Parents }})
+                 <br><br>&nbsp&nbsp;Parents:
+                   {% for parents in name|Parents %}
+                     <br>&nbsp&nbsp&nbsp&nbsp{{ parents }}
+                   {% endfor %}
+
+                 {% if name.parents.address and name.birthday|Age < 18 %}
+                   <br><br>&nbsp&nbsp;Parental address:
+                   {% for entry in name.parents.address|FormatAddress %}
+                     <br>&nbsp&nbsp&nbsp&nbsp{{ entry }}
+                   {% endfor %}
+                 {% endif %}
                {% endif %}
             </td>
           </tr><tr>
