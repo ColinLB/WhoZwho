@@ -34,7 +34,7 @@ urlpatterns = patterns('',
     url(r'^rmpic/(?P<nid>\d+)/(?P<browser_tab>[a-zA-Z]+)$',               'WhoZwho.DirectoryDeletePicture.do'),
     url(r'^print/(?P<option>[a-zA-Z]+)/(?P<browser_tab>[a-zA-Z]+)$',      'WhoZwho.DirectoryPrint.do'),
 
-    url(r'^addpc/(?P<browser_tab>[a-zA-Z]+)$',                            'WhoZwho.DirectoryAddPC.do'),
+    url(r'^addpc/(?P<browser_tab>[a-zA-Z]+)$',                            'WhoZwho.DirectoryAddPrivateContact.do'),
     url(r'^purge/(?P<nid>\d+)/(?P<browser_tab>[a-zA-Z]+)$',               'WhoZwho.DirectoryDeleteByName.do'),
 
     url(r'^imenu$',                                                       'WhoZwho.InfoMenu.do'),

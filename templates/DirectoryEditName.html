@@ -27,7 +27,7 @@ License or the Apache v2 License, as specified in the README file.
           <tr>
             <td class="left_margin"></td>
             {% if name.private %}
-              <td id=page_title>Edit Personal Contact: {{ name|IndividualName }}</td>
+              <td id=page_title>Edit Private Contact: {{ name|IndividualName }}</td>
             {% else %}
               <td id=page_title>Edit: {{ name|IndividualName }}</td>
             {% endif %}
@@ -66,7 +66,7 @@ License or the Apache v2 License, as specified in the README file.
                 <a class="more_info" href="{{ ZS.httpURL }}rmnam/{{ name.id }}">(delete name)</a>
               {% elif name.private %}
                 <br><br>
-                <a class="more_info" href="{{ ZS.httpURL }}purge/{{ name.id }}/{{ browser_tab }}">(delete personal contact)</a>
+                <a class="more_info" href="{{ ZS.httpURL }}purge/{{ name.id }}/{{ browser_tab }}">(delete private contact)</a>
               {% endif %}
             </td>
             <td class="left_margin"></td>

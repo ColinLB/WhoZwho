@@ -27,7 +27,7 @@ from django.contrib.auth.models import User
 from models import Name
 from SessionFunctions import SaveFileUpload
 
-class DirectoryAddPCForm(forms.Form):
+class AddPrivateContactForm(forms.Form):
     first = forms.CharField(max_length=32)
     last = forms.CharField(max_length=32)
     gender = forms.ChoiceField(widget=RadioSelect, choices=Z.Genders)
@@ -38,12 +38,12 @@ def do(request, browser_tab):
         return GoLogout(request, ZS)
 
     if request.method == 'POST': # If the form has been submitted...
-        form = DirectoryAddPCForm(request.POST, request.FILES)
+        form = AddPrivateContactForm(request.POST, request.FILES)
         if form.is_valid():
             try:
                 user = User.objects.get(username__exact=ZS['User'])
             except:
-                return GoLogout(request, ZS, "[PC01]: Add personal contact disabled.")
+                return GoLogout(request, ZS, "[PC01]: Add private contact disabled.")
 
             new_user = User()
             new_user.username = 'pc' + str(time.time())
@@ -70,7 +70,7 @@ def do(request, browser_tab):
         else:
             ZS['ErrorMessage'] = str(form.errors)
     else:
-        form = DirectoryAddPCForm()
+        form = AddPrivateContactForm()
 
     context = {
         'Admin': Z.Admin,
@@ -80,4 +80,4 @@ def do(request, browser_tab):
         }
 
     context.update(csrf(request))
-    return render_to_response('DirectoryAddPC.html', context )
+    return render_to_response('DirectoryAddPrivateContact.html', context )
