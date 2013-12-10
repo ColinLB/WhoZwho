@@ -174,9 +174,9 @@ def FamilyMenu(request, nid, browser_tab):
     return Menu(request, nid, browser_tab, ZS, 'f')
    
 #
-# Create Individual Address.
+# Create Personal Address.
 #
-def CreateIndividual(request, nid, browser_tab):
+def CreatePersonal(request, nid, browser_tab):
     ZS = Z.SetSession(request, browser_tab)
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS)
@@ -184,9 +184,9 @@ def CreateIndividual(request, nid, browser_tab):
     return EditAddress(request, nid, browser_tab, ZS, 'ci')
    
 #
-# Edit Individual Address.
+# Edit Personal Address.
 #
-def EditIndividual(request, nid, browser_tab):
+def EditPersonal(request, nid, browser_tab):
     ZS = Z.SetSession(request, browser_tab)
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS)
@@ -194,9 +194,9 @@ def EditIndividual(request, nid, browser_tab):
     return EditAddress(request, nid, browser_tab, ZS, 'ei')
    
 #
-# Individual Address Menu.
+# Personal Address Menu.
 #
-def IndividualMenu(request, nid, browser_tab):
+def PersonalMenu(request, nid, browser_tab):
     ZS = Z.SetSession(request, browser_tab)
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS)

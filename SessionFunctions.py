@@ -80,7 +80,7 @@ def FamilyName(name,opt='lastfirst', prefix=''):
                 else:
                     return prefix +  spouses[1].first + " & " + spouses[0].first + ' ' + spouses[1].last
 
-    return IndividualName(name, opt, prefix)
+    return PersonalName(name, opt, prefix)
 
 def FormatAddress(address, prefix=''):
     if address:
@@ -132,7 +132,7 @@ def GetDirectoryLists(ZS):
 
     return [ church_list, friend_list ]
 
-def IndividualName(name,opt='firstlast', prefix=''):
+def PersonalName(name,opt='firstlast', prefix=''):
     if opt == 'lastfirst':
         return prefix +  name.last + ", " + name.first
     else:

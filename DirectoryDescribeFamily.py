@@ -27,7 +27,7 @@ from models import Address, Family, Name
 
 # The Describe Family function has the following subfunctions:
 #
-#   1. Describe Individual - links a Name object with a Family object.
+#   1. Describe Personal - links a Name object with a Family object.
 #   2. Describe a Married Couple Family - object contains two spouses, anniversary, joint email/receipt, and photo,
 #      and is a "Parent" target (see #1, above).
 #   3. Describe a Single Parent Family - object contains joint email and photo, and is a "Parent" target (see #1, above).
@@ -36,17 +36,17 @@ from models import Address, Family, Name
 #
 #
 #
-# The Individual Request Form & Method:
+# The Personal Request Form & Method:
 #
-class IndividualChoices(models.Model):
+class PersonalChoices(models.Model):
     Select_Address = models.ForeignKey(Address, blank=True, null=True, on_delete=models.DO_NOTHING)
     Select_Parents = models.ForeignKey(Family, blank=True, null=True, on_delete=models.DO_NOTHING)
 
-class DescribeIndividualForm(forms.ModelForm):
+class DescribePersonalForm(forms.ModelForm):
     class Meta:
-        model = IndividualChoices
+        model = PersonalChoices
 
-def individual(request, nid, browser_tab):
+def personal(request, nid, browser_tab):
     ZS = Z.SetSession(request, browser_tab)
     if ZS['ErrorMessage']:
         return GoLogout(request, ZS)
@@ -60,7 +60,7 @@ def individual(request, nid, browser_tab):
             return GoLogout(request, ZS, "[DF02]: URL containd an invalid name ID.")
 
     if request.method == 'POST': # If the form has been submitted...
-        form = DescribeIndividualForm(request.POST)
+        form = DescribePersonalForm(request.POST)
         if form.is_valid():
                 name.address = form.cleaned_data['Select_Address']
                 name.parents = form.cleaned_data['Select_Parents']
@@ -79,7 +79,7 @@ def individual(request, nid, browser_tab):
         if name.parents:
             selected_parents = name.parents
 
-        form = DescribeIndividualForm(initial={
+        form = DescribePersonalForm(initial={
             'Select_Address': selected_address,
             'Select_Parents': selected_parents,
             }) 
@@ -109,7 +109,7 @@ def individual(request, nid, browser_tab):
         }
 
     context.update(csrf(request))
-    return render_to_response('DirectoryDescribeIndividual.html', context )
+    return render_to_response('DirectoryDescribePersonal.html', context )
 
 #
 # The Married Couple Request Form & Method:

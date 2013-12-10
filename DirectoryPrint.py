@@ -72,7 +72,7 @@ def do(request, option, browser_tab):
         else:
             listF += [ directory_entry ]
 
-    # Retrieve information for individual entries.
+    # Retrieve information for personal entries.
     names = Name.objects.all(). \
         exclude(approved__exact=False). \
         exclude(Q(private__exact=True) & ~Q(owner__exact=ZS['AuthorizedOwner'])). \

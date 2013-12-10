@@ -1,5 +1,5 @@
 from django import template
-from WhoZwho.SessionFunctions import Age, FamilyName, FormatAddress, IndividualName, Kids, Parents
+from WhoZwho.SessionFunctions import Age, FamilyName, FormatAddress, PersonalName, Kids, Parents
 
 register = template.Library()
 
@@ -15,9 +15,9 @@ def filter_FamilyName(name, option='lastfirst', prefix=''):
 def filter_FormatAddress(address, prefix=''):
     return FormatAddress(address, prefix)
 
-@register.filter(name='IndividualName')
-def filter_IndividualName(name, option='firstlast', prefix=''):
-    return IndividualName(name, option, prefix)
+@register.filter(name='PersonalName')
+def filter_PersonalName(name, option='firstlast', prefix=''):
+    return PersonalName(name, option, prefix)
 
 @register.filter(name='Kids')
 def filter_Kids(name, prefix=''):

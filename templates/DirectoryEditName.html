@@ -27,9 +27,9 @@ License or the Apache v2 License, as specified in the README file.
           <tr>
             <td class="left_margin"></td>
             {% if name.private %}
-              <td id=page_title>Edit Private Contact: {{ name|IndividualName }}</td>
+              <td id=page_title>Edit Private Contact: {{ name|PersonalName }}</td>
             {% else %}
-              <td id=page_title>Edit: {{ name|IndividualName }}</td>
+              <td id=page_title>Edit: {{ name|PersonalName }}</td>
             {% endif %}
           </tr><tr>
             <td></td>
@@ -99,7 +99,7 @@ License or the Apache v2 License, as specified in the README file.
                    <a href="{{ ZS.httpURL }}married/{{ name.id }}/{{ browser_tab }}">Describe family:</a>
                  {% endif %}
                {% else %}
-                 <a href="{{ ZS.httpURL }}individual/{{ name.id }}/{{ browser_tab }}">Describe family:</a>
+                 <a href="{{ ZS.httpURL }}personal/{{ name.id }}/{{ browser_tab }}">Describe family:</a>
                {% endif %}
 
                <br>&nbsp&nbsp{{ name|FamilyName }}
@@ -113,7 +113,7 @@ License or the Apache v2 License, as specified in the README file.
                {% endfor %}
                
                {% if name.address %}
-                 <br><br>&nbsp&nbsp;Individual address:
+                 <br><br>&nbsp&nbsp;Personal address:
                    {% for entry in name.address|FormatAddress %}
                      <br>&nbsp&nbsp&nbsp&nbsp{{ entry }}
                    {% endfor %}

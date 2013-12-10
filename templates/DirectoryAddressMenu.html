@@ -15,14 +15,14 @@ License or the Apache v2 License, as specified in the README file.
       {% if option = 'f' %}
         <td id=page_title>Change family address for: {{ name|FamilyName }}</td>
       {% else %}
-        <td id=page_title>Change individual address for: {{ name|IndividualName }}</td>
+        <td id=page_title>Change personal address for: {{ name|PersonalName }}</td>
       {% endif %}
     </tr><tr>
       <td class="table_column_25px"></td>
       <td>
         <ul>
           <li>Create an address for each unique "location, email, phone" combination.</li>
-          <li>Each address created may be associated any number of times, with both families and individuals.</li>
+          <li>Each address created may be associated any number of times, with both families and personals.</li>
         </ul>
       </td>
     </tr><tr>
@@ -45,7 +45,7 @@ License or the Apache v2 License, as specified in the README file.
       <td class="table_column_500px" valign="top">
         <a class="subtabs_deselected" href="{{ ZS.httpURL }}married/{{ name.id }}/{{ browser_tab }}"">&nbspMarried&nbsp</a>
         <a class="subtabs_deselected" href="{{ ZS.httpURL }}singleparent/{{ name.id }}/{{ browser_tab }}"">&nbspSingleParent&nbsp</a>
-        <a class="subtabs_deselected" href="{{ ZS.httpURL }}individual/{{ name.id }}/{{ browser_tab }}"">&nbspIndividual&nbsp</a>
+        <a class="subtabs_deselected" href="{{ ZS.httpURL }}personal/{{ name.id }}/{{ browser_tab }}"">&nbspPersonal&nbsp</a>
         <a class="subtabs_selected" href="{{ ZS.httpURL }}sia/{{ name.id }}/{{ browser_tab }}"">&nbspAddresses&nbsp</a>
 
         {% if option = 'f' %}
@@ -69,7 +69,7 @@ License or the Apache v2 License, as specified in the README file.
           <br><br>Create <a href="{{ ZS.httpURL }}cfa/{{ name.id }}/{{ browser_tab }}"">NEW</a> address.
         {% else %}
           <br>
-          <br>Currently selected <a href="{{ ZS.httpURL }}individual/{{ name.id }}/{{ browser_tab }}"">Individual</a> address:
+          <br>Currently selected <a href="{{ ZS.httpURL }}personal/{{ name.id }}/{{ browser_tab }}"">Personal</a> address:
           {% if name.address %}
             {% for entry in name.address|FormatAddress %}
               <br>&nbsp&nbsp{{ entry }}
