@@ -1,0 +1,103 @@
+<!--
+Copyright (C) 2012 C. R. Leavett-Brown
+You may distribute under the terms of either the GNU General Public
+License or the Apache v2 License, as specified in the README file.
+-->
+
+{% extends "SessionAuthenticated.html" %}
+{% load TemplateTags %}
+
+{% block body %}
+  <!-- Title, notes, and error message. -->
+  <table>
+    <tr>
+      <td class="table_column_25px"></td>
+      {% if option = 'f' %}
+        <td id=page_title>Change family address for: {{ name|FamilyName }}</td>
+      {% else %}
+        <td id=page_title>Change individual address for: {{ name|IndividualName }}</td>
+      {% endif %}
+    </tr><tr>
+      <td class="table_column_25px"></td>
+      <td>
+        <ul>
+          <li>Create an address for each unique "location, email, phone" combination.</li>
+          <li>Each address created may be associated any number of times, with both families and individuals.</li>
+        </ul>
+      </td>
+    </tr><tr>
+      <td class="table_column_25px"></td>
+      <td id="error_message" class="error_message">{{ ZS.ErrorMessage }}</td>
+    </tr>
+  </table>
+
+  <!-- Picture & subtabs. -->
+  <table>
+    <tr>
+      <td class="table_column_25px"></td>
+        <td class="table_column_225px" rowspan="0" valign="top">
+        {% if name.picture_uploaded %}
+          <img class="table_image" src="{{ ZS.httpURL }}static/pics/names/{{ name.id }}.jpg">
+        {% else %}
+          <img class="table_image" src="{{ ZS.httpURL }}static/pics/defaults/nicubunu_Abstract_person.svg">
+        {% endif %}
+      </td>
+      <td class="table_column_500px" valign="top">
+        <a class="subtabs_deselected" href="{{ ZS.httpURL }}married/{{ name.id }}/{{ browser_tab }}"">&nbspMarried&nbsp</a>
+        <a class="subtabs_deselected" href="{{ ZS.httpURL }}singleparent/{{ name.id }}/{{ browser_tab }}"">&nbspSingleParent&nbsp</a>
+        <a class="subtabs_deselected" href="{{ ZS.httpURL }}individual/{{ name.id }}/{{ browser_tab }}"">&nbspIndividual&nbsp</a>
+        <a class="subtabs_selected" href="{{ ZS.httpURL }}sia/{{ name.id }}/{{ browser_tab }}"">&nbspAddresses&nbsp</a>
+
+        {% if option = 'f' %}
+          <br>
+          {% if name.family and name.family.address %}
+            {% if name.family.spouses.all|length == 2 %}
+              <br>Currently selected <a href="{{ ZS.httpURL }}married/{{ name.id }}/{{ browser_tab }}"">Married</a> address:
+            {% else %}
+              <br>Currently selected <a href="{{ ZS.httpURL }}singleparent/{{ name.id }}/{{ browser_tab }}"">SingleParent</a> address:
+            {% endif %}
+
+            {% for entry in name.family.address|FormatAddress %}
+              <br>&nbsp&nbsp{{ entry }}
+            {% endfor %}
+
+            &nbsp&nbsp&nbsp<a href="{{ ZS.httpURL }}map/{{ name.family.address.id }}/{{ browser_tab }}"">map</a>
+            &nbsp&nbsp&nbsp<a href="{{ ZS.httpURL }}efa/{{ name.id }}/{{ browser_tab }}"">edit</a>
+          {% else %}
+            <br>&nbsp&nbsp;(none)
+          {% endif %}
+          <br><br>Create <a href="{{ ZS.httpURL }}cfa/{{ name.id }}/{{ browser_tab }}"">NEW</a> address.
+        {% else %}
+          <br>
+          <br>Currently selected <a href="{{ ZS.httpURL }}individual/{{ name.id }}/{{ browser_tab }}"">Individual</a> address:
+          {% if name.address %}
+            {% for entry in name.address|FormatAddress %}
+              <br>&nbsp&nbsp{{ entry }}
+            {% endfor %}
+
+            &nbsp&nbsp&nbsp<a href="{{ ZS.httpURL }}map/{{ name.address.id }}/{{ browser_tab }}"">map</a>
+            &nbsp&nbsp&nbsp<a href="{{ ZS.httpURL }}eia/{{ name.id }}/{{ browser_tab }}"">edit</a>
+          {% else %}
+            <br>&nbsp&nbsp;(none)
+          {% endif %}
+          <br><br>Create <a href="{{ ZS.httpURL }}cia/{{ name.id }}/{{ browser_tab }}"">NEW</a> address.
+        {% endif %}
+      </td>
+    </tr>
+  </table>
+
+  <table>
+    <tr>
+      <td class="table_column_25px"></td>
+      <td class="table_column_225px" rowspan="0" valign="top">
+        {% if name.parents %}
+          {% if name.parents and name.parents.picture_uploaded %}
+            <img class="table_image" src="{{ ZS.httpURL }}static/pics/families/{{ name.parents.id }}.jpg">
+          {% else %}
+            <img class="table_image" src="{{ ZS.httpURL }}static/pics/defaults/nicubunu_Abstract_people.svg">
+          {% endif %}
+        {% endif %}
+      </td>
+    </tr>
+  </table>
+{% endblock %}

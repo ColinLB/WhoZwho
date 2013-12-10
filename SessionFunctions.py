@@ -80,10 +80,35 @@ def FamilyName(name,opt='lastfirst', prefix=''):
                 else:
                     return prefix +  spouses[1].first + " & " + spouses[0].first + ' ' + spouses[1].last
 
-    if opt == 'lastfirst':
-        return prefix +  name.last + ", " + name.first
+    return IndividualName(name, opt, prefix)
+
+def FormatAddress(address, prefix=''):
+    if address:
+        address_array = [ prefix + address.street ]
+
+        if address.address_line2:
+            address_array += [ address.address_line2 ]
+
+        if address.address_line3:
+            address_array += [ address.address_line3 ]
+
+        address_array += [ prefix + address.city + ', ' + address.province + ', ' + address.postcode ]
+
+        contact_array = []
+        if address.email:
+            contact_array += [ address.email ]
+
+        if address.phone:
+            contact_array += [ address.phone ]
+
+
+        if len(contact_array) > 0:
+            address_array += [ prefix + ', '.join(contact_array) ]
     else:
-        return prefix +  name.first + " " + name.last
+        address_array = []
+
+    return address_array
+
 
 def GenerateTemporaryPassword(size=7, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for x in range(size))
@@ -107,6 +132,12 @@ def GetDirectoryLists(ZS):
 
     return [ church_list, friend_list ]
 
+def IndividualName(name,opt='firstlast', prefix=''):
+    if opt == 'lastfirst':
+        return prefix +  name.last + ", " + name.first
+    else:
+        return prefix +  name.first + " " + name.last
+
 def Kids(name, prefix=''):
     kids = []
     if name.family:
@@ -116,9 +147,9 @@ def Kids(name, prefix=''):
                 kids += [child.first]
 
     if len(kids) > 0:
-        return prefix + ', '.join(kids)
+        return [ prefix + ', '.join(kids) ]
 
-    return u''
+    return []
 
 def NameContacts(name, prefix=''):
     contacts = []
@@ -138,16 +169,9 @@ def NameContacts(name, prefix=''):
 
 def Parents(name):
     if name.parents:
-        spouses = name.parents.spouses.all()
-        if len(spouses) < 2:
-            return spouses[0].last + ", " + spouses[0].first
-        else:
-            if spouses[0].gender == 'm':
-                return spouses[0].last + ", " + spouses[0].first + " & " + spouses[1].first
-            else:
-                return spouses[1].last + ", " + spouses[1].first + " & " + spouses[0].first
+        return [ FamilyName(name.parents.spouses.all()[0], 'firstlast') ]
 
-    return None
+    return []
 
 def ProcessNewPicture(request, ZS, pic_dir, nid):
     std_jpg_size = Z.jpg_width * Z.jpg_height

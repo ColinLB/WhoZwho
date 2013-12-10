@@ -7,19 +7,19 @@ License or the Apache v2 License, as specified in the README file.
 {% extends "SessionAuthenticated.html" %}
 
 {% block body %}
-    <form id="DescribeParentsForm" enctype="multipart/form-data" action="/WhoZwho/individual/{{ name.id }}/{{ browser_tab }}" method="post">
+    <form id="DescribeIndividualForm" enctype="multipart/form-data" action="/WhoZwho/individual/{{ name.id }}/{{ browser_tab }}" method="post">
         {% csrf_token %}
 
         <!-- Title, notes, and error message. -->
         <table>
           <tr>
             <td class="table_column_25px"></td>
-            <td id=page_title>Describe Parents of: {{ name.first }} {{ name.last }}</td>
+            <td id=page_title>Describe Parents & Individual Address of: {{ name.first }} {{ name.last }}</td>
           </tr><tr>
             <td class="table_column_25px"></td>
             <td>
               <ul>
-                <li>Fields marked with an asterisk (*) are required.</li>
+                <!-- <li>Fields marked with an asterisk (*) are required.</li> -->
               </ul>
             </td>
           </tr><tr>
@@ -43,11 +43,12 @@ License or the Apache v2 License, as specified in the README file.
               <a class="subtabs_deselected" href="{{ ZS.httpURL }}married/{{ name.id }}/{{ browser_tab }}"">&nbspMarried&nbsp</a>
               <a class="subtabs_deselected" href="{{ ZS.httpURL }}singleparent/{{ name.id }}/{{ browser_tab }}"">&nbspSingleParent&nbsp</a>
               <a class="subtabs_selected" href="{{ ZS.httpURL }}individual/{{ name.id }}/{{ browser_tab }}"">&nbspIndividual&nbsp</a>
+              <a class="subtabs_deselected" href="{{ ZS.httpURL }}sia/{{ name.id }}/{{ browser_tab }}"">&nbspAddresses&nbsp</a>
               <table>
                 {% for field in form %}
                   <tr>
                     <td>
-                      <label for="{{ field.label }}">{{ field.label_tag }}:
+                      <label for="{{ field.label }}">{{ field.label_tag }}
                       {% if field.field.required %}*{% endif %}
                     </td><td class="table_column_25px"></td><td>
                       {{ field }}

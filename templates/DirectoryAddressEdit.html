@@ -1,0 +1,101 @@
+<!--
+Copyright (C) 2012 C. R. Leavett-Brown
+You may distribute under the terms of either the GNU General Public
+License or the Apache v2 License, as specified in the README file.
+-->
+
+{% extends "SessionAuthenticated.html" %}
+
+{% block body %}
+    <script type="text/javascript">
+        function ToggleAddressOptions() {
+            ao = document.getElementById('AddressOptions');
+            if (ao.style.display == '' || ao.style.display == 'block') {
+                ao.style.display = 'none';
+                }
+            else {
+                ao.style.display = 'block';
+                }
+            }
+    </script>
+
+    {% if option.0 = 'c' %}
+      {% if option.1 = 'f' %}
+        <form id="EditAddressForm" enctype="multipart/form-data" action="/WhoZwho/cfa/{{ name.id }}/{{ browser_tab }}" method="post">
+      {% else %}
+        <form id="EditAddressForm" enctype="multipart/form-data" action="/WhoZwho/cia/{{ name.id }}/{{ browser_tab }}" method="post">
+      {% endif %}
+    {% else %}
+      {% if option.1 = 'f' %}
+        <form id="EditAddressForm" enctype="multipart/form-data" action="/WhoZwho/efa/{{ name.id }}/{{ browser_tab }}" method="post">
+      {% else %}
+        <form id="EditAddressForm" enctype="multipart/form-data" action="/WhoZwho/eia/{{ name.id }}/{{ browser_tab }}" method="post">
+      {% endif %}
+    {% endif %}
+      {% csrf_token %}
+
+        <table>
+          <tr>
+            <td class="left_margin"></td>
+              {% if option.0 = 'c' %}
+                {% if option.1 = 'f' %}
+                  <td id=page_title>New Family Address
+                {% else %}
+                  <td id=page_title>New Individual Address
+                {% endif %}
+              {% else %}
+                {% if option.1 = 'f' %}
+                  <td id=page_title>Edit Family Address
+                {% else %}
+                  <td id=page_title>Edit Individual Address
+                {% endif %}
+              {% endif %}
+            </td>
+          </tr><tr>
+            <td></td>
+            <td>
+              <ul>
+                <li>Fields marked with an asterisk (*) are required.</li>
+                <li>Though the "Municipality" field is optional, providing an appropriate value will
+                    improve map accuracy. For example, some addresses in Colwood or Langford will not
+                    resolve properly if only the city of "Victoria" is specified.</li>
+              </ul>
+            </td>
+          </tr>
+        </table>
+
+        <table>
+          <tr>
+            <td class="left_margin"></td>
+            <td id="error_message" class="error_message">{{ ZS.ErrorMessage }}</td>
+          </tr>
+        </table>
+
+        <table>
+          <tr>
+            <td class="left_margin"></td>
+            <td rowspan="0" valign="top"><img class="show_image" src="{{ picture }}"></td>
+            <td class="left_margin"></td>
+            <td valign="top">
+              <table>
+                {% for field in form %}
+                  <tr>
+                    <td>
+                      <th><label for="{{ field.label }}">{{ field.label_tag }}
+                      {% if field.field.required %}*{% endif %}
+                    </td><td>
+                      {{ field }}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </table>
+            </td>
+          </tr><tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><input type="submit" value="Save" /></td>
+        </table>
+    </form>
+{% endblock %}

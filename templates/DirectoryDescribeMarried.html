@@ -5,6 +5,7 @@ License or the Apache v2 License, as specified in the README file.
 -->
 
 {% extends "SessionAuthenticated.html" %}
+{% load TemplateTags %}
 
 {% block body %}
     <form id="DescribeMarriedForm" enctype="multipart/form-data" action="/WhoZwho/married/{{ name.id }}/{{ browser_tab }}" method="post">
@@ -14,20 +15,12 @@ License or the Apache v2 License, as specified in the README file.
         <table>
           <tr>
             <td class="table_column_25px"></td>
-            {% if name.family and name.family.spouses.all|length == 2 %}
-                {% if name.family.spouses.all.0.gender = "m" %}
-                    <td id=page_title>Describe Family: {{ name.family.spouses.all.0.last }}, {{ name.family.spouses.all.0.first }} & {{ name.family.spouses.all.1.first }}</td>
-                {% else %}
-                    <td id=page_title>Describe Family: {{ name.family.spouses.all.1.last }}, {{ name.family.spouses.all.1.first }} & {{ name.family.spouses.all.0.first }}</td>
-                {% endif %}
-            {% else %}
-                <td id=page_title>Describe Married Family for: {{ name.first }} {{ name.last }}</td>
-            {% endif %}
+            <td id=page_title>Describe Family: {{ name|FamilyName }}</td>
           </tr><tr>
             <td class="table_column_25px"></td>
             <td>
               <ul>
-                <li>Fields marked with an asterisk (*) are required.</li>
+                <!-- <li>Fields marked with an asterisk (*) are required.</li> -->
               </ul>
             </td>
           </tr><tr>
@@ -51,11 +44,14 @@ License or the Apache v2 License, as specified in the README file.
               <a class="subtabs_selected" href="{{ ZS.httpURL }}married/{{ name.id }}/{{ browser_tab }}"">&nbspMarried&nbsp</a>
               <a class="subtabs_deselected" href="{{ ZS.httpURL }}singleparent/{{ name.id }}/{{ browser_tab }}"">&nbspSingleParent&nbsp</a>
               <a class="subtabs_deselected" href="{{ ZS.httpURL }}individual/{{ name.id }}/{{ browser_tab }}"">&nbspIndividual&nbsp</a>
+              {% if name.family %}
+                <a class="subtabs_deselected" href="{{ ZS.httpURL }}sfa/{{ name.id }}/{{ browser_tab }}"">&nbspAddresses&nbsp</a>
+              {% endif %}
               <table>
                 {% for field in form %}
                   <tr>
                     <td>
-                      <label for="{{ field.label }}">{{ field.label_tag }}:
+                      <label for="{{ field.label }}">{{ field.label_tag }}
                       {% if field.field.required %}*{% endif %}
                     </td><td class="table_column_25px"></td><td>
                       {{ field }}
