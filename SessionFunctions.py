@@ -22,6 +22,12 @@ def Age(bday=None, d=None):
 
     return (d.year - bday.year) - int((d.month, d.day) < (bday.month, bday.day))
 
+def Birthday(name):
+    try:
+        return Z.Months[name.birthday.month - 1] + ', ' + str(name.birthday.day)
+    except:
+        return ""
+
 def FamilyAddress(name, prefix=''):
     contact_array = []
 
@@ -131,6 +137,33 @@ def GetDirectoryLists(ZS):
             church_list += [name]
 
     return [ church_list, friend_list ]
+
+def PersonalContacts(name):
+    array_1 = []
+    if not name:
+        return array_1
+
+    array_2 = []
+    if name.email:
+        array_2 += [ name.email ]
+
+    if name.cell:
+        array_2 += [ name.cell ]
+
+    if len(array_2) > 0:
+        array_1 += [ 'Personal: ' + ', '.join(array_2) ]
+
+    array_2 = []
+    if name.work_email:
+        array_2 += [ name.work_email ]
+
+    if name.work_phone:
+        array_2 += [ name.work_phone ]
+
+    if len(array_2) > 0:
+        array_1 += [ 'Work: ' + ', '.join(array_2) ]
+
+    return array_1
 
 def PersonalName(name,opt='firstlast', prefix=''):
     if opt == 'lastfirst':

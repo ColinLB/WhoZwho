@@ -5,117 +5,104 @@ License or the Apache v2 License, as specified in the README file.
 -->
 
 {% extends "SessionAuthenticated.html" %}
+{% load TemplateTags %}
 
 {% block body %}
-    <table>
-        <tr valign="top">
-            <td class=left_margin></td>
-                {% if name.picture_uploaded %}
-                    <td><img class="show_image" src="{{ ZS.httpURL }}static/pics/names/{{ name.id }}.jpg"></td>
-                {% else %}
-                    <td><img class="show_image" src="{{ ZS.httpURL }}static/pics/defaults/nicubunu_Abstract_person.svg"></td>
-                {% endif %}
-            <td class=left_margin></td>
-            <td class="table_column">{{ name.first }} {{ name.last }}<br>
+  <table>
+    <tr valign="top">
+      <td class=left_margin></td>
+        {% if name.picture_uploaded %}
+          <td><img class="show_image" src="{{ ZS.httpURL }}static/pics/names/{{ name.id }}.jpg"></td>
+        {% else %}
+          <td><img class="show_image" src="{{ ZS.httpURL }}static/pics/defaults/nicubunu_Abstract_person.svg"></td>
+        {% endif %}
 
-                {% if name.cell or name.work_phone or name.email or name.work_email %}
-                    <br>
-                {% endif %}
+      <td class=left_margin></td>
+      <td class="table_column" rowspan=3>
+        <span id=page_title>{{ name|PersonalName }}</span>
 
-                {% if name.cell %}
-                    Cell: {{ name.cell }}<br>
-                {% endif %}
+        {% if name.birthday %}
+          &nbsp({{ name|Birthday }})
+        {% endif %}
 
-                {% if name.work_phone %}
-                    Work: {{ name.work_phone }}<br>
-                {% endif %}
+        {% if name|PersonalContacts %}
+          <br>
+          {% for contact in name|PersonalContacts %}
+            <br>&nbsp&nbsp{{ contact }}
+          {% endfor %}
+        {% endif %}
 
-                {% if name.email %}
-                    Email: {{ name.email }}<br>
-                {% endif %}
 
-                {% if name.work_email %}
-                    Work Email: {{ name.work_email }}<br>
-                {% endif %}
+        {% if name.address %}
+          <br>
+          <br>&nbsp&nbspPersonal address:
+          {% for entry in name.address|FormatAddress %}
+            <br>&nbsp&nbsp&nbsp&nbsp{{ entry }}
+          {% endfor %}
+          &nbsp&nbsp&nbsp<a class="more_info" href="{{ ZS.httpURL }}map/{{ name.address.id }}/{{ browser_tab }}"">map</a>
+        {% endif %}
 
-                {% if name.address and not name.family %}
-                    <br>
-                    {{ name.address.street }}<br>
-                    {% if name.address.address_line2 %}
-                        {{ name.address.address_line2 }}<br>
-                        {% if name.address.address_line3 %}
-                            {{ name.address.address_line3 }}<br>
-                        {% endif %}
-                    {% endif %}
-                    {{ name.address.city }}, {{ name.address.province }}<br>
-                    {{ name.address.postcode }}
-                    <a class="more_info" href="{{ ZS.httpURL }}saddr/{{ name.address.id }}/{{ browser_tab }}">&nbsp&nbsp(map)</a><br><br>
+        {% if name.family %}
+          {% if name.family.address %}
+            <br>
+            <br>&nbsp&nbspFamily address:
+            {% for entry in name.family.address|FormatAddress %}
+              <br>&nbsp&nbsp&nbsp&nbsp{{ entry }}
+            {% endfor %}
+            &nbsp&nbsp&nbsp<a class="more_info" href="{{ ZS.httpURL }}map/{{ name.family.address.id }}/{{ browser_tab }}"">map</a>
+          {% endif %}
 
-                    {% if name.address.phone %}
-                        Home: {{ name.address.phone }}<br>
-                    {% endif %}
-                {% endif %}
-            </td><td class="wide_margin"></td><td>
-                    Birthday: {{ birthday }}
-            </td>
-        </tr>
-    </table>
+          <br>
+          <br>&nbsp&nbspFamily:
+          <br>&nbsp&nbsp&nbsp&nbsp{{ name|FamilyName }}
+          {% if name.family.anniversary %}
+            &nbsp({{ name.family.anniversary }})
+          {% endif %}
 
-    <br>
+          {% for kids in name|Kids %}
+            <br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp{{ kids }}
+          {% endfor %}
+        {% endif %}
+
+        {% if name.parents %}
+          <br>
+          <br>&nbsp&nbspParent(s):
+          <br>&nbsp&nbsp&nbsp&nbsp{{ name.parents.spouses.all.0|FamilyName }}
+
+          {% if name.parents.address and name.birthday|Age < 18 %}
+            <br>
+            <br>&nbsp&nbspParental address:
+            {% for entry in name.parents.address|FormatAddress %}
+              <br>&nbsp&nbsp&nbsp&nbsp{{ entry }}
+            {% endfor %}
+            &nbsp&nbsp&nbsp<a class="more_info" href="{{ ZS.httpURL }}map/{{ name.parents.address.id }}/{{ browser_tab }}"">map</a>
+          {% endif %}
+        {% endif %}
+      </td>
+    </tr>
 
     {% if name.family %}
-      <table>
-        <tr valign="top">
-          <td class=left_margin></td>
-            {% if name.family.picture_uploaded %}
-              <td><img class="show_image" src="{{ ZS.httpURL }}static/pics/families/{{ name.family.id }}.jpg"></td>
-            {% else %}
-              <td><img class="show_image" src="{{ ZS.httpURL }}static/pics/defaults/nicubunu_Abstract_people.svg">
-            {% endif %}
-          </td>
-
-          <td class=left_margin></td>
-          <td class="table_column">
-            {{ FamilyName }}
-            {% if Kids %}
-              <br>&nbsp&nbsp&nbsp{{ Kids }}
-            {% endif %}
-
-            <br>
-
-            {% if name.address %}
-              <br>{{ name.address.street }}
-              {% if name.address.address_line2 %}
-                <br>{{ name.address.address_line2 }}
-                {% if name.address.address_line3 %}
-                  <br>{{ name.address.address_line3 }}
-                {% endif %}
-              {% endif %}
-              <br>{{ name.address.city }}, {{ name.address.province }}
-              <br>{{ name.address.postcode }}
-              <a class="more_info" href="{{ ZS.httpURL }}saddr/{{ name.address.id }}/{{ browser_tab }}">&nbsp&nbsp(map)</a>
-            {% endif %}
-
-            <br>
-
-
-            {% if name.family.email %}
-              <br>Both: {{ name.family.email }}
-            {% endif %}
-
-            {% if name.address.phone %}
-              <br>Home: {{ name.address.phone }}
-            {% endif %}
-          </td>
-          <td class="wide_margin"></td>
-          <td>
-            {% if name.family.anniversary %}
-                Anniversary: {{ name.family.anniversary }}
-            {% endif %}
-          </td>
-        </tr>
-      </table>
+      <tr valign="top">
+        <td class=left_margin></td>
+          {% if name.family.picture_uploaded %}
+            <td><img class="show_image" src="{{ ZS.httpURL }}static/pics/families/{{ name.family.id }}.jpg">
+          {% else %}
+            <td><img class="show_image" src="{{ ZS.httpURL }}static/pics/defaults/nicubunu_Abstract_people.svg">
+          {% endif %}
+        </td>
+      </tr>
     {% endif %}
 
-    {% block form %}{% endblock %}
+    {% if name.parents and name.birthday|Age < 18 %}
+      <tr valign="top">
+        <td class=left_margin></td>
+          {% if name.parents.picture_uploaded %}
+            <td><img class="show_image" src="{{ ZS.httpURL }}static/pics/families/{{ name.parents.id }}.jpg">
+          {% else %}
+            <td><img class="show_image" src="{{ ZS.httpURL }}static/pics/defaults/nicubunu_Abstract_people.svg">
+          {% endif %}
+        </td>
+      </tr>
+    {% endif %}
+  </table>
 {% endblock %}
