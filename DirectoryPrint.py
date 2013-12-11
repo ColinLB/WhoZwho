@@ -13,7 +13,7 @@ from models import Address, Family, Name, Wedding
 
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter, landscape
-from SessionFunctions import Age, FamilyAddress, FamilyName, Kids, NameContacts
+from SessionFunctions import Age, FormatAddress, FamilyName, Kids, NameContacts
 
 
 def do(request, option, browser_tab):
@@ -63,10 +63,16 @@ def do(request, option, browser_tab):
         for child in children:
             contacts += PersonalContacts(child)
 
-        if family.picture_uploaded:
-            directory_entry = [ 'pics/families/' + str(family.id) + '.jpg', [ FamilyName(spouses[0]), Kids(spouses[0], '  ') ] + FamilyAddress(spouses[0], '    ') + [u''] + contacts ]
+        kids = Kids(spouses[0], '  ')
+        if len(kids) > 0:
+            kids = kids[0]
         else:
-            directory_entry = [ 'pics/defaults/nicubunu_Abstract_people.png', [ FamilyName(spouses[0]), Kids(spouses[0], '  ') ] + FamilyAddress(spouses[0], '    ') + [u''] + contacts ]
+            kids = ''
+
+        if family.picture_uploaded:
+            directory_entry = [ 'pics/families/' + str(family.id) + '.jpg', [ FamilyName(spouses[0]), kids ] + FormatAddress(spouses[0].family.address, '    ') + [u''] + contacts ]
+        else:
+            directory_entry = [ 'pics/defaults/nicubunu_Abstract_people.png', [ FamilyName(spouses[0]), kids ] + FormatAddress(spouses[0].family.address, '    ') + [u''] + contacts ]
         if attends_church:
             listC += [ directory_entry ]
         else:
@@ -101,9 +107,9 @@ def do(request, option, browser_tab):
             continue
 
         if name.picture_uploaded:
-            directory_entry = [ 'pics/names/' + str(name.id) + '.jpg', [ FamilyName(name), '' ] + FamilyAddress(name, '    ') + [u''] + PersonalContacts(name) ]
+            directory_entry = [ 'pics/names/' + str(name.id) + '.jpg', [ FamilyName(name), '' ] + FormatAddress(name.address, '    ') + [u''] + PersonalContacts(name) ]
         else:
-            directory_entry = [ 'pics/defaults/nicubunu_Abstract_people.png', [ FamilyName(name), '' ] + FamilyAddress(name, '    ') + [u''] + PersonalContacts(name) ]
+            directory_entry = [ 'pics/defaults/nicubunu_Abstract_people.png', [ FamilyName(name), '' ] + FormatAddress(name.address, '    ') + [u''] + PersonalContacts(name) ]
 
         if name.out_of_town == True:
             listF += [ directory_entry ]
