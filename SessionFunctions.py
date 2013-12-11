@@ -28,44 +28,6 @@ def Birthday(name):
     except:
         return ""
 
-def FamilyAddress(name, prefix=''):
-    contact_array = []
-
-    if name.family:
-        if name.family.email:
-            contact_array += [ name.family.email ]
-
-        if name.family.spouses.count() == 2:
-            spouses = name.family.spouses.all()
-            if spouses[0].address and spouses[1].address:
-                if spouses[0].gender == 'm':
-                    address = spouses[0].address
-                else:
-                    address = spouses[1].address
-            elif spouses[0].address:
-                address = spouses[0].address
-            elif spouses[1].address:
-                address = spouses[1].address
-            else:
-                address = None
-        else:
-            address = name.address
-    else:
-        address = name.address
-
-    if address:
-        if address.phone:
-            contact_array += [ address.phone ]
-
-        address_array = [ prefix + address.street, prefix + address.city + ', ' + address.province + ', ' + address.postcode ]
-
-        if len(contact_array) > 0:
-            address_array += [ prefix + ', '.join(contact_array) ]
-    else:
-        address_array = []
-
-    return address_array
-
 def FamilyName(name,opt='lastfirst', prefix=''):
     if name.family:
         spouses = name.family.spouses.all()
