@@ -61,7 +61,8 @@ def do(request, option, browser_tab):
             exclude(removed__exact=True)
 
         for child in children:
-            contacts += PersonalContacts(child)
+            if Age(child.birthday) < 18:
+                contacts += PersonalContacts(child)
 
         kids = Kids(spouses[0], '  ')
         if len(kids) > 0:
