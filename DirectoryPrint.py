@@ -205,7 +205,12 @@ def FormatPage(ZS, canvas, page, page_number, Q):
             cell_offset = 90
             canvas.drawImage(ZS['StaticPath'] + entry[0], X(left_side,Q), Y(cell_origin,Q), width=80,height=100,mask=None)
             canvas.setFont("Helvetica", 10)
+            ix = 0
             for line in entry[1]:
+                ix += 1
+                if ix > 2 and line == '':
+                    canvas.setFont("Helvetica", 8)
+
                 canvas.drawString(X(left_side+100,Q), Y(cell_origin+cell_offset,Q), line)
                 cell_offset -= 10
             cell_origin -= cell_height
