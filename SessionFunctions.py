@@ -55,10 +55,10 @@ def FormatAddress(address, prefix=''):
         address_array = [ prefix + address.street ]
 
         if address.address_line2:
-            address_array += [ address.address_line2 ]
+            address_array += [ prefix + address.address_line2 ]
 
         if address.address_line3:
-            address_array += [ address.address_line3 ]
+            address_array += [ prefix + address.address_line3 ]
 
         address_array += [ prefix + address.city + ', ' + address.province + ', ' + address.postcode ]
 
