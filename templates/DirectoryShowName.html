@@ -78,6 +78,8 @@ License or the Apache v2 License, as specified in the README file.
             &nbsp&nbsp&nbsp<a class="more_info" href="{{ ZS.httpURL }}map/{{ name.parents.address.id }}/{{ browser_tab }}"">map</a>
           {% endif %}
         {% endif %}
+      </td><td>
+        {% block form %}{% endblock %}
       </td>
     </tr>
 
